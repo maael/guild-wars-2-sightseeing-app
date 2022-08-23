@@ -57,8 +57,11 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "tauri-app",
-        "width": 800
+        "title": "Guild Wars 2 | Sightseeing",
+        "width": 800,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "decorations": false
       }
     ]
   }
