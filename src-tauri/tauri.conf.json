@@ -11,7 +11,13 @@
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "all": true,
+      "fs": {
+        "scope": ["*"]
+      },
+      "http": {
+        "scope": ["https://api.guildwars2.com/*"]
+      }
     },
     "bundle": {
       "active": true,
