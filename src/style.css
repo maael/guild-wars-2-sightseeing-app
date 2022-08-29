@@ -18,6 +18,11 @@
 
 body {
   margin: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
 }
 
 .container {
@@ -25,8 +30,9 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   text-align: center;
+  overflow-y: auto;
+  max-height: calc(100vh - 30px);
 }
 
 .logo {

@@ -5,20 +5,16 @@ import {
   Route,
   useNavigate,
 } from "react-router-dom";
-import { invoke } from "@tauri-apps/api/tauri";
+import { convertFileSrc, invoke } from "@tauri-apps/api/tauri";
 import { BaseDirectory, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
-import { resolveResource } from "@tauri-apps/api/path";
+import { documentDir, join, resolveResource } from "@tauri-apps/api/path";
 import { fetch } from "@tauri-apps/api/http";
 import TitleBar from "./components/TitleBar";
 import "./App.css";
+import { readDir, readBinaryFile } from "@tauri-apps/api/fs";
 
 function BaseScreen({ children }: PropsWithChildren) {
-  return (
-    <div className="container">
-      <TitleBar />
-      {children}
-    </div>
-  );
+  return <div className="container">{children}</div>;
 }
 
 function WaitingForConnectionScreen() {
@@ -35,11 +31,56 @@ function WaitingForConnectionScreen() {
     };
   });
 
+  const [ts, setTs] = React.useState(0);
+
   return (
-    <BaseScreen>
+    <>
       <h1>Guild Wars 2 Sightseeing</h1>
       <p>{greetMsg}</p>
-    </BaseScreen>
+      <button
+        onClick={async () => {
+          const raw: { nanos_since_epoch: number } = await invoke("screenshot");
+          console.info({ raw });
+          setTs(raw.nanos_since_epoch);
+        }}
+      >
+        Capture
+      </button>
+      <LocalImage ts={ts} />
+    </>
+  );
+}
+
+function LocalImage({ ts }: { ts: number }) {
+  const [src, setSrc] = React.useState("");
+  const [fileSrc, setFileSrc] = React.useState("");
+  React.useEffect(() => {
+    (async () => {
+      const docDir = await documentDir();
+      const stats = await readDir(
+        await join(docDir, "Guild Wars 2", "Screens")
+      );
+      const lastFile = stats[stats.length - 1];
+      const converted = convertFileSrc(lastFile.path);
+      console.info({ converted });
+      setFileSrc(lastFile.path);
+      setSrc(converted);
+    })();
+  }, [ts]);
+
+  return (
+    <>
+      <button
+        onClick={async () => {
+          console.info("[save]", src);
+          const file = await readBinaryFile(fileSrc);
+          console.info(fileSrc, file);
+        }}
+      >
+        Save
+      </button>
+      <img style={{ height: "auto", width: 500, margin: "0 auto" }} src={src} />
+    </>
   );
 }
 
@@ -71,7 +112,7 @@ function EnterApiKeyScreen() {
     }
   }, [apiAccountInfo]);
   return (
-    <BaseScreen>
+    <>
       <h1>Guild Wars 2 Sightseeing</h1>
       <form
         onSubmit={async (e) => {
@@ -105,15 +146,20 @@ function EnterApiKeyScreen() {
       {apiAccountInfo?.accountData?.name
         ? `Hi ${apiAccountInfo.accountData.name}!`
         : null}
-    </BaseScreen>
+    </>
   );
 }
 
 function App() {
   return (
-    <Router initialEntries={["/setup"]}>
-      <InnerApp />
-    </Router>
+    <>
+      <TitleBar />
+      <BaseScreen>
+        <Router initialEntries={["/setup"]}>
+          <InnerApp />
+        </Router>
+      </BaseScreen>
+    </>
   );
 }
 

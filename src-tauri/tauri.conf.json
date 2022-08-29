@@ -12,6 +12,11 @@
   "tauri": {
     "allowlist": {
       "all": true,
+      "protocol": {
+        "all": false,
+        "asset": true,
+        "assetScope": ["$DOCUMENT/Guild Wars 2/Screens/*"]
+      },
       "fs": {
         "scope": ["*"]
       },
@@ -53,7 +58,7 @@
       }
     },
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost"
     },
     "updater": {
       "active": false
