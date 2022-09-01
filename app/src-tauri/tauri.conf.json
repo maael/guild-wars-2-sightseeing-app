@@ -21,7 +21,7 @@
         "scope": ["*"]
       },
       "http": {
-        "scope": ["https://api.guildwars2.com/*"]
+        "scope": ["https://api.guildwars2.com/*", "http://localhost:3000/*"]
       }
     },
     "bundle": {

@@ -8,10 +8,10 @@ import {
 import { convertFileSrc, invoke } from "@tauri-apps/api/tauri";
 import { BaseDirectory, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { documentDir, join, resolveResource } from "@tauri-apps/api/path";
-import { fetch } from "@tauri-apps/api/http";
+import { fetch, Body, ResponseType } from "@tauri-apps/api/http";
+import { readDir, readBinaryFile } from "@tauri-apps/api/fs";
 import TitleBar from "./components/TitleBar";
 import "./App.css";
-import { readDir, readBinaryFile } from "@tauri-apps/api/fs";
 
 function BaseScreen({ children }: PropsWithChildren) {
   return <div className="container">{children}</div>;
@@ -74,7 +74,21 @@ function LocalImage({ ts }: { ts: number }) {
         onClick={async () => {
           console.info("[save]", src);
           const file = await readBinaryFile(fileSrc);
-          console.info(fileSrc, file);
+          const formData = Body.form({
+            key: "image",
+            image: {
+              file,
+              mime: "image/jpg",
+              fileName: "image.jpg",
+            },
+          });
+          const res = await fetch("http://localhost:3000/api/image/1234", {
+            body: formData,
+            method: "POST",
+            responseType: ResponseType.JSON,
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          console.info("data", res.data);
         }}
       >
         Save
