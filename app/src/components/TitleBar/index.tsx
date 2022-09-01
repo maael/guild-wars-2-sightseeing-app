@@ -19,27 +19,21 @@ export default function TitleBar() {
           id="titlebar-minimize"
           onClick={() => appWindow.minimize()}
         >
-          <img
-            src="https://api.iconify.design/mdi:window-minimize.svg"
-            alt="minimize"
-          />
+          <img src="/ui/minimize_button.png" alt="minimize" />
         </div>
         <div
           className="titlebar-button"
           id="titlebar-maximize"
           onClick={() => appWindow.maximize()}
         >
-          <img
-            src="https://api.iconify.design/mdi:window-maximize.svg"
-            alt="maximize"
-          />
+          <img src="/ui/maximize_button.png" alt="maximize" />
         </div>
         <div
           className="titlebar-button"
           id="titlebar-close"
           onClick={() => appWindow.close()}
         >
-          <img src="https://api.iconify.design/mdi:close.svg" alt="close" />
+          <img src="/ui/close_button.png" alt="close" />
         </div>
       </div>
       <div className="titlebar-placeholder" />

@@ -9,13 +9,6 @@ AWS.config.update({
   secretAccessKey: process.env.S3_UPLOAD_SECRET,
 })
 
-console.info('[AWS]', {
-  region: process.env.S3_UPLOAD_REGION,
-  accessKeyId: process.env.S3_UPLOAD_KEY,
-  secretAccessKey: process.env.S3_UPLOAD_SECRET,
-  Bucket: `${process.env.S3_UPLOAD_BUCKET}`,
-})
-
 const s3 = new S3({ apiVersion: '2006-03-01' })
 
 const FOUR_MB = 2e6 * 2
@@ -44,8 +37,12 @@ async function getFile(req: NextApiRequest): Promise<{ buffer: Buffer; mimetype?
 }
 
 const handler: NextApiHandler = async (req, res) => {
-  const groupId = req.query.groupId.toString()
+  const groupId = req.query.groupId!.toString()
   const file = await getFile(req)
+  if (!file) {
+    res.status(400).json({ error: 'File required' })
+    return
+  }
   const uploadParams: S3.PutObjectRequest = {
     Bucket: `${process.env.S3_UPLOAD_BUCKET}`,
     Key: `${groupId}/${uuid()}.jpg`,
