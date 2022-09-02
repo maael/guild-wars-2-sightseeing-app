@@ -1,32 +1,19 @@
+import { Link } from "react-router-dom";
+
 export default function WelcomeScreen() {
   return (
     <div>
-      <div
-        style={{
-          color: "white",
-          fontSize: "3em",
-          textAlign: "center",
-          marginTop: 10,
-          position: "relative",
-        }}
-      >
+      <div className="relative mt-3 text-center text-4xl text-white">
         Guild Wars 2 Sightseeing Log
       </div>
-      <button
-        style={{
-          backgroundImage: "url(/ui/new.png)",
-          height: 75,
-          width: 75,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundColor: "rgba(0, 0, 0, 0)",
-          border: "none",
-          opacity: 0.5,
-          cursor: "pointer",
-          userSelect: "none",
-        }}
-      ></button>
+      <Link to="/groups/new">
+        <button
+          className="h-20 w-20 cursor-pointer select-none opacity-50 hover:opacity-100 bg-no-repeat bg-cover bg-center"
+          style={{
+            backgroundImage: "url(/ui/new.png)",
+          }}
+        ></button>
+      </Link>
     </div>
   );
 }
