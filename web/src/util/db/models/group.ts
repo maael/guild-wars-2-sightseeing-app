@@ -15,13 +15,13 @@ export interface Type {
   expansions: string[]
   masteries: string[]
   difficulty: number
-  created_at: string
-  updated_at: string
+  createdAt: string
+  updatedAt: string
   isActive: boolean
   items: Item[]
 }
 
-interface ItemDocument extends Type, Document {}
+export interface ItemDocument extends Type, Document {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ItemModel extends Model<ItemDocument> {}
@@ -69,11 +69,11 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
       type: Boolean,
       default: true,
     },
-    created_at: {
+    createdAt: {
       type: String,
       default: () => new Date().toISOString(),
     },
-    updated_at: {
+    updatedAt: {
       type: String,
       default: () => new Date().toISOString(),
     },

@@ -5,7 +5,7 @@ const getOne: OneHandler<GroupType> = async ({ id }) => {
   return Group.findById(id).populate('items')
 }
 
-const getMany: ManyHandler<GroupType> = async ({ limit, offset, page }) => {
+const getMany: ManyHandler<GroupType> = async ({ limit = 100, offset = 0, page = 1 }) => {
   const results = await Group.paginate({}, { limit, offset, page, populate: 'items', lean: true, leanWithId: true })
 
   const pageRatings = (
@@ -17,6 +17,8 @@ const getMany: ManyHandler<GroupType> = async ({ limit, offset, page }) => {
     acc.set(i._id.toString(), { avg: i.avgRating, count: i.count })
     return acc
   }, new Map<string, number>())
+
+  console.info('what', results.docs.length)
 
   results.docs = results.docs.map((d: any) => {
     const info = pageRatings.get(d._id.toString()) || { avg: 0, count: 0 }

@@ -8,7 +8,7 @@ export interface Type {
   accountName: string
 }
 
-interface ItemDocument extends Type, Document {}
+export interface ItemDocument extends Type, Document {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ItemModel extends Model<ItemDocument> {}

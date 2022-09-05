@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "tauri-app",
+    "productName": "Guild Wars 2 | Sightseeing",
     "version": "0.0.0"
   },
   "tauri": {
@@ -39,7 +39,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.maael.tauri-template",
+      "identifier": "com.maael.gw2-sightseeing-app",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

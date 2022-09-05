@@ -13,6 +13,7 @@
     "build-css": "npx tailwindcss -i ./src/input.css -o ./src/style.css"
   },
   "dependencies": {
+    "@tanstack/react-query": "^4.2.3",
     "@tauri-apps/api": "^1.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -12,7 +12,7 @@ export interface Type {
   owner: Group
 }
 
-interface ItemDocument extends Type, Document {}
+export interface ItemDocument extends Type, Document {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ItemModel extends Model<ItemDocument> {}
