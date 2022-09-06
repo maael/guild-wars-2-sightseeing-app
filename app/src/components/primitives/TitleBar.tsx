@@ -11,12 +11,11 @@ export default function TitleBar() {
     })();
   }, []);
   const { connection } = useConnection();
-  console.info("con", connection);
   return (
     <>
       <div
         data-tauri-drag-region
-        className="bg-gray-900 flex-grow-0 flex-shrink-0 text-white select-none flex flex-row justify-end items-center cursor-move text-sm"
+        className="bg-gray-900 bg-opacity-25 flex-grow-0 flex-shrink-0 text-white select-none flex flex-row justify-end items-center cursor-move text-sm"
       >
         <div className="absolute top-2 left-2">{title}</div>
         <div>
