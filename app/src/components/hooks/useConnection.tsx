@@ -19,7 +19,11 @@ export function Provider({ children }: React.PropsWithChildren) {
       const raw: string = await invoke("get_mumble");
       const data = JSON.parse(raw);
       setConnection({
-        connection: { status: data ? "connected" : "waiting", data },
+        connection: {
+          status:
+            data && Object.keys(data).length > 0 ? "connected" : "waiting",
+          data,
+        },
         setConnection,
       });
     }, 3000);

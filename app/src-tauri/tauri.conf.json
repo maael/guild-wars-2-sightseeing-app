@@ -6,7 +6,7 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "Guild Wars 2 | Sightseeing",
+    "productName": "Guild Wars 2 Sightseeing",
     "version": "0.0.0"
   },
   "tauri": {

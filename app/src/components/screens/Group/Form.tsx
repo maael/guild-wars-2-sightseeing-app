@@ -1,12 +1,13 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Group } from "../../../types";
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { Group, WithRating, GroupDocument } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
+import Input from "../../primitives/Input";
 
 export default function GroupFormScreen() {
-  const location = useLocation();
   const nav = useNavigate();
-  console.info("what", location);
+
   const [group, setGroup] = React.useState<
     Omit<Group, "creator" | "isActive" | "createdAt" | "updatedAt">
   >({
@@ -18,7 +19,20 @@ export default function GroupFormScreen() {
     masteries: [],
     expansions: [],
   });
-  console.info("hi");
+
+  const { id } = useParams();
+  useQuery<WithRating<GroupDocument>>(
+    [`group/${id}`],
+    () =>
+      fetch(`http://localhost:3000/api/groups/${id}`).then((res) => res.json()),
+    {
+      onSuccess: (data) => {
+        setGroup(data);
+      },
+      enabled: !!id,
+    }
+  );
+
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     console.info("save", group);
@@ -33,12 +47,12 @@ export default function GroupFormScreen() {
     <div>
       <PageHeader>New Group</PageHeader>
       <form onSubmit={save}>
-        <input
+        <Input
           placeholder="Name..."
           value={group.name}
           onChange={(e) => setGroup((g) => ({ ...g, name: e.target.value }))}
         />
-        <input
+        <Input
           placeholder="Description..."
           value={group.description}
           onChange={(e) =>

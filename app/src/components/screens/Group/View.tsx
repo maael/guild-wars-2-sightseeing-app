@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { WithRating, GroupDocument } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 
@@ -18,6 +18,7 @@ export default function GroupViewScreen() {
   return (
     <div>
       <PageHeader>Group View</PageHeader>
+      <Link to={`/groups/${id}/edit`}>Edit</Link>
       {JSON.stringify(data)}
     </div>
   );
