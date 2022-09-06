@@ -1,6 +1,6 @@
 import { Document, Schema, Model } from 'mongoose'
-import { connect } from '~/util/db/mongo'
-import { ItemModel as Group } from '~/util/db/models/group'
+import { connect } from '../mongo'
+import { ItemModel as Group } from './group'
 
 const connection = connect()
 

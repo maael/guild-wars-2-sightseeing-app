@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Group, WithRating, GroupDocument } from "../../../types";
+import { Group, WithRating, GroupDocument, Item } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 import Input from "../../primitives/Input";
 import Button from "../../primitives/Button";
@@ -74,9 +74,17 @@ export default function GroupFormScreen() {
         <div className="flex flex-row gap-2 justify-center items-center">
           <Button
             type="button"
-            onClick={() =>
-              setGroup((g) => ({ ...g, items: g.items.concat({}) }))
-            }
+            onClick={() => {
+              const newItem: Omit<Item, "owner"> = {
+                name: "",
+                description: "",
+                precision: 100,
+              };
+              setGroup((g) => ({
+                ...g,
+                items: g.items.concat(newItem as any),
+              }));
+            }}
           >
             Add Item
           </Button>

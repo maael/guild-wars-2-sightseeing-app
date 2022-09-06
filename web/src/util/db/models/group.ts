@@ -1,6 +1,6 @@
 import { Document, Schema, Model, PaginateModel } from 'mongoose'
-import { connect } from '~/util/db/mongo'
-import { ItemModel as Item } from '~/util/db/models/item'
+import { connect } from '../mongo'
+import { ItemModel as Item } from './item'
 
 const connection = connect()
 
