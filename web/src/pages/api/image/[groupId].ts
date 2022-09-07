@@ -38,6 +38,7 @@ async function getFile(req: NextApiRequest): Promise<{ buffer: Buffer; mimetype?
 
 const handler: NextApiHandler = async (req, res) => {
   const groupId = req.query.groupId!.toString()
+  console.info('[image]', { groupId })
   const file = await getFile(req)
   if (!file) {
     res.status(400).json({ error: 'File required' })

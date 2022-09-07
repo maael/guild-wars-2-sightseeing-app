@@ -1,20 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { FaStar, FaUser } from "react-icons/fa";
+import { FaSpinner, FaStar, FaUser } from "react-icons/fa";
 import { GroupDocument, PaginateResult, WithRating } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
+import { API_URL } from "../../../util";
+import Difficulty from "../../primitives/Difficulty";
+import Rating from "../../primitives/Rating";
 
 export default function GroupListScreen() {
   const { isLoading, error, data } = useQuery<
     PaginateResult<WithRating<GroupDocument>>
-  >(["groups"], () =>
-    fetch("http://localhost:3000/api/groups").then((res) => res.json())
-  );
+  >(["groups"], () => fetch(`${API_URL}/api/groups`).then((res) => res.json()));
 
-  if (isLoading) return <div>"Loading...";</div>;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full text-3xl">
+        <FaSpinner className="animate-spin" />
+      </div>
+    );
+  }
 
-  if (error)
-    return <div>"An error has occurred: " + (error as Error).message</div>;
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-full text-red-700">
+        An error has occurred: {(error as Error).message}
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -34,29 +46,10 @@ export default function GroupListScreen() {
           New
         </div>
       </Link>
-      <div className="grid grid-cols-2 gap-2 max-w-3xl mx-auto pb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-3xl mx-auto pb-10 px-2">
         {data?.docs.map((d) => (
           <Item key={d._id} item={d} />
         ))}
-      </div>
-    </div>
-  );
-}
-
-const difficultyMap: { [k: number]: { label: string; colour: string } } = {
-  1: { label: "Beginner", colour: "bg-green-400" },
-  2: { label: "Easy", colour: "bg-green-600" },
-  3: { label: "Medium", colour: "bg-orange-500" },
-  5: { label: "Hard", colour: "bg-red-600" },
-  6: { label: "Expert", colour: "bg-red-800" },
-};
-function Difficulty({ level }: { level: number }) {
-  return (
-    <div className="flex flex-row">
-      <div
-        className={`${difficultyMap[level]?.colour} px-1.5 py-0.5 text-xs rounded-md`}
-      >
-        {difficultyMap[level]?.label || "Unknown"}
       </div>
     </div>
   );
@@ -76,9 +69,7 @@ function Item({ item }: { item: WithRating<GroupDocument> }) {
           <div className="flex flex-row gap-2 justify-center items-center">
             <div className="flex-1 text-lg">{item.name}</div>
             <Difficulty level={item.difficulty} />
-            <div className="flex flex-row gap-2">
-              <FaStar /> {item.rating.avg} ({item.rating.count})
-            </div>
+            <Rating rating={item.rating} />
           </div>
           <div className="flex-1">{item.description}</div>
           <div className="flex flex-row gap-2 justify-between items-center">

@@ -9,6 +9,11 @@ export interface Type {
   description: string
   imageUrl?: string
   precision: number
+  location: {
+    x: number
+    y: number
+    z: number
+  }
   owner: Group
 }
 
@@ -34,6 +39,20 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
     precision: {
       type: Number,
       default: 5,
+    },
+    location: {
+      x: {
+        type: Number,
+        default: 0,
+      },
+      y: {
+        type: Number,
+        default: 0,
+      },
+      z: {
+        type: Number,
+        default: 0,
+      },
     },
     owner: {
       type: Schema.Types.ObjectId,

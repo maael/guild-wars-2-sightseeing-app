@@ -1,13 +1,13 @@
 import { Document, Schema, Model, PaginateModel } from 'mongoose'
 import { connect } from '../mongo'
-import { ItemModel as Item } from './item'
+import { ItemDocument as Item } from './item'
 
 const connection = connect()
 
 export interface Type {
   name: string
   description: string
-  bannerimageUrl: string
+  bannerImageUrl: string
   creator: {
     accountName: string
     characterName: string
@@ -38,7 +38,7 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
       required: true,
       trim: true,
     },
-    bannerimageUrl: {
+    bannerImageUrl: {
       type: String,
       required: true,
       trim: true,

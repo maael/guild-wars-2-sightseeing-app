@@ -5,8 +5,13 @@ async function getMany() {
   return Rating.find()
 }
 
-const putOne: OneHandler<number> = async ({ id }) => {
-  await Rating.create({ raterAccountName: 'Test.1234', groupId: id, rating: 2 })
+const putOne: OneHandler<number> = async ({ id, body }) => {
+  console.info({ body })
+  await Rating.findOneAndUpdate(
+    { raterAccountName: 'Test.1234', groupId: id },
+    { raterAccountName: 'Test.1234', groupId: id, rating: body.rating },
+    { upsert: true }
+  )
   return Rating.count({ groupId: id })
 }
 
