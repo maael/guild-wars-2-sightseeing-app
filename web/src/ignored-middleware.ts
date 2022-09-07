@@ -4,6 +4,11 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import fetch from 'isomorphic-fetch'
 
+/**
+ * This was preventing image uploads for some reason
+ * So care when re-introducing
+ */
+
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()

@@ -1,7 +1,7 @@
 import { convertFileSrc, invoke } from "@tauri-apps/api/tauri";
 import { documentDir, join } from "@tauri-apps/api/path";
 import { fetch, Body, ResponseType } from "@tauri-apps/api/http";
-import { readDir, readBinaryFile } from "@tauri-apps/api/fs";
+import { readDir } from "@tauri-apps/api/fs";
 import { API_URL } from "../../util";
 
 export function useLocalImageHook() {
@@ -16,12 +16,10 @@ export function useLocalImageHook() {
 
   async function saveImage(groupId: string, fileSrc: string) {
     console.info("[save]", `${API_URL}/api/image/${groupId}`, fileSrc);
-    const file = await readBinaryFile(fileSrc);
-    console.info("[save][file]");
     const formData = Body.form({
       key: "image",
       image: {
-        file,
+        file: fileSrc,
         mime: "image/jpg",
         fileName: "image.jpg",
       },
@@ -34,7 +32,7 @@ export function useLocalImageHook() {
       headers: { "Content-Type": "multipart/form-data" },
     });
     console.info("data", res.data);
-    return res.data;
+    return (res.data as any)?.Location;
   }
 
   return {

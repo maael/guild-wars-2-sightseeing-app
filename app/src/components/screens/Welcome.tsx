@@ -9,6 +9,11 @@ export default function WelcomeScreen() {
       <Link to="/groups">
         <div className="flex flex-row justify-center items-center">List</div>
       </Link>
+      <Link to="/connected">
+        <div className="flex flex-row justify-center items-center">
+          Connecting
+        </div>
+      </Link>
     </div>
   );
 }

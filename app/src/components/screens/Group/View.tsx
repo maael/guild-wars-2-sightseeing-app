@@ -167,7 +167,7 @@ function Item({ item: d }: { item: ItemDocument }) {
       className="h-28 bg-no-repeat bg-top"
     >
       <div className="p-2 flex flex-col gap-1 h-full">
-        <div>{d.imageUrl}</div>
+        <div>{d.imageUrl ? <img src={d.imageUrl} /> : null}</div>
         <div>{d.name}</div>
         <div>{d.description}</div>
         <div>{d.precision}</div>

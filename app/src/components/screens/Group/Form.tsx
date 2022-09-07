@@ -46,6 +46,7 @@ export default function GroupFormScreen() {
     e.preventDefault();
     const embellishedGroupItems = await Promise.all(
       group.items.map(async (i) => {
+        let imageUrl = "";
         if (i.imageUrl?.includes("|")) {
           const [_, fileSrc] = (i.imageUrl || "").split("|");
           console.info("start", fileSrc);
@@ -53,11 +54,11 @@ export default function GroupFormScreen() {
             (group as any)._id || "new_group",
             fileSrc
           );
-          console.info("resolve", result);
+          imageUrl = result;
         }
         return {
           ...i,
-          imageUrl: "",
+          imageUrl,
         };
       })
     );
@@ -68,7 +69,7 @@ export default function GroupFormScreen() {
       body: JSON.stringify(embellishedGroup),
     }).then((r) => r.json());
     console.info("saved", res);
-    // nav("/groups");
+    nav("/groups");
   }
   console.info("[group]", group);
   return (

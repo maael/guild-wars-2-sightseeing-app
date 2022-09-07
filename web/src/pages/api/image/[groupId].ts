@@ -11,14 +11,14 @@ AWS.config.update({
 
 const s3 = new S3({ apiVersion: '2006-03-01' })
 
-const FOUR_MB = 2e6 * 2
+const EIGHT_MB = 2e6 * 4
 const uploadMiddleware = multer({
   dest: 'uploads/',
   storage: multer.memoryStorage(),
   limits: {
     fields: 4,
     files: 1,
-    fileSize: FOUR_MB,
+    fileSize: EIGHT_MB,
     fieldNameSize: 10,
   },
 })
