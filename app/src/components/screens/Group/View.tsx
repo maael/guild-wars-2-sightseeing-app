@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   FaClock,
@@ -14,6 +15,7 @@ import Button from "../../primitives/Button";
 import Difficulty from "../../primitives/Difficulty";
 import PageHeader from "../../primitives/PageHeader";
 import Rating from "../../primitives/Rating";
+import { invoke } from "@tauri-apps/api/tauri";
 
 function RatingSelection({
   id,
@@ -81,6 +83,34 @@ function doRating(id: string, rating: number, refetch: () => Promise<any>) {
   };
 }
 
+function within(value: number, compare: number, precision: number) {
+  return compare - precision < value && value < compare + precision;
+}
+
+function useGroupMatch(group?: WithRating<GroupDocument>) {
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const data = await invoke("get_mumble").then((r) =>
+          JSON.parse(r as string)
+        );
+        const position = data.avatar.position;
+        const matches = group?.items.filter((i) => {
+          return i.position.every((v, idx) =>
+            within(position[idx], v, i.precision)
+          );
+        });
+        console.info({ matches });
+      } catch (e) {
+        console.error("[group:match][error]", e);
+      }
+    }, 2_000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [group]);
+}
+
 export default function GroupViewScreen() {
   const { id } = useParams();
   const { isLoading, error, data, refetch } = useQuery<
@@ -88,6 +118,8 @@ export default function GroupViewScreen() {
   >([`group/${id}`], () =>
     fetch(`${API_URL}/api/groups/${id}`).then((res) => res.json())
   );
+
+  useGroupMatch(data);
 
   if (isLoading) {
     return (
@@ -166,13 +198,11 @@ function Item({ item: d }: { item: ItemDocument }) {
       className="bg-no-repeat bg-top bg-cover"
     >
       <div className="p-2 pb-4 flex flex-col gap-1 h-full">
-        <div className="rounded-md overflow-hidden">
+        <div className="rounded-md overflow-hidden mb-1">
           {d.imageUrl ? <img src={d.imageUrl} /> : null}
         </div>
         <div>{d.name}</div>
         <div className="text-sm">{d.description}</div>
-        <div>{d.precision}</div>
-        <div>{d.position?.join(", ")}</div>
       </div>
     </div>
   );

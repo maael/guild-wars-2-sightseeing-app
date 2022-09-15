@@ -192,7 +192,7 @@ export default function GroupFormScreen() {
                 name: "",
                 description: "",
                 imageUrl: "",
-                precision: 100,
+                precision: 5,
                 position: [0, 0, 0],
               };
               setGroup((g) => ({
