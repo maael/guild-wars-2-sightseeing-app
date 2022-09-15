@@ -6,8 +6,9 @@ import PageHeader from "../../primitives/PageHeader";
 import Input from "../../primitives/Input";
 import Button from "../../primitives/Button";
 import { API_URL } from "../../../util";
-import { FaCamera } from "react-icons/fa";
+import { FaCamera, FaImage } from "react-icons/fa";
 import { useLocalImageHook } from "../../hooks/useLocalImage";
+import { invoke } from "@tauri-apps/api/tauri";
 
 export default function GroupFormScreen() {
   const nav = useNavigate();
@@ -46,7 +47,7 @@ export default function GroupFormScreen() {
     e.preventDefault();
     const embellishedGroupItems = await Promise.all(
       group.items.map(async (i) => {
-        let imageUrl = "";
+        let imageUrl = i.imageUrl;
         if (i.imageUrl?.includes("|")) {
           const [_, fileSrc] = (i.imageUrl || "").split("|");
           console.info("start", fileSrc);
@@ -98,15 +99,18 @@ export default function GroupFormScreen() {
           {(group.items || []).map((item, i) => (
             <div
               key={i}
-              className="flex flex-col justify-center items-center gap-1"
+              className="flex flex-col justify-center items-center gap-2"
             >
-              <div>Item {i + 1}</div>
               {item.imageUrl ? (
                 <img
                   src={(item.imageUrl.split("|") || [])[0] || ""}
-                  className="h-10 aspect-video bg-gray-700 bg-opacity-20 rounded-md"
+                  className="w-full aspect-video bg-gray-700 bg-opacity-20 rounded-md"
                 />
-              ) : null}
+              ) : (
+                <div className="w-full aspect-video bg-gray-700 rounded-md flex justify-center items-center text-2xl bg-opacity-50 opacity-50">
+                  <FaImage />
+                </div>
+              )}
               <Input
                 label={`Name`}
                 placeholder="Name..."
@@ -141,14 +145,22 @@ export default function GroupFormScreen() {
                   })
                 }
               />
-              <div className="grid grid-cols-4 gap-1 text-xs">
-                <Input label="x" className="w-10" disabled />
-                <Input label="y" className="w-10" disabled />
-                <Input label="z" className="w-10" disabled />
+              <div className="flex flex-row gap-1 justify-center items-center text-xs">
+                <Input
+                  label="Position"
+                  className="flex-3"
+                  value={item.position?.join(", ")}
+                  disabled
+                />
                 <Button
                   onClick={async (e) => {
                     e.preventDefault();
-                    const { src, fileSrc } = await takeScreenshot();
+                    const [{ src, fileSrc }, data] = await Promise.all([
+                      takeScreenshot(),
+                      invoke("get_mumble").then((raw) =>
+                        JSON.parse(raw as string)
+                      ),
+                    ]);
                     console.info("[img]", { src, fileSrc });
                     setGroup((g) => {
                       const newItems = g.items
@@ -156,6 +168,9 @@ export default function GroupFormScreen() {
                         .concat({
                           ...g.items[i],
                           imageUrl: `${src}|${fileSrc}`,
+                          position: data.avatar.position.map((p: number) =>
+                            Number(p.toFixed(4))
+                          ),
                         } as any)
                         .concat(g.items.slice(i + 1));
                       return { ...g, items: newItems };
@@ -178,11 +193,7 @@ export default function GroupFormScreen() {
                 description: "",
                 imageUrl: "",
                 precision: 100,
-                location: {
-                  x: 0,
-                  y: 0,
-                  z: 0,
-                },
+                position: [0, 0, 0],
               };
               setGroup((g) => ({
                 ...g,

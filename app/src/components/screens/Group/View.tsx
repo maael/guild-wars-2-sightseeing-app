@@ -147,7 +147,7 @@ export default function GroupViewScreen() {
         <div>{data?.expansions.join(",")}</div>
         <div>{data?.masteries.join(",")}</div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 px-2">
           {(data?.items || []).map((d) => (
             <Item key={d._id} item={d} />
           ))}
@@ -162,18 +162,17 @@ function Item({ item: d }: { item: ItemDocument }) {
     <div
       style={{
         backgroundImage: "url(/ui/windowbg-glyphs.png)",
-        backgroundSize: "100%",
       }}
-      className="h-28 bg-no-repeat bg-top"
+      className="bg-no-repeat bg-top bg-cover"
     >
-      <div className="p-2 flex flex-col gap-1 h-full">
-        <div>{d.imageUrl ? <img src={d.imageUrl} /> : null}</div>
-        <div>{d.name}</div>
-        <div>{d.description}</div>
-        <div>{d.precision}</div>
-        <div>
-          {d.location?.x},{d.location?.y},{d.location?.z}
+      <div className="p-2 pb-4 flex flex-col gap-1 h-full">
+        <div className="rounded-md overflow-hidden">
+          {d.imageUrl ? <img src={d.imageUrl} /> : null}
         </div>
+        <div>{d.name}</div>
+        <div className="text-sm">{d.description}</div>
+        <div>{d.precision}</div>
+        <div>{d.position?.join(", ")}</div>
       </div>
     </div>
   );
