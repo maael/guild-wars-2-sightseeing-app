@@ -1,10 +1,9 @@
 import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "react-hot-toast";
 import TitleBar from "./components/primitives/TitleBar";
 import "./App.css";
 import EnterApiKeyScreen from "./components/screens/ApiKey";
-import WaitingForConnectionScreen from "./components/screens/Connecting";
-import WelcomeScreen from "./components/screens/Welcome";
 import GroupListScreen from "./components/screens/Group/List";
 import GroupViewScreen from "./components/screens/Group/View";
 import GroupFormScreen from "./components/screens/Group/Form";
@@ -19,10 +18,11 @@ function App() {
       <ConnectionProvider>
         <TitleBar />
         <div className="flex-1 overflow-y-auto">
-          <Router initialEntries={["/welcome"]}>
+          <Router initialEntries={["/setup"]}>
             <InnerApp />
           </Router>
         </div>
+        <Toaster />
       </ConnectionProvider>
     </QueryClientProvider>
   );
@@ -31,9 +31,7 @@ function App() {
 function InnerApp() {
   return (
     <Routes>
-      <Route path="/welcome" element={<WelcomeScreen />} />
       <Route path="/setup" element={<EnterApiKeyScreen />} />
-      <Route path="/connected" element={<WaitingForConnectionScreen />} />
       <Route path="/groups/new" element={<GroupFormScreen />} />
       <Route path="/groups/:id/edit" element={<GroupFormScreen />} />
       <Route

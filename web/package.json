@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.1207.0",
+    "cookie": "^0.5.0",
     "fathom-client": "^3.4.1",
     "isomorphic-fetch": "^3.0.0",
     "mongoose": "^6.5.3",
@@ -41,6 +42,7 @@
     "@babel/eslint-parser": "^7.17.0",
     "@babel/eslint-plugin": "^7.17.7",
     "@next/eslint-plugin-next": "^12.1.5",
+    "@types/cookie": "^0.5.1",
     "@types/node": "^17.0.25",
     "@types/react": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.20.0",

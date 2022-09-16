@@ -6,6 +6,7 @@ const connection = connect()
 export interface Type {
   groupId: ObjectId
   accountName: string
+  items: ObjectId[]
 }
 
 export interface ItemDocument extends Type, Document {}
@@ -22,6 +23,10 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
     accountName: {
       type: String,
       required: true,
+    },
+    items: {
+      type: [Schema.Types.ObjectId],
+      default: [],
     },
   },
   {

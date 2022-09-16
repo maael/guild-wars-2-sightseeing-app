@@ -4,14 +4,18 @@ import { FaChevronLeft } from "react-icons/fa";
 
 export default function PageHeader({
   children,
+  backNav,
   rightAction,
-}: React.PropsWithChildren<{ rightAction?: React.ReactNode }>) {
+}: React.PropsWithChildren<{
+  backNav?: string;
+  rightAction?: React.ReactNode;
+}>) {
   const nav = useNavigate();
   return (
     <header className="relative flex flex-row gap-2">
       <button
         className="absolute left-3 top-2 text-2xl"
-        onClick={() => nav(-1)}
+        onClick={() => nav(backNav || (-1 as any))}
       >
         <FaChevronLeft />
       </button>

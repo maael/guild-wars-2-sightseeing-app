@@ -5,11 +5,11 @@ async function getMany() {
   return Rating.find()
 }
 
-const putOne: OneHandler<number> = async ({ id, body }) => {
+const putOne: OneHandler<number> = async ({ id, body, gw2 }) => {
   console.info({ body })
   await Rating.findOneAndUpdate(
-    { raterAccountName: 'Test.1234', groupId: id },
-    { raterAccountName: 'Test.1234', groupId: id, rating: body.rating },
+    { raterAccountName: gw2?.account, groupId: id },
+    { raterAccountName: gw2?.account, groupId: id, rating: body.rating },
     { upsert: true }
   )
   return Rating.count({ groupId: id })

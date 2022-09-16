@@ -4,12 +4,23 @@ export type { ItemDocument as GroupDocument, Type as Group } from './util/db/mod
 export type { ItemDocument as ItemDocument, Type as Item } from './util/db/models/item'
 export type { ItemDocument as RatingDocument, Type as Rating } from './util/db/models/rating'
 
-export type OneHandler<T> = (args: { id: string; body?: any }) => Promise<T | null>
-export type ManyHandler<T> = (args: {
+export type OneHandler<T, Body = any> = (args: {
+  id: string
+  body?: Body
+  gw2?: {
+    account?: string
+    character?: string
+  }
+}) => Promise<T | null>
+export type ManyHandler<T, Body = any> = (args: {
   limit?: number
   page?: number
   offset?: number
-  body?: any
+  body?: Body
+  gw2?: {
+    account?: string
+    character?: string
+  }
 }) => Promise<T[] | PaginateResult<T>>
 
 type WithRating<T> = T & {

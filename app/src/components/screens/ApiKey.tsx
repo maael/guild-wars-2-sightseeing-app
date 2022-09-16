@@ -17,6 +17,7 @@ function useApiAccountInfo() {
       const resourcePath = await resolveResource("settings.json");
       const data = JSON.parse(await readTextFile(resourcePath));
       console.info("what", data);
+      localStorage.setItem("gw2-account", data?.accountData?.name);
       setApiAccountInfo(data);
     })();
   }, []);
@@ -28,7 +29,7 @@ export default function EnterApiKeyScreen() {
   const nav = useNavigate();
   React.useEffect(() => {
     if (apiAccountInfo) {
-      nav("/connected");
+      nav("/groups");
     }
   }, [apiAccountInfo]);
   return (

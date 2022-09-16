@@ -1,16 +1,25 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { FaSpinner, FaStar, FaUser } from "react-icons/fa";
+import { FaCheckCircle, FaSpinner, FaUser } from "react-icons/fa";
+import cls from "classnames";
 import { GroupDocument, PaginateResult, WithRating } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
-import { API_URL } from "../../../util";
+import { API_URL, fetchWithKey } from "../../../util";
 import Difficulty from "../../primitives/Difficulty";
 import Rating from "../../primitives/Rating";
 
 export default function GroupListScreen() {
   const { isLoading, error, data } = useQuery<
     PaginateResult<WithRating<GroupDocument>>
-  >(["groups"], () => fetch(`${API_URL}/api/groups`).then((res) => res.json()));
+  >(["groups"], () =>
+    fetchWithKey(`${API_URL}/api/groups`).then((res) => res.json())
+  );
+
+  const { data: completions } = useQuery<WithRating<GroupDocument>[]>(
+    ["completions"],
+    () => fetchWithKey(`${API_URL}/api/completions`).then((res) => res.json())
+  );
+  console.info({ completions, data });
 
   if (isLoading) {
     return (
@@ -31,9 +40,7 @@ export default function GroupListScreen() {
   return (
     <div>
       <PageHeader>
-        <>
-          List ({data?.docs.length}/{data?.totalDocs})
-        </>
+        <>Guild Wars 2 Sightseeing</>
       </PageHeader>
       <Link to="/groups/new" className="opacity-70 hover:opacity-100">
         <div className="flex flex-row justify-center items-center">
@@ -43,19 +50,45 @@ export default function GroupListScreen() {
               backgroundImage: "url(/ui/new.png)",
             }}
           ></div>
-          New
+          New Log
         </div>
       </Link>
+      <h2 className="text-center text-2xl mb-1">
+        {`Your logs (${completions?.length})`}
+      </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-3xl mx-auto pb-10 px-2">
+        {completions?.map((d) => (
+          <Item
+            key={d._id}
+            item={d}
+            completedItems={(d as any).completedItems?.length}
+          />
+        ))}
+      </div>
+      <h2 className="text-center text-2xl mb-1">
+        Showing {data?.docs.length} of {data?.totalDocs} logs
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-3xl mx-auto pb-10 px-2">
         {data?.docs.map((d) => (
-          <Item key={d._id} item={d} />
+          <Item
+            key={d._id}
+            item={d}
+            completedItems={(d as any).completedItems?.length}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function Item({ item }: { item: WithRating<GroupDocument> }) {
+function Item({
+  item,
+  completedItems = 0,
+}: {
+  item: WithRating<GroupDocument>;
+  completedItems: number;
+}) {
+  const isDone = completedItems === item.items?.length;
   return (
     <Link to={`/groups/${item._id}`}>
       <div
@@ -63,9 +96,13 @@ function Item({ item }: { item: WithRating<GroupDocument> }) {
           backgroundImage: "url(/ui/windowbg-glyphs.png)",
           backgroundSize: "100%",
         }}
-        className="h-28 bg-no-repeat bg-top"
+        className="h-28 bg-no-repeat bg-top relative"
       >
-        <div className="p-2 flex flex-col gap-1 h-full">
+        <div
+          className={cls("p-2 flex flex-col gap-1 h-full", {
+            "opacity-60": isDone,
+          })}
+        >
           <div className="flex flex-row gap-2 justify-center items-center">
             <div className="flex-1 text-lg">{item.name}</div>
             <Difficulty level={item.difficulty} />
@@ -73,13 +110,20 @@ function Item({ item }: { item: WithRating<GroupDocument> }) {
           </div>
           <div className="flex-1">{item.description}</div>
           <div className="flex flex-row gap-2 justify-between items-center">
-            <div>{item.items?.length || 0} items</div>
+            <div>
+              {completedItems} of {item.items?.length || 0} items
+            </div>
             <div>{item.expansions.join(",")}</div>
             <div className="flex flex-row gap-2">
               <FaUser /> {item.creator.accountName}
             </div>
           </div>
         </div>
+        {isDone ? (
+          <div className="absolute inset-0 flex justify-center items-center text-4xl">
+            <FaCheckCircle className="text-green-600" />
+          </div>
+        ) : null}
       </div>
     </Link>
   );

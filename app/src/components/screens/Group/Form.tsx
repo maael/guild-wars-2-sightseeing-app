@@ -1,14 +1,14 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { invoke } from "@tauri-apps/api/tauri";
 import { Group, WithRating, GroupDocument, Item } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 import Input from "../../primitives/Input";
 import Button from "../../primitives/Button";
-import { API_URL } from "../../../util";
+import { API_URL, fetchWithKey } from "../../../util";
 import { FaCamera, FaImage } from "react-icons/fa";
 import { useLocalImageHook } from "../../hooks/useLocalImage";
-import { invoke } from "@tauri-apps/api/tauri";
 
 export default function GroupFormScreen() {
   const nav = useNavigate();
@@ -31,7 +31,7 @@ export default function GroupFormScreen() {
 
   useQuery<WithRating<GroupDocument>>(
     [`group/${id}`],
-    () => fetch(`${API_URL}/api/groups/${id}`).then((res) => res.json()),
+    () => fetchWithKey(`${API_URL}/api/groups/${id}`).then((res) => res.json()),
     {
       onSuccess: (data) => {
         setGroup((g) => ((g as any)._id ? g : data));
@@ -65,10 +65,13 @@ export default function GroupFormScreen() {
     );
     const embellishedGroup = { ...group, items: embellishedGroupItems };
     console.info("save", embellishedGroup);
-    const res = await fetch(`${API_URL}/api/groups${id ? `/${id}` : ""}`, {
-      method: id ? "PUT" : "POST",
-      body: JSON.stringify(embellishedGroup),
-    }).then((r) => r.json());
+    const res = await fetchWithKey(
+      `${API_URL}/api/groups${id ? `/${id}` : ""}`,
+      {
+        method: id ? "PUT" : "POST",
+        body: JSON.stringify(embellishedGroup),
+      }
+    ).then((r) => r.json());
     console.info("saved", res);
     nav("/groups");
   }

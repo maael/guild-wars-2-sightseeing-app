@@ -19,8 +19,17 @@ const handler: NextApiHandler = async (req, res) => {
     res.status(501).json({ error: 'Not implemented', type, method: req.method.toLowerCase(), id })
     return
   }
-  const results = await matchedFunction({ id, limit, page, offset, body: JSON.parse(req.body || '{}') })
-  res.json(results)
+  try {
+    const gw2 = {
+      account: req.headers['x-gw2-account'],
+      character: req.headers['x-gw2-character'],
+    }
+    console.info({ gw2 })
+    const results = await matchedFunction({ id, limit, page, offset, gw2, body: JSON.parse(req.body || '{}') })
+    res.json(results)
+  } catch (e) {
+    res.status(500).json({ error: e.message })
+  }
 }
 
 export default handler

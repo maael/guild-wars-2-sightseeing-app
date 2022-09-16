@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
+  FaCheckCircle,
   FaClock,
   FaPencilAlt,
   FaRegStar,
@@ -9,13 +10,25 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { useParams, Link } from "react-router-dom";
-import { WithRating, GroupDocument, ItemDocument } from "../../../types";
-import { API_URL } from "../../../util";
+import { toast } from "react-hot-toast";
+import cls from "classnames";
+import { invoke } from "@tauri-apps/api/tauri";
+import { Howl } from "howler";
+import {
+  WithRating,
+  GroupDocument,
+  ItemDocument,
+  CompletionDocument,
+} from "../../../types";
+import { API_URL, fetchWithKey } from "../../../util";
 import Button from "../../primitives/Button";
 import Difficulty from "../../primitives/Difficulty";
 import PageHeader from "../../primitives/PageHeader";
 import Rating from "../../primitives/Rating";
-import { invoke } from "@tauri-apps/api/tauri";
+
+const bellSound = new Howl({
+  src: ["/sounds/bell.ogg"],
+});
 
 function RatingSelection({
   id,
@@ -75,7 +88,7 @@ function RatedStar({
 
 function doRating(id: string, rating: number, refetch: () => Promise<any>) {
   return async function () {
-    await fetch(`${API_URL}/api/ratings/${id}`, {
+    await fetchWithKey(`${API_URL}/api/ratings/${id}`, {
       method: "PUT",
       body: JSON.stringify({ rating }),
     }).then((r) => r.json());
@@ -88,6 +101,20 @@ function within(value: number, compare: number, precision: number) {
 }
 
 function useGroupMatch(group?: WithRating<GroupDocument>) {
+  const [groupMatches, setGroupMatches] = useState<Set<string>>(new Set());
+  useQuery<CompletionDocument>(
+    [`completion/${group?._id}`],
+    () =>
+      fetchWithKey(`${API_URL}/api/completions/${group?._id}`).then((res) =>
+        res.json()
+      ),
+    {
+      onSuccess: (completions) => {
+        setGroupMatches(new Set(completions?.items as any));
+      },
+      enabled: !!group?._id,
+    }
+  );
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -100,7 +127,16 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
             within(position[idx], v, i.precision)
           );
         });
-        console.info({ matches });
+        const newMatches = matches?.filter((m) => !groupMatches.has(m._id));
+        if (newMatches && newMatches.length > 0) {
+          bellSound.play();
+          for (const match of newMatches) {
+            toast.success(`Found ${match.name}!`);
+          }
+          setGroupMatches(
+            (m) => new Set([...m, ...(newMatches?.map((v) => v._id) || [])])
+          );
+        }
       } catch (e) {
         console.error("[group:match][error]", e);
       }
@@ -108,7 +144,19 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
     return () => {
       clearInterval(interval);
     };
-  }, [group]);
+  }, [group, groupMatches]);
+  useEffect(() => {
+    (async () => {
+      if (groupMatches.size !== 0) {
+        console.info("push", group?._id, groupMatches);
+        await fetchWithKey(`${API_URL}/api/completions/${group?._id}`, {
+          method: "PUT",
+          body: JSON.stringify([...groupMatches]),
+        }).then((r) => r.json());
+      }
+    })();
+  }, [group, groupMatches]);
+  return groupMatches;
 }
 
 export default function GroupViewScreen() {
@@ -116,10 +164,10 @@ export default function GroupViewScreen() {
   const { isLoading, error, data, refetch } = useQuery<
     WithRating<GroupDocument>
   >([`group/${id}`], () =>
-    fetch(`${API_URL}/api/groups/${id}`).then((res) => res.json())
+    fetchWithKey(`${API_URL}/api/groups/${id}`).then((res) => res.json())
   );
 
-  useGroupMatch(data);
+  const groupMatches = useGroupMatch(data);
 
   if (isLoading) {
     return (
@@ -158,8 +206,7 @@ export default function GroupViewScreen() {
       >
         {data?.name}
       </PageHeader>
-      <div className="flex flex-col justify-center items-center gap-2">
-        <div>{data?.bannerImageUrl}</div>
+      <div className="flex flex-col justify-center items-center gap-2 mt-2">
         <div>{data?.description}</div>
         <div className="flex flex-row justify-center items-center gap-1">
           <FaClock /> {data?.createdAt}
@@ -181,7 +228,7 @@ export default function GroupViewScreen() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 px-2">
           {(data?.items || []).map((d) => (
-            <Item key={d._id} item={d} />
+            <Item key={d._id} item={d} matched={groupMatches.has(d._id)} />
           ))}
         </div>
       </div>
@@ -189,21 +236,31 @@ export default function GroupViewScreen() {
   );
 }
 
-function Item({ item: d }: { item: ItemDocument }) {
+function Item({ item: d, matched }: { item: ItemDocument; matched: boolean }) {
   return (
     <div
       style={{
         backgroundImage: "url(/ui/windowbg-glyphs.png)",
       }}
-      className="bg-no-repeat bg-top bg-cover"
+      className="bg-no-repeat bg-top bg-cover relative"
     >
-      <div className="p-2 pb-4 flex flex-col gap-1 h-full">
+      <div
+        className={cls("p-2 pb-4 flex flex-col gap-1 h-full", {
+          "opacity-40": matched,
+        })}
+      >
         <div className="rounded-md overflow-hidden mb-1">
           {d.imageUrl ? <img src={d.imageUrl} /> : null}
         </div>
         <div>{d.name}</div>
         <div className="text-sm">{d.description}</div>
       </div>
+
+      {matched ? (
+        <div className="absolute inset-0 flex justify-center items-center text-4xl">
+          <FaCheckCircle className="text-green-600" />
+        </div>
+      ) : null}
     </div>
   );
 }
