@@ -2,6 +2,7 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/tauri";
+import { Body } from "@tauri-apps/api/http";
 import toast from "react-hot-toast";
 import cls from "classnames";
 import { GroupType, WithRating, GroupDocument, ItemType } from "../../../types";
@@ -40,9 +41,12 @@ export default function GroupFormScreen() {
 
   const { takeScreenshot, saveImage } = useLocalImageHook();
 
-  const { isLoading } = useQuery<WithRating<GroupDocument>>(
+  const { isLoading } = useQuery(
     [`group/${id}`],
-    () => fetchWithKey(`${API_URL}/api/groups/${id}`).then((res) => res.json()),
+    () =>
+      fetchWithKey<WithRating<GroupDocument>>(
+        `${API_URL}/api/groups/${id}`
+      ).then((res) => res.data),
     {
       onSuccess: (data) => {
         setGroup((g) => ((g as any)._id ? g : data));
@@ -75,10 +79,13 @@ export default function GroupFormScreen() {
         })
       );
       const embellishedGroup = { ...group, items: embellishedGroupItems };
-      await fetchWithKey(`${API_URL}/api/groups${id ? `/${id}` : ""}`, {
-        method: id ? "PUT" : "POST",
-        body: JSON.stringify(embellishedGroup),
-      }).then((r) => r.json());
+      const result = await fetchWithKey(
+        `${API_URL}/api/groups${id ? `/${id}` : ""}`,
+        {
+          method: id ? "PUT" : "POST",
+          body: Body.json(embellishedGroup),
+        }
+      ).then((r) => r.data);
       nav("/groups");
     } catch (e) {
       console.error(e);

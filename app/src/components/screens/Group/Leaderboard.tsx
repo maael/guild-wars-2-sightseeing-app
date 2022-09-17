@@ -7,12 +7,10 @@ import PageHeader from "../../primitives/PageHeader";
 
 export default function GroupLeaderboardScreen() {
   const { id } = useParams();
-  const { data, isLoading } = useQuery<any[]>(
-    [`groups/${id}/leaderboard`],
-    () =>
-      fetchWithKey(`${API_URL}/api/leaderboards/${id}`).then((res) =>
-        res.json()
-      )
+  const { data, isLoading } = useQuery([`groups/${id}/leaderboard`], () =>
+    fetchWithKey<any[]>(`${API_URL}/api/leaderboards/${id}`).then(
+      (res) => res.data
+    )
   );
   console.info({ data, isLoading });
 

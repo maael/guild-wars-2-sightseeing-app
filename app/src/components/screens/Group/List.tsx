@@ -10,15 +10,16 @@ import Rating from "../../primitives/Rating";
 import Button from "../../primitives/Button";
 
 export default function GroupListScreen() {
-  const { isLoading, error, data } = useQuery<
-    PaginateResult<WithRating<GroupDocument>>
-  >(["groups"], () =>
-    fetchWithKey(`${API_URL}/api/groups`).then((res) => res.json())
+  const { isLoading, error, data } = useQuery(["groups"], () =>
+    fetchWithKey<PaginateResult<WithRating<GroupDocument>>>(
+      `${API_URL}/api/groups`
+    ).then((res) => res.data)
   );
 
-  const { data: completions } = useQuery<WithRating<GroupDocument>[]>(
-    ["completions"],
-    () => fetchWithKey(`${API_URL}/api/completions`).then((res) => res.json())
+  const { data: completions } = useQuery(["completions"], () =>
+    fetchWithKey<WithRating<GroupDocument>[]>(
+      `${API_URL}/api/completions`
+    ).then((res) => res.data)
   );
 
   if (isLoading) {
@@ -32,7 +33,7 @@ export default function GroupListScreen() {
   if (error) {
     return (
       <div className="flex justify-center items-center h-full text-red-700">
-        An error has occurred: {(error as Error).message}
+        An error has occurred: {(error as Error).stack}
       </div>
     );
   }

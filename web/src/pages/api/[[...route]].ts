@@ -25,7 +25,7 @@ const handler: NextApiHandler = async (req, res) => {
       character: req.headers['x-gw2-character'],
     }
     console.info({ gw2 })
-    const results = await matchedFunction({ id, limit, page, offset, gw2, body: JSON.parse(req.body || '{}') })
+    const results = await matchedFunction({ id, limit, page, offset, gw2, body: req.body || {} })
     res.json(results)
   } catch (e) {
     res.status(500).json({ error: e.message })

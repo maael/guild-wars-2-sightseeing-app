@@ -24,7 +24,8 @@
         "scope": [
           "https://api.guildwars2.com/*",
           "http://localhost:3000/*",
-          "http://localhost:3001/*"
+          "http://localhost:3001/*",
+          "https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com/*"
         ]
       }
     },
@@ -62,7 +63,7 @@
       }
     },
     "security": {
-      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost"
+      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com"
     },
     "updater": {
       "active": false

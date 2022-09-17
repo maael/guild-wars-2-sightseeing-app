@@ -15,6 +15,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import cls from "classnames";
 import { invoke } from "@tauri-apps/api/tauri";
+import { Body } from "@tauri-apps/api/http";
 import { Howl } from "howler";
 import format from "date-fns/format";
 import Modal from "react-modal";
@@ -112,8 +113,8 @@ function doRating(id: string, rating: number, refetch: () => Promise<any>) {
   return async function () {
     await fetchWithKey(`${API_URL}/api/ratings/${id}`, {
       method: "PUT",
-      body: JSON.stringify({ rating }),
-    }).then((r) => r.json());
+      body: Body.json({ rating }),
+    }).then((r) => r.data);
     await refetch();
   };
 }
@@ -124,12 +125,12 @@ function within(value: number, compare: number, precision: number) {
 
 function useGroupMatch(group?: WithRating<GroupDocument>) {
   const [groupMatches, setGroupMatches] = useState<Set<string>>(new Set());
-  useQuery<CompletionDocument>(
+  useQuery(
     [`completion/${group?._id}`],
     () =>
-      fetchWithKey(`${API_URL}/api/completions/${group?._id}`).then((res) =>
-        res.json()
-      ),
+      fetchWithKey<CompletionDocument>(
+        `${API_URL}/api/completions/${group?._id}`
+      ).then((res) => res.data),
     {
       onSuccess: (completions) => {
         setGroupMatches(new Set(completions?.items as any));
@@ -173,8 +174,8 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
         console.info("push", group?._id, groupMatches);
         await fetchWithKey(`${API_URL}/api/completions/${group?._id}`, {
           method: "PUT",
-          body: JSON.stringify([...groupMatches]),
-        }).then((r) => r.json());
+          body: Body.json([...groupMatches]),
+        }).then((r) => r.data);
       }
     })();
   }, [group, groupMatches]);
@@ -185,10 +186,10 @@ export default function GroupViewScreen() {
   const [selected, setSelected] = useState<number | null>(null);
   const { id } = useParams();
   const nav = useNavigate();
-  const { isLoading, error, data, refetch } = useQuery<
-    WithRating<GroupDocument>
-  >([`group/${id}`], () =>
-    fetchWithKey(`${API_URL}/api/groups/${id}`).then((res) => res.json())
+  const { isLoading, error, data, refetch } = useQuery([`group/${id}`], () =>
+    fetchWithKey<WithRating<GroupDocument>>(`${API_URL}/api/groups/${id}`).then(
+      (d) => d.data
+    )
   );
 
   const groupMatches = useGroupMatch(data);
