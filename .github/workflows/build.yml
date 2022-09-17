@@ -74,14 +74,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
+      - run: pwd
+      - run: dir "."
       - run: dir "$GITHUB_WORKSPACE"
-      - run: dir "$GITHUB_WORKSPACE/src-tauri"
-      - run: dir "$GITHUB_WORKSPACE/src-tauri/target"
-      - run: dir "$GITHUB_WORKSPACE/src-tauri/target/release"
+      - run: dir "./src-tauri"
+      - run: dir "./src-tauri/target"
+      - run: dir "./src-tauri/target/release"
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: "$GITHUB_WORKSPACE/src-tauri/target/release/Guild Wars 2 Sightseeing.exe"
+          file: "./src-tauri/target/release/Guild Wars 2 Sightseeing.exe"
           release_id: ${{ needs.create-release.outputs.release_id }}
 
   publish-release:
