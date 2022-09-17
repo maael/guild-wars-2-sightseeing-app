@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { BaseDirectory, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { resolveResource } from "@tauri-apps/api/path";
 import { fetch } from "@tauri-apps/api/http";
+import Input from "../primitives/Input";
+import Button from "../primitives/Button";
+import { FaSave } from "react-icons/fa";
 
 function useApiAccountInfo() {
   const [apiAccountInfo, setApiAccountInfo] = React.useState<{
@@ -16,7 +19,7 @@ function useApiAccountInfo() {
     (async () => {
       const resourcePath = await resolveResource("settings.json");
       const data = JSON.parse(await readTextFile(resourcePath));
-      console.info("what", data);
+      console.info("[useApiAccountInfo]", data);
       localStorage.setItem("gw2-account", data?.accountData?.name);
       setApiAccountInfo(data);
     })();
@@ -28,14 +31,16 @@ export default function EnterApiKeyScreen() {
   const [apiAccountInfo, setApiAccountInfo] = useApiAccountInfo();
   const nav = useNavigate();
   React.useEffect(() => {
-    if (apiAccountInfo) {
+    console.info("[apiAccountInfo]", apiAccountInfo);
+    if (apiAccountInfo && apiAccountInfo.accountData?.name) {
       nav("/groups");
     }
   }, [apiAccountInfo]);
   return (
-    <>
-      <h1>Guild Wars 2 Sightseeing</h1>
+    <div className="flex flex-col gap-2 h-full justify-center items-center">
+      <h1 className="text-2xl">Guild Wars 2 Sightseeing</h1>
       <form
+        className="flex flex-col gap-2 justify-center items-center"
         onSubmit={async (e) => {
           e.preventDefault();
           const apiKey = (
@@ -55,18 +60,20 @@ export default function EnterApiKeyScreen() {
           setApiAccountInfo(apiAccountInfo);
         }}
       >
-        <input
+        <Input
+          label="API Key"
           type="password"
-          style={{ background: "#333333" }}
           defaultValue={apiAccountInfo.apiKey}
           placeholder="API Key..."
           name="api-key"
         />
-        <button type="submit">Save Key</button>
+        <Button type="submit">
+          <FaSave /> Save Key
+        </Button>
       </form>
       {apiAccountInfo?.accountData?.name
         ? `Hi ${apiAccountInfo.accountData.name}!`
         : null}
-    </>
+    </div>
   );
 }
