@@ -74,6 +74,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           releaseId: ${{ needs.create-release.outputs.release_id }}
+      - uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "src-tauri/target/release/Guild Wars 2 Sightseeing.exe"
+          release_id: ${{ needs.create-release.outputs.release_id }}
 
   publish-release:
     runs-on: ubuntu-20.04
