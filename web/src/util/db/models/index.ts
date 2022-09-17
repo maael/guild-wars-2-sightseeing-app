@@ -1,7 +1,8 @@
-import Group, { Type as GroupType } from './group'
-import Item, { Type as ItemType } from './item'
-import Completion, { Type as CompletionType } from './completion'
-import Rating, { Type as RatingType } from './rating'
+import Group from './group'
+import Item from './item'
+import Completion from './completion'
+import Rating from './rating'
+import { GroupType, ItemType, CompletionType, RatingType } from '../../../types'
 
 export { Group, Item, Completion, Rating }
 
