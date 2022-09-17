@@ -2,16 +2,27 @@ import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/tauri";
+import toast from "react-hot-toast";
+import cls from "classnames";
 import { Group, WithRating, GroupDocument, Item } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 import Input from "../../primitives/Input";
 import Button from "../../primitives/Button";
 import { API_URL, fetchWithKey } from "../../../util";
-import { FaCamera, FaImage } from "react-icons/fa";
+import {
+  FaCamera,
+  FaImage,
+  FaPlus,
+  FaSave,
+  FaSpinner,
+  FaTimes,
+} from "react-icons/fa";
 import { useLocalImageHook } from "../../hooks/useLocalImage";
+import { difficultyMap } from "../../primitives/Difficulty";
 
 export default function GroupFormScreen() {
   const nav = useNavigate();
+  const [saving, setSaving] = React.useState(false);
 
   const [group, setGroup] = React.useState<
     Omit<Group, "creator" | "isActive" | "createdAt" | "updatedAt">
@@ -29,7 +40,7 @@ export default function GroupFormScreen() {
 
   const { takeScreenshot, saveImage } = useLocalImageHook();
 
-  useQuery<WithRating<GroupDocument>>(
+  const { isLoading } = useQuery<WithRating<GroupDocument>>(
     [`group/${id}`],
     () => fetchWithKey(`${API_URL}/api/groups/${id}`).then((res) => res.json()),
     {
@@ -37,48 +48,66 @@ export default function GroupFormScreen() {
         setGroup((g) => ((g as any)._id ? g : data));
       },
       enabled: !!id,
-      refetchInterval: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
     }
   );
 
-  async function save(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const embellishedGroupItems = await Promise.all(
-      group.items.map(async (i) => {
-        let imageUrl = i.imageUrl;
-        if (i.imageUrl?.includes("|")) {
-          const [_, fileSrc] = (i.imageUrl || "").split("|");
-          console.info("start", fileSrc);
-          const result = await saveImage(
-            (group as any)._id || "new_group",
-            fileSrc
-          );
-          imageUrl = result;
-        }
-        return {
-          ...i,
-          imageUrl,
-        };
-      })
-    );
-    const embellishedGroup = { ...group, items: embellishedGroupItems };
-    console.info("save", embellishedGroup);
-    const res = await fetchWithKey(
-      `${API_URL}/api/groups${id ? `/${id}` : ""}`,
-      {
+  async function save(
+    e: React.FormEvent<HTMLFormElement> | React.FormEvent<HTMLButtonElement>
+  ) {
+    try {
+      setSaving(true);
+      e.preventDefault();
+      const embellishedGroupItems = await Promise.all(
+        group.items.map(async (i) => {
+          let imageUrl = i.imageUrl;
+          if (i.imageUrl?.includes("|")) {
+            const [_, fileSrc] = (i.imageUrl || "").split("|");
+            const result = await saveImage(
+              (group as any)._id || "new_group",
+              fileSrc
+            );
+            imageUrl = result;
+          }
+          return {
+            ...i,
+            imageUrl,
+          };
+        })
+      );
+      const embellishedGroup = { ...group, items: embellishedGroupItems };
+      await fetchWithKey(`${API_URL}/api/groups${id ? `/${id}` : ""}`, {
         method: id ? "PUT" : "POST",
         body: JSON.stringify(embellishedGroup),
-      }
-    ).then((r) => r.json());
-    console.info("saved", res);
-    nav("/groups");
+      }).then((r) => r.json());
+      nav("/groups");
+    } catch (e) {
+      console.error(e);
+      toast.error(`Error saving, please try again!`);
+    } finally {
+      setSaving(false);
+    }
   }
-  console.info("[group]", group);
+
+  if (!!id && isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full text-3xl">
+        <FaSpinner className="animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div>
-      <PageHeader>New Group</PageHeader>
+      <PageHeader
+        rightAction={
+          <Button onClick={save} disabled={saving} className="shadow-md">
+            {saving ? <FaSpinner className="animate-spin" /> : <FaSave />} Save
+          </Button>
+        }
+        rightClassName="!fixed top-10 right-3 text-lg"
+      >
+        New Group
+      </PageHeader>
       <form
         onSubmit={save}
         className="flex flex-col gap-2 max-w-2xl mx-auto mt-5 items-center"
@@ -97,12 +126,28 @@ export default function GroupFormScreen() {
             setGroup((g) => ({ ...g, description: e.target.value }))
           }
         />
+        <div className="grid grid-cols-5 gap-2.5">
+          {Object.entries(difficultyMap).map(([k, v]) => (
+            <Button
+              key={k}
+              type="button"
+              className={cls(
+                `${v.border} border rounded-md px-2 py-1 text-xs text-center`,
+                { [v.colour]: k === group.difficulty.toString() }
+              )}
+              style={{}}
+              onClick={() => setGroup((g) => ({ ...g, difficulty: Number(k) }))}
+            >
+              {v.label}
+            </Button>
+          ))}
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">
           {(group.items || []).map((item, i) => (
             <div
               key={i}
-              className="flex flex-col justify-center items-center gap-2"
+              className="flex flex-col justify-center items-center gap-2 relative"
             >
               {item.imageUrl ? (
                 <img
@@ -183,6 +228,20 @@ export default function GroupFormScreen() {
                   <FaCamera />
                 </Button>
               </div>
+              <Button
+                className="!absolute right-1 top-1 !bg-red-600 text-xs !p-1"
+                type="button"
+                onClick={() =>
+                  setGroup((g) => {
+                    return {
+                      ...g,
+                      items: g.items.slice(0, i).concat(g.items.slice(i + 1)),
+                    };
+                  })
+                }
+              >
+                <FaTimes />
+              </Button>
             </div>
           ))}
         </div>
@@ -204,9 +263,8 @@ export default function GroupFormScreen() {
               }));
             }}
           >
-            Add Item
+            <FaPlus /> Add Item
           </Button>
-          <Button type="submit">Save</Button>
         </div>
       </form>
     </div>

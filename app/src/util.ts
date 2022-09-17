@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 
-export const API_URL = "http://localhost:3001";
+export const API_URL = "http://localhost:3000";
 
 export const fetchWithKey: typeof fetch = async (path, options) => {
   let opts = options;

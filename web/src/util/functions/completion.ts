@@ -9,7 +9,7 @@ const getOne: OneHandler<CompletionType> = async ({ id, gw2 }) => {
 const getMany: ManyHandler<any> = async ({ gw2 }) => {
   const playerCompletions = (await Completion.find({ accountName: gw2?.account }).lean()) as any
   const playerCompletionsMap = new Map(playerCompletions.map((c) => [c.groupId.toString(), c.items]))
-  const groups = await Group.find({ _id: { $in: playerCompletions.map((c) => c.groupId) } }).lean()
+  const groups = await Group.find({ _id: { $in: playerCompletions.map((c) => c.groupId) }, isActive: true }).lean()
   const groupsWithRatings = await enhanceGroupsWithRatings(groups as any, gw2?.account, false)
   return groupsWithRatings.map((g) => ({ ...g, completedItems: playerCompletionsMap.get(g._id.toString()) || [] }))
 }

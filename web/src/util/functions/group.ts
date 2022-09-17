@@ -51,7 +51,7 @@ export async function enhanceGroupsWithRatings(groups: GroupDocument[], gw2Accou
 
 const getOne: OneHandler<GroupType> = async ({ id, gw2 }) => {
   const [item, pageRatings] = await Promise.all([
-    Group.findById(id).lean().populate('items'),
+    Group.findOne({ _id: id, isActive: true }).lean().populate('items'),
     getPageRatings([new mongoose.Types.ObjectId(id)], gw2?.account),
   ])
   if (!item) return item
@@ -62,7 +62,7 @@ const getOne: OneHandler<GroupType> = async ({ id, gw2 }) => {
 
 const getMany: ManyHandler<GroupType> = async ({ limit = 100, offset = 0, page = 1, gw2 }) => {
   const results = await Group.paginate(
-    {},
+    { isActive: true },
     { limit, offset, page, populate: 'items', lean: true, leanWithId: true, sort: { createdAt: -1 } }
   )
 
@@ -74,7 +74,7 @@ const getMany: ManyHandler<GroupType> = async ({ limit = 100, offset = 0, page =
 const postMany: OneHandler<GroupType> = async ({ body, gw2 }) => {
   const input = {
     name: body.name,
-    description: body.description,
+    description: body.description || '',
     bannerImageUrl: body.bannerImageUrl || 'http://image',
     creator: {
       accountName: gw2?.account,
@@ -83,19 +83,11 @@ const postMany: OneHandler<GroupType> = async ({ body, gw2 }) => {
     difficulty: body.difficulty || 3,
     expansions: body.expansions || [],
     masteries: body.masteries || [],
-    items: [
-      {
-        name: 'Test Item',
-        description: 'Test Description',
-        imageUrl: 'http://test',
-        precision: 3,
-      },
-    ],
+    items: body.items || [],
   }
-  console.info('what', body.items)
   const createditems = await Promise.all(
     input.items.map(async (d) => {
-      const item = await Item.create(d)
+      const item = await Item.create({ ...d, description: d.description || '', precision: d.precision || 5 })
       return item._id
     })
   )
@@ -106,8 +98,8 @@ const postMany: OneHandler<GroupType> = async ({ body, gw2 }) => {
 const putOne: OneHandler<GroupType> = async ({ id, body }) => {
   const input = {
     name: body.name,
-    description: body.description,
-    bannerImageUrl: body.bannerImageUrl,
+    description: body.description || '',
+    bannerImageUrl: body.bannerImageUrl || 'http://image',
     creator: {
       accountName: body.creator.accountName,
       characterName: body.creator.characterName,
@@ -119,9 +111,8 @@ const putOne: OneHandler<GroupType> = async ({ id, body }) => {
   }
   const createdItems = await Promise.all(
     input.items.map(async (d) => {
-      const item = new Item({ ...d, description: d.description || 'Test description', precision: d.precision || 100 })
+      const item = new Item({ ...d, description: d.description || '', precision: d.precision || 5 })
       item.isNew = !d._id
-      console.info('result', item.isNew, d, item)
       const result = await item.save()
       return result._id
     })
@@ -131,8 +122,8 @@ const putOne: OneHandler<GroupType> = async ({ id, body }) => {
   return item as unknown as GroupType
 }
 
-const deleteOne: OneHandler<{ deleted: boolean }> = async ({ id }) => {
-  await Group.updateOne({ id }, { $set: { isActive: false } })
+const deleteOne: OneHandler<{ deleted: boolean }> = async ({ id, gw2 }) => {
+  await Group.updateOne({ _id: id, 'creator.accountName': gw2?.account }, { isActive: false })
   return { deleted: true }
 }
 

@@ -17,7 +17,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ConnectionProvider>
         <TitleBar />
-        <div className="flex-1 overflow-y-auto">
+        <div id="app" className="flex-1 overflow-y-auto">
           <Router initialEntries={["/setup"]}>
             <InnerApp />
           </Router>

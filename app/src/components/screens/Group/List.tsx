@@ -7,6 +7,7 @@ import PageHeader from "../../primitives/PageHeader";
 import { API_URL, fetchWithKey } from "../../../util";
 import Difficulty from "../../primitives/Difficulty";
 import Rating from "../../primitives/Rating";
+import Button from "../../primitives/Button";
 
 export default function GroupListScreen() {
   const { isLoading, error, data } = useQuery<
@@ -39,20 +40,24 @@ export default function GroupListScreen() {
 
   return (
     <div>
-      <PageHeader>
+      <PageHeader
+        hideBack
+        rightAction={
+          <Link to="/groups/new" className="opacity-70 hover:opacity-100">
+            <Button className="flex flex-row justify-center items-center -left-3">
+              <div
+                className="h-14 w-14 -ml-4 -mr-3 -my-4 cursor-pointer bg-no-repeat bg-cover bg-center"
+                style={{
+                  backgroundImage: "url(/ui/new.png)",
+                }}
+              ></div>
+              New Log
+            </Button>
+          </Link>
+        }
+      >
         <>Guild Wars 2 Sightseeing</>
       </PageHeader>
-      <Link to="/groups/new" className="opacity-70 hover:opacity-100">
-        <div className="flex flex-row justify-center items-center">
-          <div
-            className="h-14 w-14 -mr-2 cursor-pointer bg-no-repeat bg-cover bg-center"
-            style={{
-              backgroundImage: "url(/ui/new.png)",
-            }}
-          ></div>
-          New Log
-        </div>
-      </Link>
       <h2 className="text-center text-2xl mb-1">
         {`Your logs (${completions?.length})`}
       </h2>

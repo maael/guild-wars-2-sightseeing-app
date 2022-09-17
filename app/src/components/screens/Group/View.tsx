@@ -7,13 +7,16 @@ import {
   FaRegStar,
   FaSpinner,
   FaStar,
+  FaTimes,
   FaUser,
 } from "react-icons/fa";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import cls from "classnames";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Howl } from "howler";
+import format from "date-fns/format";
+import Modal from "react-modal";
 import {
   WithRating,
   GroupDocument,
@@ -25,6 +28,24 @@ import Button from "../../primitives/Button";
 import Difficulty from "../../primitives/Difficulty";
 import PageHeader from "../../primitives/PageHeader";
 import Rating from "../../primitives/Rating";
+
+const customStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    padding: 0,
+    border: 0,
+  },
+  overlay: {
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    zIndex: 999,
+  },
+};
 
 const bellSound = new Howl({
   src: ["/sounds/bell.ogg"],
@@ -160,7 +181,9 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
 }
 
 export default function GroupViewScreen() {
+  const [selected, setSelected] = useState<number | null>(null);
   const { id } = useParams();
+  const nav = useNavigate();
   const { isLoading, error, data, refetch } = useQuery<
     WithRating<GroupDocument>
   >([`group/${id}`], () =>
@@ -168,6 +191,10 @@ export default function GroupViewScreen() {
   );
 
   const groupMatches = useGroupMatch(data);
+
+  useEffect(() => {
+    Modal.setAppElement("#app");
+  }, []);
 
   if (isLoading) {
     return (
@@ -197,22 +224,45 @@ export default function GroupViewScreen() {
     <div>
       <PageHeader
         rightAction={
-          <Link to={`/groups/${id}/edit`}>
-            <Button>
-              <FaPencilAlt /> Edit
-            </Button>
-          </Link>
+          data?.creator.accountName === localStorage.getItem("gw2-account") ? (
+            <div className="flex flex-row gap-1 justify-center items-center">
+              <Link to={`/groups/${id}/edit`}>
+                <Button>
+                  <FaPencilAlt /> Edit
+                </Button>
+              </Link>
+              <Button
+                className="!bg-red-700"
+                style={{}}
+                onClick={async () => {
+                  try {
+                    await fetchWithKey(`${API_URL}/api/groups/${id}`, {
+                      method: "DELETE",
+                    });
+                    nav("/groups");
+                  } catch (e) {
+                    console.error(e);
+                    toast.error(`Error deleting, please try again`);
+                  }
+                }}
+              >
+                <FaTimes /> Delete
+              </Button>
+            </div>
+          ) : null
         }
       >
         {data?.name}
       </PageHeader>
       <div className="flex flex-col justify-center items-center gap-2 mt-2">
         <div>{data?.description}</div>
-        <div className="flex flex-row justify-center items-center gap-1">
-          <FaClock /> {data?.createdAt}
-        </div>
-        <div className="flex flex-row justify-center items-center gap-1">
-          <FaUser /> {data?.creator.accountName}
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-5">
+          <div className="flex flex-row justify-center items-center gap-1">
+            <FaClock /> {format(new Date(data?.createdAt || ""), "dd/MM/yy")}
+          </div>
+          <div className="flex flex-row justify-center items-center gap-1">
+            <FaUser /> {data?.creator.accountName}
+          </div>
         </div>
         <Difficulty level={data?.difficulty} />
         <Rating rating={data?.rating} />
@@ -227,22 +277,45 @@ export default function GroupViewScreen() {
         <div>{data?.masteries.join(",")}</div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 px-2">
-          {(data?.items || []).map((d) => (
-            <Item key={d._id} item={d} matched={groupMatches.has(d._id)} />
+          {(data?.items || []).map((d, idx) => (
+            <Item
+              key={d._id}
+              item={d}
+              matched={groupMatches.has(d._id)}
+              onClick={() => setSelected(idx)}
+            />
           ))}
         </div>
       </div>
+      <Modal
+        isOpen={selected !== null}
+        onRequestClose={() => setSelected(null)}
+        style={customStyles}
+        contentLabel="Example Modal"
+      >
+        <img src={data?.items[selected!]?.imageUrl || ""} />
+        <div className="my-2 text-center">{data?.items[selected!]?.name}</div>
+      </Modal>
     </div>
   );
 }
 
-function Item({ item: d, matched }: { item: ItemDocument; matched: boolean }) {
+function Item({
+  item: d,
+  matched,
+  onClick,
+}: {
+  item: ItemDocument;
+  matched: boolean;
+  onClick: () => void;
+}) {
   return (
     <div
       style={{
         backgroundImage: "url(/ui/windowbg-glyphs.png)",
       }}
-      className="bg-no-repeat bg-top bg-cover relative"
+      className="bg-no-repeat bg-top bg-cover relative cursor-pointer"
+      onClick={onClick}
     >
       <div
         className={cls("p-2 pb-4 flex flex-col gap-1 h-full", {
