@@ -78,7 +78,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "./src-tauri/target/release/Guild Wars 2 Sightseeing.exe"
+          file: "./app/src-tauri/target/release/Guild Wars 2 Sightseeing.exe"
           release_id: ${{ needs.create-release.outputs.release_id }}
 
   publish-release:
