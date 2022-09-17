@@ -1,8 +1,5 @@
-import { PaginateResult } from 'mongoose'
-export type { ItemDocument as CompletionDocument, Type as Completion } from './util/db/models/completion'
-export type { ItemDocument as GroupDocument, Type as Group } from './util/db/models/group'
-export type { ItemDocument as ItemDocument, Type as Item } from './util/db/models/item'
-export type { ItemDocument as RatingDocument, Type as Rating } from './util/db/models/rating'
+import type { PaginateResult, ObjectId, Document } from 'mongoose'
+import 'mongoose-paginate-v2'
 
 export type OneHandler<T, Body = any> = (args: {
   id: string
@@ -31,3 +28,51 @@ type WithRating<T> = T & {
   }
 }
 export type { PaginateResult, WithRating }
+
+export interface CompletionType {
+  groupId: ObjectId
+  accountName: string
+  items: ObjectId[]
+  createdAt: string
+  updatedAt: string
+}
+
+export interface CompletionDocument extends CompletionType, Document {}
+
+export interface GroupType {
+  name: string
+  description: string
+  bannerImageUrl: string
+  creator: {
+    accountName: string
+    characterName: string
+  }
+  expansions: string[]
+  masteries: string[]
+  difficulty: number
+  createdAt: string
+  updatedAt: string
+  isActive: boolean
+  items: ItemDocument[]
+}
+
+export interface GroupDocument extends GroupType, Document {}
+
+export interface ItemType {
+  name: string
+  description: string
+  imageUrl?: string
+  precision: number
+  position: [number, number, number]
+  owner: GroupDocument
+}
+
+export interface ItemDocument extends ItemType, Document {}
+
+export interface RatingType {
+  groupId: ObjectId
+  raterAccountName: string
+  rating: number
+}
+
+export interface RatingDocument extends RatingType, Document {}

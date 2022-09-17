@@ -1,19 +1,8 @@
-import { Document, Schema, Model } from 'mongoose'
+import { Schema, Model } from 'mongoose'
 import { connect } from '../mongo'
-import { ItemModel as Group } from './group'
+import { ItemDocument } from '../../../types'
 
 const connection = connect()
-
-export interface Type {
-  name: string
-  description: string
-  imageUrl?: string
-  precision: number
-  position: [number, number, number]
-  owner: Group
-}
-
-export interface ItemDocument extends Type, Document {}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ItemModel extends Model<ItemDocument> {}

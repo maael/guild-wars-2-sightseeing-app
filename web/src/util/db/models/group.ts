@@ -1,32 +1,13 @@
-import { Document, Schema, Model, PaginateModel } from 'mongoose'
+import { Schema, Model, PaginateModel } from 'mongoose'
 import { connect } from '../mongo'
-import { ItemDocument as Item } from './item'
+import { GroupDocument } from '../../../types'
 
 const connection = connect()
 
-export interface Type {
-  name: string
-  description: string
-  bannerImageUrl: string
-  creator: {
-    accountName: string
-    characterName: string
-  }
-  expansions: string[]
-  masteries: string[]
-  difficulty: number
-  createdAt: string
-  updatedAt: string
-  isActive: boolean
-  items: Item[]
-}
-
-export interface ItemDocument extends Type, Document {}
-
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ItemModel extends Model<ItemDocument> {}
+export interface ItemModel extends Model<GroupDocument> {}
 
-const itemSchema = new Schema<ItemDocument, ItemModel>(
+const itemSchema = new Schema<GroupDocument, ItemModel>(
   {
     name: {
       type: String,
@@ -82,6 +63,6 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
   }
 )
 
-const Item = connection.model<ItemDocument, PaginateModel<ItemModel>>('Group', itemSchema)
+const Item = connection.model<GroupDocument, PaginateModel<ItemModel>>('Group', itemSchema)
 
 export default Item

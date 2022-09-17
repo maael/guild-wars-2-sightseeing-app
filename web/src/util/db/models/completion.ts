@@ -1,22 +1,13 @@
-import { Document, Schema, Model, ObjectId, PaginateModel } from 'mongoose'
+import { Schema, Model, PaginateModel } from 'mongoose'
 import { connect } from '../mongo'
+import { CompletionDocument } from '../../../types'
 
 const connection = connect()
 
-export interface Type {
-  groupId: ObjectId
-  accountName: string
-  items: ObjectId[]
-  createdAt: string
-  updatedAt: string
-}
-
-export interface ItemDocument extends Type, Document {}
-
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ItemModel extends Model<ItemDocument> {}
+interface ItemModel extends Model<CompletionDocument> {}
 
-const itemSchema = new Schema<ItemDocument, ItemModel>(
+const itemSchema = new Schema<CompletionDocument, ItemModel>(
   {
     groupId: {
       type: Schema.Types.ObjectId,
@@ -37,6 +28,6 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
   }
 )
 
-const Item = connection.model<ItemDocument, PaginateModel<ItemModel>>('Completion', itemSchema)
+const Item = connection.model<CompletionDocument, PaginateModel<ItemModel>>('Completion', itemSchema)
 
 export default Item

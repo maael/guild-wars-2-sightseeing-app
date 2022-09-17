@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/tauri";
 import toast from "react-hot-toast";
 import cls from "classnames";
-import { Group, WithRating, GroupDocument, Item } from "../../../types";
+import { GroupType, WithRating, GroupDocument, ItemType } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 import Input from "../../primitives/Input";
 import Button from "../../primitives/Button";
@@ -25,7 +25,7 @@ export default function GroupFormScreen() {
   const [saving, setSaving] = React.useState(false);
 
   const [group, setGroup] = React.useState<
-    Omit<Group, "creator" | "isActive" | "createdAt" | "updatedAt">
+    Omit<GroupType, "creator" | "isActive" | "createdAt" | "updatedAt">
   >({
     name: "",
     description: "",
@@ -251,7 +251,7 @@ export default function GroupFormScreen() {
           <Button
             type="button"
             onClick={() => {
-              const newItem: Omit<Item, "owner"> = {
+              const newItem: Omit<ItemType, "owner"> = {
                 name: "",
                 description: "",
                 imageUrl: "",

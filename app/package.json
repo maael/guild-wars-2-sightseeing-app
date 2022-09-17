@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "watch-css": "npx tailwindcss -i ./src/input.css -o ./src/style.css --watch",
-    "build-css": "npx tailwindcss -i ./src/input.css -o ./src/style.css"
+    "build-css": "npx tailwindcss -i ./src/input.css -o ./src/style.css",
+    "prepare-build": "node scripts/prepare-build.cjs"
   },
   "dependencies": {
     "@tanstack/react-query": "^4.2.3",
@@ -35,7 +36,7 @@
     "@vitejs/plugin-react": "^2.0.0",
     "autoprefixer": "^10.4.8",
     "mongoose": "^6.5.4",
-    "mongoose-paginate-v2": "^1.7.0",
+    "mongoose-paginate-v2": "^1.7.1",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.16",
     "tailwindcss": "^3.1.8",
