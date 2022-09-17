@@ -69,14 +69,6 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
       type: Boolean,
       default: true,
     },
-    createdAt: {
-      type: String,
-      default: () => new Date().toISOString(),
-    },
-    updatedAt: {
-      type: String,
-      default: () => new Date().toISOString(),
-    },
     items: [
       {
         type: Schema.Types.ObjectId,
@@ -86,6 +78,7 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
   },
   {
     id: true,
+    timestamps: true,
   }
 )
 

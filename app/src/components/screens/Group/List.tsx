@@ -20,7 +20,6 @@ export default function GroupListScreen() {
     ["completions"],
     () => fetchWithKey(`${API_URL}/api/completions`).then((res) => res.json())
   );
-  console.info({ completions, data });
 
   if (isLoading) {
     return (
@@ -42,6 +41,7 @@ export default function GroupListScreen() {
     <div>
       <PageHeader
         hideBack
+        className="pt-12 sm:pt-0"
         rightAction={
           <Link to="/groups/new" className="opacity-70 hover:opacity-100">
             <Button className="flex flex-row justify-center items-center -left-3">
@@ -56,7 +56,9 @@ export default function GroupListScreen() {
           </Link>
         }
       >
-        <>Guild Wars 2 Sightseeing</>
+        <span>
+          <span className="hidden sm:inline">Guild Wars 2</span> Sightseeing
+        </span>
       </PageHeader>
       <h2 className="text-center text-2xl mb-1">
         {`Your logs (${completions?.length})`}

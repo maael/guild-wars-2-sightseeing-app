@@ -7,6 +7,8 @@ export interface Type {
   groupId: ObjectId
   accountName: string
   items: ObjectId[]
+  createdAt: string
+  updatedAt: string
 }
 
 export interface ItemDocument extends Type, Document {}
@@ -31,6 +33,7 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
   },
   {
     id: true,
+    timestamps: true,
   }
 )
 

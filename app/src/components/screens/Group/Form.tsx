@@ -97,20 +97,21 @@ export default function GroupFormScreen() {
   }
 
   return (
-    <div>
+    <div className="px-2 overflow-x-hidden">
       <PageHeader
+        className="pt-12 sm:pt-0"
         rightAction={
           <Button onClick={save} disabled={saving} className="shadow-md">
             {saving ? <FaSpinner className="animate-spin" /> : <FaSave />} Save
           </Button>
         }
-        rightClassName="!fixed top-10 right-3 text-lg"
+        rightClassName="!fixed top-10 right-3 sm:text-lg"
       >
         New Group
       </PageHeader>
       <form
         onSubmit={save}
-        className="flex flex-col gap-2 max-w-2xl mx-auto mt-5 items-center"
+        className="flex flex-col gap-2 max-w-2xl mx-auto mt-4 items-center"
       >
         <Input
           label="Name"
@@ -126,7 +127,7 @@ export default function GroupFormScreen() {
             setGroup((g) => ({ ...g, description: e.target.value }))
           }
         />
-        <div className="grid grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
           {Object.entries(difficultyMap).map(([k, v]) => (
             <Button
               key={k}
@@ -143,7 +144,7 @@ export default function GroupFormScreen() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-4 my-5">
           {(group.items || []).map((item, i) => (
             <div
               key={i}

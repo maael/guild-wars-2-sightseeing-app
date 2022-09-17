@@ -12,11 +12,11 @@ export default function Input({
   outerClassName?: React.CSSProperties;
 }) {
   return (
-    <div className={cls("flex flex-row", outerClassName)}>
+    <div className={cls("flex flex-col sm:flex-row", outerClassName)}>
       <div
         style={{ background: "#584025" }}
         className={cls(
-          "flex justify-center items-center py-1 px-2 rounded-l-md",
+          "flex justify-center items-center py-1 px-2 rounded-t-md sm:rounded-l-md sm:rounded-tr-none",
           labelClassName
         )}
       >
@@ -26,7 +26,7 @@ export default function Input({
         {...inputProps}
         style={{ borderColor: "#584025" }}
         className={cls(
-          "text-black py-1 px-2 rounded-r-md border-b",
+          "text-black py-1 px-2 rounded-b-md sm:rounded-r-md sm:rounded-bl-none border-b",
           inputProps.className
         )}
       />

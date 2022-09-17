@@ -9,15 +9,17 @@ export default function PageHeader({
   hideBack,
   rightAction,
   rightClassName,
+  className,
 }: React.PropsWithChildren<{
   backNav?: string;
   hideBack?: boolean;
   rightAction?: React.ReactNode;
   rightClassName?: string;
+  className?: string;
 }>) {
   const nav = useNavigate();
   return (
-    <header className="relative flex flex-row gap-2">
+    <header className={cls("relative flex flex-row gap-2", className)}>
       {hideBack ? null : (
         <button
           className="absolute left-3 top-2 text-2xl"

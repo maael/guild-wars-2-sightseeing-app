@@ -2,6 +2,7 @@ import { appWindow } from "@tauri-apps/api/window";
 import { getName } from "@tauri-apps/api/app";
 import { useEffect, useState } from "react";
 import { useConnection } from "../hooks/useConnection";
+import { FaEye } from "react-icons/fa";
 
 export default function TitleBar() {
   const [title, setTitle] = useState("");
@@ -17,8 +18,10 @@ export default function TitleBar() {
         data-tauri-drag-region
         className="bg-gray-900 bg-opacity-25 flex-grow-0 flex-shrink-0 text-white select-none flex flex-row justify-end items-center cursor-move text-sm"
       >
-        <div className="absolute top-2 left-2">{title}</div>
-        <div>
+        <div className="absolute top-2 left-3 select-none pointer-events-none flex flex-row gap-1">
+          <FaEye /> <span className="hidden sm:inline">{title}</span>
+        </div>
+        <div className="pointer-events-none">
           {connection?.status === "connected" ? (
             <div
               className="bg-green-600 px-3 py-0.5 text-xs rounded-md mx-5"

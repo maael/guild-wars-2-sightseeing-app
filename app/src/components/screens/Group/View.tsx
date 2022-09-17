@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   FaCheckCircle,
   FaClock,
+  FaList,
   FaPencilAlt,
   FaRegStar,
   FaSpinner,
@@ -223,6 +224,7 @@ export default function GroupViewScreen() {
   return (
     <div>
       <PageHeader
+        className="pt-10 sm:pt-0"
         rightAction={
           data?.creator.accountName === localStorage.getItem("gw2-account") ? (
             <div className="flex flex-row gap-1 justify-center items-center">
@@ -266,12 +268,16 @@ export default function GroupViewScreen() {
         </div>
         <Difficulty level={data?.difficulty} />
         <Rating rating={data?.rating} />
-
         <RatingSelection
           id={id}
           refetch={refetch}
           userRating={data?.rating?.user}
         />
+        <Link to={`/groups/${id}/leaderboard`}>
+          <Button type="button" className="gap-2">
+            <FaList /> Leaderboard
+          </Button>
+        </Link>
 
         <div>{data?.expansions.join(",")}</div>
         <div>{data?.masteries.join(",")}</div>
