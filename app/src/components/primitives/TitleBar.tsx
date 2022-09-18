@@ -61,11 +61,14 @@ export default function TitleBar() {
                 " px-3 py-0.5 text-xs rounded-md flex flex-row gap-1 justify-center items-center mx-2 animate-pulse",
                 {
                   "bg-yellow-600":
-                    !connection || connection?.status === "waiting",
-                  "bg-red-600": connection?.status === "error",
+                    !connection ||
+                    connection?.status === "waiting" ||
+                    connection?.status === "error",
                 }
               )}
-              title={JSON.stringify(connection?.data)}
+              title={JSON.stringify(
+                connection?.data?.error || connection?.data
+              )}
             >
               <FaSpinner className="animate-spin" /> Character...
             </div>
