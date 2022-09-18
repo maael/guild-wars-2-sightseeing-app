@@ -4,6 +4,12 @@ Bringing [FFXIV style sightseeing logs](https://ffxiv.consolegameswiki.com/wiki/
 
 Streamlines making the logs by automating turning off the HUD and capturing screenshots, and getting location information from the [Mumble Link](https://wiki.guildwars2.com/wiki/API:MumbleLink).
 
+## Images
+
+| List View                                                                  | Log View                                                                  |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| ![The apps list view as an overlay over Guild Wars 2](/.imgs/gw2_list.png) | ![The apps log view as an overlay over Guild Wars 2](/.imgs/gw2_view.png) |
+
 ## Usage
 
 ### Install / Setup
