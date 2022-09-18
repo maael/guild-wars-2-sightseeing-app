@@ -2,7 +2,7 @@ import { appWindow } from "@tauri-apps/api/window";
 import { getName } from "@tauri-apps/api/app";
 import { useEffect, useState } from "react";
 import { useConnection } from "../hooks/useConnection";
-import { FaEye } from "react-icons/fa";
+import { FaEye, FaSpinner } from "react-icons/fa";
 
 export default function TitleBar() {
   const [title, setTitle] = useState("");
@@ -11,6 +11,20 @@ export default function TitleBar() {
       setTitle(await getName());
     })();
   }, []);
+  const [accountName, setAccountName] = useState(() =>
+    localStorage.getItem("gw2-account")
+  );
+  useEffect(() => {
+    if (accountName) return;
+    const interval = setInterval(() => {
+      if (!localStorage.getItem("gw2-account")) return;
+      setAccountName(localStorage.getItem("gw2-account"));
+      clearInterval(interval);
+    }, 2_000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [accountName]);
   const { connection } = useConnection();
   return (
     <>
@@ -22,16 +36,27 @@ export default function TitleBar() {
           <FaEye /> <span className="hidden sm:inline">{title}</span>
         </div>
         <div className="pointer-events-none">
+          {accountName ? (
+            <div
+              className="bg-green-600 px-3 py-0.5 text-xs rounded-md ml-5 text-ellipsis overflow-hidden whitespace-nowrap"
+              style={{ maxWidth: 100 }}
+            >
+              {accountName}
+            </div>
+          ) : null}
+        </div>
+        <div className="pointer-events-none">
           {connection?.status === "connected" ? (
             <div
-              className="bg-green-600 px-3 py-0.5 text-xs rounded-md mx-5"
+              className="bg-green-600 px-3 py-0.5 text-xs rounded-md mx-2 text-ellipsis overflow-hidden whitespace-nowrap"
+              style={{ maxWidth: 100 }}
               title={JSON.stringify(connection.data)}
             >
               {connection.data.identity.name}
             </div>
           ) : (
-            <div className="bg-yellow-600 px-3 py-0.5 text-xs rounded-md mx-5 animate-pulse">
-              Waiting...
+            <div className="bg-yellow-600 px-3 py-0.5 text-xs rounded-md flex flex-row gap-1 justify-center items-center mx-2 animate-pulse">
+              <FaSpinner className="animate-spin" /> Character...
             </div>
           )}
         </div>

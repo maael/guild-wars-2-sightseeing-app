@@ -64,6 +64,12 @@ export default function GroupListScreen() {
       <h2 className="text-center text-2xl mb-1">
         {`Your logs (${completions?.length})`}
       </h2>
+      {!completions || completions.length === 0 ? (
+        <p className="text-center text-sm mx-2">
+          Any logs you've started or completed will appear here, find some
+          below!
+        </p>
+      ) : null}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-3xl mx-auto pb-10 px-2">
         {completions?.map((d) => (
           <Item
@@ -122,7 +128,7 @@ function Item({
               {completedItems} of {item.items?.length || 0} items
             </div>
             <div>{item.expansions.join(",")}</div>
-            <div className="flex flex-row gap-2">
+            <div className="flex flex-row gap-1">
               <FaUser /> {item.creator.accountName}
             </div>
           </div>

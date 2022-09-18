@@ -125,7 +125,7 @@ function within(value: number, compare: number, precision: number) {
 
 function useGroupMatch(group?: WithRating<GroupDocument>) {
   const [groupMatches, setGroupMatches] = useState<Set<string>>(new Set());
-  useQuery(
+  const { data: queryData } = useQuery(
     [`completion/${group?._id}`],
     () =>
       fetchWithKey<CompletionDocument>(
@@ -144,6 +144,7 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
         const data = await invoke("get_mumble").then((r) =>
           JSON.parse(r as string)
         );
+        if (Object.keys(data).length === 0) return;
         const position = data.avatar.position;
         const matches = group?.items.filter((i) => {
           return i.position.every((v, idx) =>
@@ -170,8 +171,12 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
   }, [group, groupMatches]);
   useEffect(() => {
     (async () => {
-      if (groupMatches.size !== 0) {
-        console.info("push", group?._id, groupMatches);
+      const existingMatches = (queryData?.items || []).map((m) => m.toString());
+      if (
+        groupMatches.size !== 0 &&
+        group?._id &&
+        ![...groupMatches].every((m) => existingMatches?.includes(m))
+      ) {
         await fetchWithKey(`${API_URL}/api/completions/${group?._id}`, {
           method: "PUT",
           body: Body.json([...groupMatches]),
@@ -258,7 +263,7 @@ export default function GroupViewScreen() {
         {data?.name}
       </PageHeader>
       <div className="flex flex-col justify-center items-center gap-2 mt-2">
-        <div>{data?.description}</div>
+        <div className="mx-3 text-center">{data?.description}</div>
         <div className="flex flex-col gap-2 sm:flex-row sm:gap-5">
           <div className="flex flex-row justify-center items-center gap-1">
             <FaClock /> {format(new Date(data?.createdAt || ""), "dd/MM/yy")}

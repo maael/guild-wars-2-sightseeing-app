@@ -37,8 +37,36 @@ export default function EnterApiKeyScreen() {
     }
   }, [apiAccountInfo]);
   return (
-    <div className="flex flex-col gap-2 h-full justify-center items-center">
+    <div className="mt-10 flex flex-col gap-2 items-center max-w-lg mx-auto">
       <h1 className="text-2xl">Guild Wars 2 Sightseeing</h1>
+      <h3 className="text-xl">Setup</h3>
+      <h3 className="text-lg">To get started please provide an API Key!</h3>
+      <ol className="list-decimal mx-8 mt-2 mb-4 space-y-3">
+        <li>
+          Go to{" "}
+          <a
+            className="underline"
+            href="https://account.arena.net/applications"
+            target="_blank"
+          >
+            official Guild Wars 2 API Key Management →
+          </a>
+        </li>
+        <li>Click on the "New Key" button</li>
+        <li>
+          Enter a name and ensure{" "}
+          <strong className="border border-white rounded-md px-1 relative text-sm">
+            account
+          </strong>{" "}
+          and{" "}
+          <strong className="border border-white rounded-md px-1 relative text-sm">
+            characters
+          </strong>{" "}
+          are ticked, and click on "Create API Key"
+        </li>
+        <li>Copy your new API key</li>
+        <li>Paste it in the form below and hit "Save Key"</li>
+      </ol>
       <form
         className="flex flex-col gap-2 justify-center items-center"
         onSubmit={async (e) => {
@@ -71,9 +99,11 @@ export default function EnterApiKeyScreen() {
           <FaSave /> Save Key
         </Button>
       </form>
-      {apiAccountInfo?.accountData?.name
-        ? `Hi ${apiAccountInfo.accountData.name}!`
-        : null}
+      <div className="mt-2">
+        {apiAccountInfo?.accountData?.name
+          ? `Hi ${apiAccountInfo.accountData.name}!`
+          : null}
+      </div>
     </div>
   );
 }
