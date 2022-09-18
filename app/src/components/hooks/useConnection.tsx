@@ -22,10 +22,15 @@ export function Provider({ children }: React.PropsWithChildren) {
         console.info("[useConnection:mumble]", raw);
         const data = JSON.parse(raw || "{}");
         console.info("[useConnection:parsed]", data);
+        const status =
+          data && Object.keys(data).length > 0
+            ? !!data.error
+              ? "error"
+              : "connected"
+            : "waiting";
         setConnection({
           connection: {
-            status:
-              data && Object.keys(data).length > 0 ? "connected" : "waiting",
+            status,
             data,
           },
           setConnection,

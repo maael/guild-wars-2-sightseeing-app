@@ -16,11 +16,26 @@ pub struct LinkedMem {
 }
 
 pub fn get_data() -> std::string::String {
-    let mut gw2 = link::GW2::new().expect("Unable to link to Guild Wars 2");
+    let gw2 = link::GW2::new();
 
-    if let Some(link) = gw2.tick() {
-        let identity: link::GW2Identity =
-            serde_json::from_str(&link.identity().to_string()).unwrap();
+    if gw2.is_err() {
+        return json!({"error": "GW2 link error"}).to_string();
+    }
+
+    if let Some(link) = gw2.unwrap().tick() {
+        let identity_result: Result<link::GW2Identity, serde_json::Error> =
+            serde_json::from_str(&link.identity().to_string());
+        if identity_result.is_err() {
+            return json!({
+                "error":
+                    format!(
+                        "Failed to serialize JSON from: {}",
+                        &link.identity().to_string()
+                    )
+            })
+            .to_string();
+        }
+        let identity: link::GW2Identity = identity_result.unwrap();
         return json!({
           "type": "link",
           "ui_version": link.ui_version(),
@@ -61,6 +76,6 @@ pub fn get_data() -> std::string::String {
         })
         .to_string();
     } else {
-        return String::from("{}");
+        return json!({"error": "No tick"}).to_string();
     }
 }

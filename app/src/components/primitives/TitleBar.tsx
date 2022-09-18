@@ -53,7 +53,7 @@ export default function TitleBar() {
               style={{ maxWidth: 100 }}
               title={JSON.stringify(connection.data)}
             >
-              {connection.data.identity.name}
+              {connection?.data?.identity?.name}
             </div>
           ) : (
             <div
