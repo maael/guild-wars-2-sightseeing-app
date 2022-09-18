@@ -1,8 +1,9 @@
 import { appWindow } from "@tauri-apps/api/window";
 import { getName } from "@tauri-apps/api/app";
 import { useEffect, useState } from "react";
-import { useConnection } from "../hooks/useConnection";
 import { FaEye, FaSpinner } from "react-icons/fa";
+import cls from "classnames";
+import { useConnection } from "../hooks/useConnection";
 
 export default function TitleBar() {
   const [title, setTitle] = useState("");
@@ -45,7 +46,7 @@ export default function TitleBar() {
             </div>
           ) : null}
         </div>
-        <div className="pointer-events-none">
+        <div>
           {connection?.status === "connected" ? (
             <div
               className="bg-green-600 px-3 py-0.5 text-xs rounded-md mx-2 text-ellipsis overflow-hidden whitespace-nowrap"
@@ -55,7 +56,17 @@ export default function TitleBar() {
               {connection.data.identity.name}
             </div>
           ) : (
-            <div className="bg-yellow-600 px-3 py-0.5 text-xs rounded-md flex flex-row gap-1 justify-center items-center mx-2 animate-pulse">
+            <div
+              className={cls(
+                " px-3 py-0.5 text-xs rounded-md flex flex-row gap-1 justify-center items-center mx-2 animate-pulse",
+                {
+                  "bg-yellow-600":
+                    !connection || connection?.status === "waiting",
+                  "bg-red-600": connection?.status === "error",
+                }
+              )}
+              title={JSON.stringify(connection?.data)}
+            >
               <FaSpinner className="animate-spin" /> Character...
             </div>
           )}

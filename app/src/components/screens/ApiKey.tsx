@@ -13,19 +13,37 @@ function useApiAccountInfo() {
   const [apiAccountInfo, setApiAccountInfo] = React.useState<{
     apiKey: string;
     accountData?: { name?: string };
-  }>({
-    apiKey: "",
-    accountData: {},
+  }>(() => {
+    try {
+      const parsed = JSON.parse(
+        localStorage.getItem("gw2-account-info") || "{}"
+      );
+      if (parsed && parsed.apiKey) {
+        console.info("[useApiAccountInfo:setState:hydrate]", parsed);
+        return parsed;
+      } else {
+        console.warn("[useApiAccountInfo:setState:hydrate:missing]");
+      }
+    } catch (e) {
+      console.warn("[useApiAccountInfo:setState:hydrate:error]", e);
+    }
+    return {
+      apiKey: "",
+      accountData: {},
+    };
   });
   React.useEffect(() => {
     (async () => {
       try {
         const resourcePath = await resolveResource("settings.json");
-        const data = JSON.parse(await readTextFile(resourcePath));
+        const fileData = await readTextFile(resourcePath);
+        const data = JSON.parse(fileData || "{}");
         console.info("[useApiAccountInfo]", data);
+        localStorage.setItem("gw2-account-info", JSON.stringify(data));
         localStorage.setItem("gw2-account", data?.accountData?.name);
         setApiAccountInfo(data);
       } catch (e) {
+        console.error("[useApiAccountInfo:error]", e);
         Sentry.captureException(e);
       }
     })();
@@ -40,7 +58,11 @@ export default function EnterApiKeyScreen() {
   React.useEffect(() => {
     console.info("[apiAccountInfo]", apiAccountInfo);
     if (apiAccountInfo && apiAccountInfo.accountData?.name) {
-      Sentry.setUser({ username: apiAccountInfo.accountData?.name });
+      const username = apiAccountInfo.accountData?.name || undefined;
+      console.info("[username]", username);
+      Sentry.setUser({
+        username,
+      });
       nav("/groups");
     }
   }, [apiAccountInfo]);
@@ -99,8 +121,13 @@ export default function EnterApiKeyScreen() {
                 dir: BaseDirectory.Resource,
               }
             );
+            localStorage.setItem(
+              "gw2-account-info",
+              JSON.stringify(apiAccountInfo)
+            );
             setApiAccountInfo(apiAccountInfo);
           } catch (e) {
+            console.error("[EnterApiKeyScreen:submit]", e);
             Sentry.captureException(e);
             toast.error(
               "There was a problem getting your account information, please try again"

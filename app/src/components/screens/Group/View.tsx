@@ -150,7 +150,7 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
     const interval = setInterval(async () => {
       try {
         const data = await invoke("get_mumble").then((r) =>
-          JSON.parse(r as string)
+          JSON.parse((r as string) || "{}")
         );
         if (Object.keys(data).length === 0) return;
         const position = data.avatar.position;

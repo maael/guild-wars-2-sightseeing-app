@@ -216,7 +216,7 @@ export default function GroupFormScreen() {
                     const [{ src, fileSrc }, data] = await Promise.all([
                       takeScreenshot(),
                       invoke("get_mumble").then((raw) =>
-                        JSON.parse(raw as string)
+                        JSON.parse((raw as string) || "{}")
                       ),
                     ]);
                     console.info("[img]", { src, fileSrc });
