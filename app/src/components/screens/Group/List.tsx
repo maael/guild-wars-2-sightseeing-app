@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { FaCheckCircle, FaSpinner, FaUser } from "react-icons/fa";
 import cls from "classnames";
+import * as Sentry from "@sentry/react";
 import { GroupDocument, PaginateResult, WithRating } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 import { API_URL, fetchWithKey } from "../../../util";
@@ -10,16 +11,30 @@ import Rating from "../../primitives/Rating";
 import Button from "../../primitives/Button";
 
 export default function GroupListScreen() {
-  const { isLoading, error, data } = useQuery(["groups"], () =>
-    fetchWithKey<PaginateResult<WithRating<GroupDocument>>>(
-      `${API_URL}/api/groups`
-    ).then((res) => res.data)
+  const { isLoading, error, data } = useQuery(
+    ["groups"],
+    () =>
+      fetchWithKey<PaginateResult<WithRating<GroupDocument>>>(
+        `${API_URL}/api/groups`
+      ).then((res) => res.data),
+    {
+      onError: (e) => {
+        Sentry.captureException(e);
+      },
+    }
   );
 
-  const { data: completions } = useQuery(["completions"], () =>
-    fetchWithKey<WithRating<GroupDocument>[]>(
-      `${API_URL}/api/completions`
-    ).then((res) => res.data)
+  const { data: completions } = useQuery(
+    ["completions"],
+    () =>
+      fetchWithKey<WithRating<GroupDocument>[]>(
+        `${API_URL}/api/completions`
+      ).then((res) => res.data),
+    {
+      onError: (e) => {
+        Sentry.captureException(e);
+      },
+    }
   );
 
   if (isLoading) {
@@ -32,8 +47,8 @@ export default function GroupListScreen() {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-full text-red-700">
-        An error has occurred: {(error as Error).stack}
+      <div className="flex justify-center items-center h-full text-red-700 mx-2">
+        {`An error has occurred: ${error as Error}, ${(error as Error).stack}}`}
       </div>
     );
   }

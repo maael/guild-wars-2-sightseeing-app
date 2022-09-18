@@ -5,11 +5,6 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { Body } from "@tauri-apps/api/http";
 import toast from "react-hot-toast";
 import cls from "classnames";
-import { GroupType, WithRating, GroupDocument, ItemType } from "../../../types";
-import PageHeader from "../../primitives/PageHeader";
-import Input from "../../primitives/Input";
-import Button from "../../primitives/Button";
-import { API_URL, fetchWithKey } from "../../../util";
 import {
   FaCamera,
   FaImage,
@@ -18,6 +13,12 @@ import {
   FaSpinner,
   FaTimes,
 } from "react-icons/fa";
+import * as Sentry from "@sentry/react";
+import { GroupType, WithRating, GroupDocument, ItemType } from "../../../types";
+import PageHeader from "../../primitives/PageHeader";
+import Input from "../../primitives/Input";
+import Button from "../../primitives/Button";
+import { API_URL, fetchWithKey } from "../../../util";
 import { useLocalImageHook } from "../../hooks/useLocalImage";
 import { difficultyMap } from "../../primitives/Difficulty";
 
@@ -51,6 +52,9 @@ export default function GroupFormScreen() {
       onSuccess: (data) => {
         setGroup((g) => ((g as any)._id ? g : data));
       },
+      onError: (e) => {
+        Sentry.captureException(e);
+      },
       enabled: !!id,
     }
   );
@@ -79,15 +83,13 @@ export default function GroupFormScreen() {
         })
       );
       const embellishedGroup = { ...group, items: embellishedGroupItems };
-      const result = await fetchWithKey(
-        `${API_URL}/api/groups${id ? `/${id}` : ""}`,
-        {
-          method: id ? "PUT" : "POST",
-          body: Body.json(embellishedGroup),
-        }
-      ).then((r) => r.data);
+      await fetchWithKey(`${API_URL}/api/groups${id ? `/${id}` : ""}`, {
+        method: id ? "PUT" : "POST",
+        body: Body.json(embellishedGroup),
+      }).then((r) => r.data);
       nav("/groups");
     } catch (e) {
+      Sentry.captureException(e);
       console.error(e);
       toast.error(`Error saving, please try again!`);
     } finally {

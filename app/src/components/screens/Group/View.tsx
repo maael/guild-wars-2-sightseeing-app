@@ -19,6 +19,7 @@ import { Body } from "@tauri-apps/api/http";
 import { Howl } from "howler";
 import format from "date-fns/format";
 import Modal from "react-modal";
+import * as Sentry from "@sentry/react";
 import {
   WithRating,
   GroupDocument,
@@ -111,11 +112,15 @@ function RatedStar({
 
 function doRating(id: string, rating: number, refetch: () => Promise<any>) {
   return async function () {
-    await fetchWithKey(`${API_URL}/api/ratings/${id}`, {
-      method: "PUT",
-      body: Body.json({ rating }),
-    }).then((r) => r.data);
-    await refetch();
+    try {
+      await fetchWithKey(`${API_URL}/api/ratings/${id}`, {
+        method: "PUT",
+        body: Body.json({ rating }),
+      }).then((r) => r.data);
+      await refetch();
+    } catch (e) {
+      Sentry.captureException(e);
+    }
   };
 }
 
@@ -134,6 +139,9 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
     {
       onSuccess: (completions) => {
         setGroupMatches(new Set(completions?.items as any));
+      },
+      onError: (e) => {
+        Sentry.captureException(e);
       },
       enabled: !!group?._id,
     }
@@ -191,10 +199,17 @@ export default function GroupViewScreen() {
   const [selected, setSelected] = useState<number | null>(null);
   const { id } = useParams();
   const nav = useNavigate();
-  const { isLoading, error, data, refetch } = useQuery([`group/${id}`], () =>
-    fetchWithKey<WithRating<GroupDocument>>(`${API_URL}/api/groups/${id}`).then(
-      (d) => d.data
-    )
+  const { isLoading, error, data, refetch } = useQuery(
+    [`group/${id}`],
+    () =>
+      fetchWithKey<WithRating<GroupDocument>>(
+        `${API_URL}/api/groups/${id}`
+      ).then((d) => d.data),
+    {
+      onError: (e) => {
+        Sentry.captureException(e);
+      },
+    }
   );
 
   const groupMatches = useGroupMatch(data);
@@ -213,8 +228,8 @@ export default function GroupViewScreen() {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-full text-red-700">
-        An error has occurred: {(error as Error).message}
+      <div className="flex justify-center items-center h-full text-red-700 mx-2">
+        {`An error has occurred: ${error as Error}, ${(error as Error).stack}}`}
       </div>
     );
   }

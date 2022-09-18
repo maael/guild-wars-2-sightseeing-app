@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { BaseDirectory, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { resolveResource } from "@tauri-apps/api/path";
 import { fetch } from "@tauri-apps/api/http";
+import { FaSave } from "react-icons/fa";
+import toast from "react-hot-toast";
+import * as Sentry from "@sentry/react";
 import Input from "../primitives/Input";
 import Button from "../primitives/Button";
-import { FaSave } from "react-icons/fa";
 
 function useApiAccountInfo() {
   const [apiAccountInfo, setApiAccountInfo] = React.useState<{
@@ -17,11 +19,15 @@ function useApiAccountInfo() {
   });
   React.useEffect(() => {
     (async () => {
-      const resourcePath = await resolveResource("settings.json");
-      const data = JSON.parse(await readTextFile(resourcePath));
-      console.info("[useApiAccountInfo]", data);
-      localStorage.setItem("gw2-account", data?.accountData?.name);
-      setApiAccountInfo(data);
+      try {
+        const resourcePath = await resolveResource("settings.json");
+        const data = JSON.parse(await readTextFile(resourcePath));
+        console.info("[useApiAccountInfo]", data);
+        localStorage.setItem("gw2-account", data?.accountData?.name);
+        setApiAccountInfo(data);
+      } catch (e) {
+        Sentry.captureException(e);
+      }
     })();
   }, []);
   return [apiAccountInfo, setApiAccountInfo] as const;
@@ -29,10 +35,12 @@ function useApiAccountInfo() {
 
 export default function EnterApiKeyScreen() {
   const [apiAccountInfo, setApiAccountInfo] = useApiAccountInfo();
+  const [error, setError] = React.useState<Error | null>(null);
   const nav = useNavigate();
   React.useEffect(() => {
     console.info("[apiAccountInfo]", apiAccountInfo);
     if (apiAccountInfo && apiAccountInfo.accountData?.name) {
+      Sentry.setUser({ username: apiAccountInfo.accountData?.name });
       nav("/groups");
     }
   }, [apiAccountInfo]);
@@ -71,21 +79,34 @@ export default function EnterApiKeyScreen() {
         className="flex flex-col gap-2 justify-center items-center"
         onSubmit={async (e) => {
           e.preventDefault();
-          const apiKey = (
-            e.currentTarget.elements.namedItem("api-key") as HTMLInputElement
-          ).value.trim();
+          try {
+            setError(null);
+            const apiKey = (
+              e.currentTarget.elements.namedItem("api-key") as HTMLInputElement
+            ).value.trim();
 
-          const accountData: any = await fetch(
-            `https://api.guildwars2.com/v2/account?${new URLSearchParams({
-              access_token: apiKey,
-            })}`
-          ).then((res) => res.data);
+            const accountData: any = await fetch(
+              `https://api.guildwars2.com/v2/account?${new URLSearchParams({
+                access_token: apiKey,
+              })}`
+            ).then((res) => res.data);
 
-          const apiAccountInfo = { apiKey, accountData };
-          await writeTextFile("settings.json", JSON.stringify(apiAccountInfo), {
-            dir: BaseDirectory.Resource,
-          });
-          setApiAccountInfo(apiAccountInfo);
+            const apiAccountInfo = { apiKey, accountData };
+            await writeTextFile(
+              "settings.json",
+              JSON.stringify(apiAccountInfo),
+              {
+                dir: BaseDirectory.Resource,
+              }
+            );
+            setApiAccountInfo(apiAccountInfo);
+          } catch (e) {
+            Sentry.captureException(e);
+            toast.error(
+              "There was a problem getting your account information, please try again"
+            );
+            setError(e as Error);
+          }
         }}
       >
         <Input
@@ -104,6 +125,11 @@ export default function EnterApiKeyScreen() {
           ? `Hi ${apiAccountInfo.accountData.name}!`
           : null}
       </div>
+      {error ? (
+        <div className="text-red-600 mx-2">
+          {`Error: ${error} - ${error.stack?.toString()}`}
+        </div>
+      ) : null}
     </div>
   );
 }

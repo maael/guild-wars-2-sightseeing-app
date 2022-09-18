@@ -2,17 +2,24 @@ import { useQuery } from "@tanstack/react-query";
 import format from "date-fns/format";
 import { FaClock, FaSpinner, FaUser } from "react-icons/fa";
 import { useParams } from "react-router-dom";
+import * as Sentry from "@sentry/react";
 import { API_URL, fetchWithKey } from "../../../util";
 import PageHeader from "../../primitives/PageHeader";
 
 export default function GroupLeaderboardScreen() {
   const { id } = useParams();
-  const { data, isLoading } = useQuery([`groups/${id}/leaderboard`], () =>
-    fetchWithKey<any[]>(`${API_URL}/api/leaderboards/${id}`).then(
-      (res) => res.data
-    )
+  const { data, isLoading } = useQuery(
+    [`groups/${id}/leaderboard`],
+    () =>
+      fetchWithKey<any[]>(`${API_URL}/api/leaderboards/${id}`).then(
+        (res) => res.data
+      ),
+    {
+      onError: (e) => {
+        Sentry.captureException(e);
+      },
+    }
   );
-  console.info({ data, isLoading });
 
   if (isLoading) {
     return (
