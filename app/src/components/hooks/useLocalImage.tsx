@@ -32,6 +32,9 @@ export function useLocalImageHook() {
       headers: { "Content-Type": "multipart/form-data" },
     });
     console.info("data", res.data);
+    if (!res.ok) {
+      throw new Error((res.data as any).error || "Unknown error");
+    }
     return (res.data as any)?.Location;
   }
 
