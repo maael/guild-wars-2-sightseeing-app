@@ -84,7 +84,11 @@ export default function TitleBar() {
         <div
           className="inline-flex justify-center items-center w-7 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
           id="titlebar-maximize"
-          onClick={() => appWindow.maximize()}
+          onClick={async () =>
+            (await appWindow.isMaximized())
+              ? appWindow.unmaximize()
+              : appWindow.maximize()
+          }
         >
           <img src="/ui/maximize_button.png" alt="maximize" />
         </div>

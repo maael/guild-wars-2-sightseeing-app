@@ -31,9 +31,10 @@ export function useLocalImageHook() {
       responseType: ResponseType.JSON,
       headers: { "Content-Type": "multipart/form-data" },
     });
-    console.info("data", res.data);
+    console.info("[saveImage:data]", res.ok, res.status, res.data);
     if (!res.ok) {
-      throw new Error((res.data as any).error || "Unknown error");
+      console.error("[saveImage:error]", res.status, res.data as any);
+      throw new Error((res.data as any).error || "Unknown error saving image");
     }
     return (res.data as any)?.Location;
   }

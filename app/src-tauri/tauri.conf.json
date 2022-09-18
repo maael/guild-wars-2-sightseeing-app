@@ -11,14 +11,16 @@
   },
   "tauri": {
     "allowlist": {
-      "all": true,
       "protocol": {
         "all": false,
         "asset": true,
         "assetScope": ["$DOCUMENT/Guild Wars 2/Screens/*"]
       },
       "fs": {
-        "scope": ["*"]
+        "scope": ["*"],
+        "readDir": true,
+        "readFile": true,
+        "writeFile": true
       },
       "http": {
         "scope": [
@@ -28,7 +30,22 @@
           "https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com/*",
           "https://gw2-sightseeing-api.mael.tech/*",
           "https://o304997.ingest.sentry.io/*"
-        ]
+        ],
+        "all": true
+      },
+      "path": {
+        "all": true
+      },
+      "window": {
+        "setTitle": true,
+        "minimize": true,
+        "maximize": true,
+        "setAlwaysOnTop": true,
+        "unmaximize": true,
+        "unminimize": true,
+        "close": true,
+        "setPosition": true,
+        "startDragging": true
       }
     },
     "bundle": {
