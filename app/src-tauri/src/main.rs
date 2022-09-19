@@ -171,6 +171,9 @@ fn screenshot() -> SystemTime {
 }
 
 fn main() {
+    // This is needed to have a permanent pointer to the Mumble Shared Memory
+    // Otherwise it will remain empty
+    let _handler = MumbleLinkHandler::new().unwrap();
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![get_mumble, screenshot])
         .run(tauri::generate_context!())
