@@ -25,7 +25,7 @@ export function useLocalImageHook() {
       },
     });
     console.info("[save][start]", formData);
-    const res = await fetch(`${API_URL}/api/image/${groupId}`, {
+    const res = await fetch(`${API_URL}/api/image?groupId=${groupId}`, {
       body: formData,
       method: "POST",
       responseType: ResponseType.JSON,

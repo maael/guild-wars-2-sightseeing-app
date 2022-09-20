@@ -54,7 +54,7 @@ export default function GroupLeaderboardScreen() {
             <div className="flex flex-row gap-2 justify-center items-center">
               <FaClock />
               {d.updatedAt
-                ? format(new Date(d.updatedAt), "hh:mm dd/MM/yy")
+                ? format(new Date(d.updatedAt), "HH:mm dd/MM/yy")
                 : null}
             </div>
           </div>

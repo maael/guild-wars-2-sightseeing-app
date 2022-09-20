@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { fetch, ResponseType } from "@tauri-apps/api/http";
 
-export const API_URL = "https://gw2-sightseeing-api.mael.tech";
+export const API_URL = "http://localhost:3001";
 
 export const fetchWithKey: typeof fetch = async (path, options) => {
   let opts = options || { method: "GET" };

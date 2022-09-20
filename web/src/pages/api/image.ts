@@ -38,36 +38,40 @@ async function getUploadPipe(
   buf: Buffer
 ): Promise<{ name: string; file: File; info: { filename: string; encoding: string; mimeType: string } }> {
   return new Promise((resolve, reject) => {
-    const bufStream = getBufferStream(buf)
+    try {
+      const bufStream = getBufferStream(buf)
 
-    let processedFile: any
+      let processedFile: any
 
-    const bb = busboy({
-      headers,
-    })
+      const bb = busboy({
+        headers,
+      })
 
-    bb.on('file', (name, file, info) => {
-      console.info('[image:upload:file]', name)
-      processedFile = { name, file, info }
-      bb.end()
-      resolve(processedFile)
-    })
+      bb.on('file', (name, file, info) => {
+        console.info('[image:upload:file]', name)
+        processedFile = { name, file, info }
+        bb.end()
+        resolve(processedFile)
+      })
 
-    bb.on('error', (err) => {
-      console.info('[image:upload:err]', err)
-      reject(err)
-    })
+      bb.on('error', (err) => {
+        console.info('[image:upload:err]', err)
+        reject(err)
+      })
 
-    bb.on('finish', () => {
-      console.info('[image:upload:finish]')
-    })
+      bb.on('finish', () => {
+        console.info('[image:upload:finish]')
+      })
 
-    bb.on('close', () => {
-      console.info('[image:upload:close]')
-      resolve(processedFile)
-    })
+      bb.on('close', () => {
+        console.info('[image:upload:close]')
+        resolve(processedFile)
+      })
 
-    bufStream.pipe(bb)
+      bufStream.pipe(bb)
+    } catch (e) {
+      reject(e)
+    }
   })
 }
 
@@ -100,7 +104,12 @@ async function upload(headers: any, groupId: string, buf: Buffer): Promise<S3.Ma
 }
 
 const handler: NextApiHandler = async (req, res) => {
-  console.info('[image:upload:headers]', req.headers)
+  console.info('[image:upload:headers]', {
+    'content-type': req.headers['content-type'],
+    'content-length': req.headers['content-length'],
+    'content-disposition': req.headers['content-disposition'],
+    'content-encoding': req.headers['content-encoding'],
+  })
   try {
     const groupId = req.query.groupId?.toString()
     console.info('[image:upload:start]', { groupId })
