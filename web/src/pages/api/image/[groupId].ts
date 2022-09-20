@@ -1,8 +1,9 @@
-import { NextApiHandler, NextApiRequest } from 'next'
+import { NextApiHandler } from 'next'
+import type { Readable } from 'node:stream'
 import AWS, { S3 } from 'aws-sdk'
 import { v4 as uuid } from 'uuid'
 import busboy from 'busboy'
-import S3Stream from 's3-upload-stream'
+import stream from 'stream'
 
 AWS.config.update({
   region: process.env.S3_UPLOAD_REGION,
@@ -12,53 +13,97 @@ AWS.config.update({
 
 const s3 = new S3({ apiVersion: '2006-03-01' })
 
-const s3Stream = S3Stream(s3)
+async function buffer(readable: Readable) {
+  const chunks: any[] = []
+  for await (const chunk of readable) {
+    chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk)
+  }
+  return Buffer.concat(chunks)
+}
 
-async function uploadFile(req: NextApiRequest): Promise<{ Location: string }> {
-  const groupId = req.query.groupId?.toString()
-  console.info('[image:upload:start]', { groupId })
-  const key = `${groupId}/${uuid()}.jpg`
-  const upload = s3Stream.upload({
-    Bucket: `${process.env.S3_UPLOAD_BUCKET}`,
-    Key: key,
-    Metadata: {
-      GroupId: groupId,
-    },
-  })
+function getBufferStream(buf: Buffer) {
+  const bufferStream = new stream.PassThrough()
+  bufferStream.end(buf)
+  return bufferStream
+}
+
+async function getUploadPipe(
+  headers: any,
+  buf: Buffer
+): Promise<{ name: string; file: File; info: { filename: string; encoding: string; mimeType: string } }> {
   return new Promise((resolve, reject) => {
-    const bb = busboy({ headers: req.headers })
-    let error: any
-    bb.on('file', (_, file) => {
-      console.info('[image:upload:file]', file)
-      file.pipe(upload)
+    const bufStream = getBufferStream(buf)
+
+    let processedFile: any
+
+    const bb = busboy({
+      headers,
     })
+
+    bb.on('file', (name, file, info) => {
+      console.info('[image:upload:file]', name)
+      processedFile = { name, file, info }
+      bb.end()
+      resolve(processedFile)
+    })
+
     bb.on('error', (err) => {
-      error = err
-      console.error('[image:upload:error]', err)
+      console.info('[image:upload:err]', err)
       reject(err)
     })
-    bb.on('end', () => {
-      console.error('[image:upload:end]')
-    })
+
     bb.on('finish', () => {
-      console.error('[image:upload:finish]')
+      console.info('[image:upload:finish]')
     })
+
     bb.on('close', () => {
-      console.info('[image:upload:close]', { groupId, key, error })
-      if (error) return
-      resolve({
-        Location: `https://${process.env.S3_UPLOAD_BUCKET}.s3.${process.env.S3_UPLOAD_REGION}.amazonaws.com/${key}`,
-      })
+      console.info('[image:upload:close]')
+      resolve(processedFile)
     })
-    req.pipe(bb)
+
+    bufStream.pipe(bb)
+  })
+}
+
+async function upload(headers: any, groupId: string, buf: Buffer): Promise<S3.ManagedUpload.SendData> {
+  const key = `${groupId}/${uuid()}.jpg`
+
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
+    console.info('[upload:start]')
+    const { file, info } = await getUploadPipe(headers, buf)
+    s3.upload(
+      {
+        Bucket: `${process.env.S3_UPLOAD_BUCKET}`,
+        Key: key,
+        Body: file,
+        ContentType: info.mimeType,
+        Metadata: {
+          GroupId: groupId,
+        },
+      },
+      (err, data) => {
+        if (err) {
+          return reject(err)
+        }
+        console.info('[upload:resolve]')
+        resolve(data)
+      }
+    )
   })
 }
 
 const handler: NextApiHandler = async (req, res) => {
+  console.info('[image:upload:headers]', req.headers)
   try {
-    const result = await uploadFile(req)
+    const groupId = req.query.groupId?.toString()
+    console.info('[image:upload:start]', { groupId })
+    const buf = await buffer(req)
+    const result = await upload(req.headers, groupId, buf)
+    console.info('[image:upload:done]', { groupId, location: result?.Location })
     res.json(result)
   } catch (e) {
+    console.error('[image:upload:error]', e)
     res.status(500).json({ error: e.message })
   }
 }
