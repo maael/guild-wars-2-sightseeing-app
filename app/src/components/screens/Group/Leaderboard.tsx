@@ -47,15 +47,33 @@ export default function GroupLeaderboardScreen() {
                   : "rgba(55, 45, 35, 0.8)",
             }}
           >
-            <div className="flex-1 flex flex-row gap-2 items-center">
+            <div className="flex-1 flex flex-row gap-2 items-center text-ellipsis overflow-hidden whitespace-nowrap">
               <FaUser />
               {d.accountName}
             </div>
-            <div className="flex flex-row gap-2 justify-center items-center">
-              <FaClock />
-              {d.updatedAt
-                ? format(new Date(d.updatedAt), "HH:mm dd/MM/yy")
-                : null}
+            <div
+              className="px-2 sm:px-6 text-center"
+              title={`${d.completedItems} completed of ${d.totalItems}`}
+            >
+              {((d.completedItems / (d.totalItems || 1)) * 100).toFixed(0)}%
+            </div>
+            <div className="flex flex-row gap-1 sm:gap-2 justify-end items-center">
+              <FaClock className="" />
+              <time
+                title={`Updated at ${
+                  d.updatedAt
+                    ? format(new Date(d.updatedAt), "HH:mm dd/MM/yy")
+                    : ""
+                }`}
+              >
+                <span className="hidden sm:inline-block">
+                  {d.updatedAt ? format(new Date(d.updatedAt), "HH:mm") : null}
+                </span>
+                {d.updatedAt ? format(new Date(d.updatedAt), "dd/MM") : null}
+                <span className="hidden sm:inline-block">
+                  {d.updatedAt ? format(new Date(d.updatedAt), "/yy") : null}
+                </span>
+              </time>
             </div>
           </div>
         ))}
