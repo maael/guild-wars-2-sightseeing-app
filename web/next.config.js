@@ -1,5 +1,8 @@
 /* eslint-disable no-undef */
 module.exports = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   async headers() {
     return [
       {

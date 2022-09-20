@@ -5,6 +5,12 @@ import { v4 as uuid } from 'uuid'
 import busboy from 'busboy'
 import stream from 'stream'
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+}
+
 AWS.config.update({
   region: process.env.S3_UPLOAD_REGION,
   accessKeyId: process.env.S3_UPLOAD_KEY,
@@ -109,9 +115,3 @@ const handler: NextApiHandler = async (req, res) => {
 }
 
 export default handler
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
