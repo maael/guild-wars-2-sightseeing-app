@@ -10,6 +10,7 @@ const getOne: OneHandler<CompletionType[]> = async ({ id }) => {
     { $match: { groupId: new mongoose.Types.ObjectId(id) } },
     { $set: { totalItems: groupItems, completedItems: { $size: '$items' } } },
     { $sort: { updatedAt: 1, completedItems: -1 } },
+    { $limit: 1000 },
   ])
 }
 
