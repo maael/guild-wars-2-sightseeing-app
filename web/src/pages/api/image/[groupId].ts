@@ -30,12 +30,25 @@ async function uploadFile(req: NextApiRequest): Promise<{ Location: string }> {
   upload.maxPartSize(EIGHT_MB)
   return new Promise((resolve, reject) => {
     const bb = busboy({ headers: req.headers })
+    let error: any
     bb.on('file', (_, file) => {
+      console.info('[image:upload:file]', file)
       file.pipe(upload)
     })
-    bb.on('error', reject)
+    bb.on('error', (err) => {
+      error = err
+      console.error('[image:upload:error]', err)
+      reject(err)
+    })
+    bb.on('end', () => {
+      console.error('[image:upload:end]')
+    })
+    bb.on('finish', () => {
+      console.error('[image:upload:finish]')
+    })
     bb.on('close', () => {
-      console.info('[image:upload:done]', { groupId, key })
+      console.info('[image:upload:close]', { groupId, key, error })
+      if (error) return
       resolve({
         Location: `https://${process.env.S3_UPLOAD_BUCKET}.s3.${process.env.S3_UPLOAD_REGION}.amazonaws.com/${key}`,
       })
@@ -49,8 +62,7 @@ const handler: NextApiHandler = async (req, res) => {
     const result = await uploadFile(req)
     res.json(result)
   } catch (e) {
-    console.error('[image:upload:error]', e)
-    res.json({ error: e.message })
+    res.status(500).json({ error: e.message })
   }
 }
 
