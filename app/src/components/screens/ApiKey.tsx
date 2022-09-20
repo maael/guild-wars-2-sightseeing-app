@@ -43,8 +43,7 @@ function useApiAccountInfo() {
         localStorage.setItem("gw2-account", data?.accountData?.name);
         setApiAccountInfo(data);
       } catch (e) {
-        console.error("[useApiAccountInfo:error]", e);
-        Sentry.captureException(e);
+        console.warn("[useApiAccountInfo:error]", e);
       }
     })();
   }, []);
@@ -59,10 +58,14 @@ export default function EnterApiKeyScreen() {
     console.info("[apiAccountInfo]", apiAccountInfo);
     if (apiAccountInfo && apiAccountInfo.accountData?.name) {
       const username = apiAccountInfo.accountData?.name || undefined;
+      localStorage.setItem("gw2-account", username || "");
       console.info("[username]", username);
-      Sentry.setUser({
-        username,
-      });
+      if (username) {
+        Sentry.setUser({
+          username,
+        });
+      }
+      console.info("[navigate]", "/groups");
       nav("/groups");
     }
   }, [apiAccountInfo]);

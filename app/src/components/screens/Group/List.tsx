@@ -19,6 +19,7 @@ export default function GroupListScreen() {
       ).then((res) => res.data),
     {
       onError: (e) => {
+        console.info("[groups:error]", e);
         Sentry.captureException(e);
       },
     }
@@ -32,6 +33,7 @@ export default function GroupListScreen() {
       ).then((res) => res.data),
     {
       onError: (e) => {
+        console.info("[completions:error]", e);
         Sentry.captureException(e);
       },
     }
@@ -123,9 +125,9 @@ function Item({
       <div
         style={{
           backgroundImage: "url(/ui/windowbg-glyphs.png)",
-          backgroundSize: "100%",
+          backgroundSize: "100% 100%",
         }}
-        className="h-28 bg-no-repeat bg-top relative"
+        className="h-28 bg-no-repeat bg-top relative pb-1 px-1"
       >
         <div
           className={cls("p-2 flex flex-col gap-1 h-full", {

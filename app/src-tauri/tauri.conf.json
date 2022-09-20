@@ -16,11 +16,15 @@
         "asset": true,
         "assetScope": ["$DOCUMENT/Guild Wars 2/Screens/*"]
       },
+      "shell": {
+        "open": true
+      },
       "fs": {
         "scope": ["*"],
         "readDir": true,
         "readFile": true,
-        "writeFile": true
+        "writeFile": true,
+        "removeFile": true
       },
       "http": {
         "scope": [
