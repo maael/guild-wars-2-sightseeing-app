@@ -14,8 +14,6 @@ const s3 = new S3({ apiVersion: '2006-03-01' })
 
 const s3Stream = S3Stream(s3)
 
-const EIGHT_MB = 2e6 * 4
-
 async function uploadFile(req: NextApiRequest): Promise<{ Location: string }> {
   const groupId = req.query.groupId?.toString()
   console.info('[image:upload:start]', { groupId })
@@ -27,7 +25,6 @@ async function uploadFile(req: NextApiRequest): Promise<{ Location: string }> {
       GroupId: groupId,
     },
   })
-  upload.maxPartSize(EIGHT_MB)
   return new Promise((resolve, reject) => {
     const bb = busboy({ headers: req.headers })
     let error: any
