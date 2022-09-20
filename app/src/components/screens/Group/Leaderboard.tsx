@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import format from "date-fns/format";
-import { FaClock, FaSpinner, FaUser } from "react-icons/fa";
+import { FaCheckCircle, FaClock, FaSpinner, FaUser } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import * as Sentry from "@sentry/react";
 import { API_URL, fetchWithKey } from "../../../util";
@@ -48,17 +48,20 @@ export default function GroupLeaderboardScreen() {
             }}
           >
             <div className="flex-1 flex flex-row gap-2 items-center text-ellipsis overflow-hidden whitespace-nowrap">
-              <FaUser />
+              <FaUser className="text-white text-opacity-80" />
               {d.accountName}
             </div>
             <div
-              className="px-2 sm:px-6 text-center"
+              className="px-2 sm:px-6 text-center flex flex-row justify-center items-center gap-1"
               title={`${d.completedItems} completed of ${d.totalItems}`}
             >
+              {d.completedItems >= d.totalItems ? (
+                <FaCheckCircle className="text-green-500 text-opacity-80" />
+              ) : null}
               {((d.completedItems / (d.totalItems || 1)) * 100).toFixed(0)}%
             </div>
-            <div className="flex flex-row gap-1 sm:gap-2 justify-end items-center">
-              <FaClock className="" />
+            <div className="flex flex-row gap-1 sm:gap-3 justify-end items-center">
+              <FaClock className="text-white text-opacity-80" />
               <time
                 title={`Updated at ${
                   d.updatedAt
@@ -66,7 +69,7 @@ export default function GroupLeaderboardScreen() {
                     : ""
                 }`}
               >
-                <span className="hidden sm:inline-block">
+                <span className="hidden sm:inline-block mr-2">
                   {d.updatedAt ? format(new Date(d.updatedAt), "HH:mm") : null}
                 </span>
                 {d.updatedAt ? format(new Date(d.updatedAt), "dd/MM") : null}
