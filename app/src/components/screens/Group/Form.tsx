@@ -110,7 +110,7 @@ export default function GroupFormScreen() {
       <PageHeader
         className="pt-12 sm:pt-0"
         rightAction={
-          <Button onClick={save} disabled={saving} className="shadow-md">
+          <Button onClick={save} disabled={saving} className="shadow-md mr-3">
             {saving ? <FaSpinner className="animate-spin" /> : <FaSave />} Save
           </Button>
         }
