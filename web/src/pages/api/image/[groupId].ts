@@ -1,7 +1,8 @@
 import { NextApiHandler, NextApiRequest } from 'next'
 import AWS, { S3 } from 'aws-sdk'
 import { v4 as uuid } from 'uuid'
-import multer from 'multer'
+import busboy from 'busboy'
+import S3Stream from 's3-upload-stream'
 
 AWS.config.update({
   region: process.env.S3_UPLOAD_REGION,
@@ -11,54 +12,44 @@ AWS.config.update({
 
 const s3 = new S3({ apiVersion: '2006-03-01' })
 
-const EIGHT_MB = 2e6 * 4
-const uploadMiddleware = multer({
-  dest: 'uploads/',
-  storage: multer.memoryStorage(),
-  limits: {
-    fields: 4,
-    files: 1,
-    fileSize: EIGHT_MB,
-    fieldNameSize: 10,
-  },
-})
+const s3Stream = S3Stream(s3)
 
-async function getFile(req: NextApiRequest): Promise<{ buffer: Buffer; mimetype?: string }> {
+const EIGHT_MB = 2e6 * 4
+
+async function uploadFile(req: NextApiRequest): Promise<{ Location: string }> {
+  const groupId = req.query.groupId?.toString()
+  console.info('[image:upload:start]', { groupId })
+  const key = `${groupId}/${uuid()}.jpg`
+  const upload = s3Stream.upload({
+    Bucket: `${process.env.S3_UPLOAD_BUCKET}`,
+    Key: key,
+    Metadata: {
+      GroupId: groupId,
+    },
+  })
+  upload.maxPartSize(EIGHT_MB)
   return new Promise((resolve, reject) => {
-    uploadMiddleware.single('image')(req, {}, async (err) => {
-      console.info(req.body)
-      if (err) {
-        reject(err)
-        return
-      }
-      resolve((req as any).file)
+    const bb = busboy({ headers: req.headers })
+    bb.on('file', (_, file) => {
+      file.pipe(upload)
     })
+    bb.on('error', reject)
+    bb.on('close', () => {
+      console.info('[image:upload:done]', { groupId, key })
+      resolve({
+        Location: `https://${process.env.S3_UPLOAD_BUCKET}.s3.${process.env.S3_UPLOAD_REGION}.amazonaws.com/${key}`,
+      })
+    })
+    req.pipe(bb)
   })
 }
 
 const handler: NextApiHandler = async (req, res) => {
-  const groupId = req.query.groupId!.toString()
-  console.info('[image]', { groupId })
-  const file = await getFile(req)
-  if (!file) {
-    res.status(400).json({ error: 'File required' })
-    return
-  }
-  const uploadParams: S3.PutObjectRequest = {
-    Bucket: `${process.env.S3_UPLOAD_BUCKET}`,
-    Key: `${groupId}/${uuid()}.jpg`,
-    Body: file.buffer,
-    ContentType: file.mimetype || 'image/jpg',
-    Metadata: {
-      GroupId: groupId,
-    },
-  }
   try {
-    const result = await s3.upload(uploadParams).promise()
-    console.info(result)
+    const result = await uploadFile(req)
     res.json(result)
   } catch (e) {
-    console.error(e)
+    console.error('[image:upload:error]', e)
     res.json({ error: e.message })
   }
 }

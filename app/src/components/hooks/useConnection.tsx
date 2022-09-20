@@ -17,9 +17,10 @@ export function Provider({ children }: React.PropsWithChildren) {
   const [{ connection }, setConnection] = React.useState<Partial<ConnData>>({});
   React.useEffect(() => {
     const interval = setInterval(async () => {
+      let raw: string = "";
       try {
-        const raw: string = await invoke("get_mumble");
-        console.info("[useConnection:mumble]", raw);
+        raw = await invoke("get_mumble");
+        console.info("[useConnection:mumble]");
         const data = JSON.parse(raw || "{}");
         console.info("[useConnection:parsed]", data);
         const status =
@@ -36,7 +37,7 @@ export function Provider({ children }: React.PropsWithChildren) {
           setConnection,
         });
       } catch (e) {
-        console.error("[useConnection:error]", e);
+        console.error("[useConnection:error]", e, raw);
         Sentry.captureException(e);
         setConnection((c) => ({
           connection: {

@@ -12,7 +12,7 @@ export const fetchWithKey: typeof fetch = async (path, options) => {
       localStorage.getItem("gw2-account");
     try {
       const mumbleInfo = await invoke("get_mumble").then((r) =>
-        JSON.parse(r as string)
+        JSON.parse((r as string) || "{}")
       );
       (opts.headers as any)["X-GW2-CHARACTER"] = mumbleInfo?.identity?.name;
     } catch (e) {

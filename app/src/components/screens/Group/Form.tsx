@@ -106,7 +106,7 @@ export default function GroupFormScreen() {
   }
 
   return (
-    <div className="px-2 overflow-x-hidden">
+    <div className="px-2 overflow-x-hidden py-3">
       <PageHeader
         className="pt-12 sm:pt-0"
         rightAction={
