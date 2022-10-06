@@ -48,3 +48,41 @@ export async function resetSettings() {
     console.warn(e);
   }
 }
+
+function mapCoords(cr: any, mr: any, p: [number, number]) {
+  return [
+    Math.round(
+      cr[0][0] +
+        ((cr[1][0] - cr[0][0]) * (p[0] - mr[0][0])) / (mr[1][0] - mr[0][0])
+    ),
+    Math.round(
+      cr[0][1] +
+        (cr[1][1] - cr[0][1]) * (1 - (p[1] - mr[0][1]) / (mr[1][1] - mr[0][1]))
+    ),
+  ];
+}
+
+/** Do we need to do this? Doesn't seem to change the produced coords */
+const M_TO_INCHES = 39.3701;
+
+export async function getGeoCoords(mumbleData: any) {
+  console.info("==============================");
+  console.info("========= Geo Coords =========");
+  console.info("==============================");
+  const mapData: any = await fetch(
+    `https://api.guildwars2.com/v2/maps/${mumbleData?.context?.map_id}`
+  ).then((res) => res.data);
+  console.info("[Map]", mapData);
+  console.info("[Rects]", mapData?.continent_rect, mapData?.map_rect);
+  const locationInInches = {
+    x: (mumbleData?.avatar?.position || [])[0] * M_TO_INCHES,
+    y: (mumbleData?.avatar?.position || [])[2] * M_TO_INCHES,
+  };
+  const scaled = mapCoords(mapData?.continent_rect, mapData?.map_rect, [
+    locationInInches.x,
+    locationInInches.y,
+  ]);
+  console.info("[Scaled]", scaled);
+  console.info("==============================");
+  return scaled;
+}

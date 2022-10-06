@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/react";
 import { Body, fetch } from "@tauri-apps/api/http";
 import App from "./App";
 import "./style.css";
-import { resetSettings } from "./util";
+// import { resetSettings } from "./util";
 
 Sentry.init({
   dsn: "https://aceac5b32b7c482d81fc038a64075e05@o304997.ingest.sentry.io/6756834",
@@ -43,10 +43,10 @@ Sentry.init({
     ),
 });
 
-resetSettings().then(() => {
-  ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
-  );
-});
+// resetSettings().then(() => {
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+// });

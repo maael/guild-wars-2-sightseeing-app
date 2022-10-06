@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import React from "react";
 import * as Sentry from "@sentry/react";
+import { getGeoCoords } from "../../util";
 
 const ConnectionContext = React.createContext<Partial<ConnData>>({});
 ConnectionContext.displayName = "ConnectionContext";
@@ -23,6 +24,8 @@ export function Provider({ children }: React.PropsWithChildren) {
         console.info("[useConnection:mumble]");
         const data = JSON.parse(raw || "{}");
         console.info("[useConnection:parsed]", data);
+        // TODO: Remove
+        void getGeoCoords(data);
         const status =
           data && Object.keys(data).length > 0
             ? !!data.error
@@ -47,7 +50,7 @@ export function Provider({ children }: React.PropsWithChildren) {
           setConnection,
         }));
       }
-    }, 2_000);
+    }, 5_000);
     return () => {
       clearInterval(interval);
     };
