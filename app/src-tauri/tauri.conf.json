@@ -33,7 +33,8 @@
           "http://localhost:3001/*",
           "https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com/*",
           "https://gw2-sightseeing-api.mael.tech/*",
-          "https://o304997.ingest.sentry.io/*"
+          "https://o304997.ingest.sentry.io/*",
+          "https://gw2-sightseeing.maael.xyz/*"
         ],
         "all": true
       },
@@ -86,7 +87,7 @@
       }
     },
     "security": {
-      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com"
+      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com https://gw2-sightseeing.maael.xyz"
     },
     "updater": {
       "active": false
