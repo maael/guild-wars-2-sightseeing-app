@@ -66,14 +66,9 @@ function mapCoords(cr: any, mr: any, p: [number, number]) {
 const M_TO_INCHES = 39.3701;
 
 export async function getGeoCoords(mumbleData: any) {
-  console.info("==============================");
-  console.info("========= Geo Coords =========");
-  console.info("==============================");
   const mapData: any = await fetch(
     `https://api.guildwars2.com/v2/maps/${mumbleData?.context?.map_id}`
   ).then((res) => res.data);
-  console.info("[Map]", mapData);
-  console.info("[Rects]", mapData?.continent_rect, mapData?.map_rect);
   const locationInInches = {
     x: (mumbleData?.avatar?.position || [])[0] * M_TO_INCHES,
     y: (mumbleData?.avatar?.position || [])[2] * M_TO_INCHES,
@@ -82,7 +77,5 @@ export async function getGeoCoords(mumbleData: any) {
     locationInInches.x,
     locationInInches.y,
   ]);
-  console.info("[Scaled]", scaled);
-  console.info("==============================");
   return scaled;
 }

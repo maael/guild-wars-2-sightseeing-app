@@ -64,6 +64,7 @@ export interface ItemType {
   imageUrl?: string
   precision: number
   position: [number, number, number]
+  metadata?: any
   owner: GroupDocument
 }
 

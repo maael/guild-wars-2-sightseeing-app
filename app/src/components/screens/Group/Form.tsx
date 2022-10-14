@@ -18,7 +18,7 @@ import { GroupType, WithRating, GroupDocument, ItemType } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 import Input from "../../primitives/Input";
 import Button from "../../primitives/Button";
-import { API_URL, fetchWithKey } from "../../../util";
+import { API_URL, fetchWithKey, getGeoCoords } from "../../../util";
 import { useLocalImageHook } from "../../hooks/useLocalImage";
 import { difficultyMap } from "../../primitives/Difficulty";
 
@@ -220,6 +220,7 @@ export default function GroupFormScreen() {
                       ),
                     ]);
                     console.info("[img]", { src, fileSrc });
+                    const geocoords = await getGeoCoords(data);
                     setGroup((g) => {
                       const newItems = g.items
                         .slice(0, i)
@@ -229,6 +230,9 @@ export default function GroupFormScreen() {
                           position: data.avatar.position.map((p: number) =>
                             Number(p.toFixed(4))
                           ),
+                          metadata: {
+                            geocoords,
+                          },
                         } as any)
                         .concat(g.items.slice(i + 1));
                       return { ...g, items: newItems };

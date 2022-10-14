@@ -24,8 +24,6 @@ export function Provider({ children }: React.PropsWithChildren) {
         console.info("[useConnection:mumble]");
         const data = JSON.parse(raw || "{}");
         console.info("[useConnection:parsed]", data);
-        // TODO: Remove
-        void getGeoCoords(data);
         const status =
           data && Object.keys(data).length > 0
             ? !!data.error

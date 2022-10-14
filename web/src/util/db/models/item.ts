@@ -29,6 +29,9 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
       type: [Number],
       default: [0, 0, 0],
     },
+    metadata: {
+      type: Schema.Types.Mixed,
+    },
     owner: {
       type: Schema.Types.ObjectId,
       ref: 'Group',
