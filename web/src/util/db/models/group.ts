@@ -1,8 +1,6 @@
-import { Schema, Model, PaginateModel } from 'mongoose'
-import { connect } from '../mongo'
+import mongoose, { Schema, Model, PaginateModel } from 'mongoose'
+import paginate from 'mongoose-paginate-v2'
 import { GroupDocument } from '../../../types'
-
-const connection = connect()
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ItemModel extends Model<GroupDocument> {}
@@ -63,6 +61,8 @@ const itemSchema = new Schema<GroupDocument, ItemModel>(
   }
 )
 
-const Item = connection.model<GroupDocument, PaginateModel<ItemModel>>('Group', itemSchema)
+itemSchema.plugin(paginate)
+
+const Item = mongoose.models.Group || mongoose.model<GroupDocument, PaginateModel<ItemModel>>('Group', itemSchema)
 
 export default Item

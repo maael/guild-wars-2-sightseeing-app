@@ -51,22 +51,45 @@ export async function enhanceGroupsWithRatings(groups: GroupDocument[], gw2Accou
 
 const getOne: OneHandler<GroupType> = async ({ id, gw2 }) => {
   const [item, pageRatings] = await Promise.all([
-    Group.findOne({ _id: id, isActive: true }).lean().populate('items'),
+    Group.findOne<GroupType>({ _id: id, isActive: true }).lean().populate('items'),
     getPageRatings([new mongoose.Types.ObjectId(id)], gw2?.account),
   ])
   if (!item) return item
   const info = pageRatings.get(id) || { avg: 0, count: 0 }
   ;(item as any).rating = info
-  return item as unknown as GroupType
+  ;(item.items as any) = item.items.map((i) => {
+    return {
+      ...i,
+      imageUrl: i.imageUrl?.replace(
+        'https://s3.us-west-2.amazonaws.com/gw2-sightseeing.maael.xyz',
+        'https://gw2-sightseeing.maael.xyz'
+      ),
+    }
+  })
+  return item
 }
 
 const getMany: ManyHandler<GroupType> = async ({ limit = 100, offset = 0, page = 1, gw2 }) => {
-  const results = await Group.paginate(
+  const results = await (Group as any).paginate(
     { isActive: true },
     { limit, offset, page, populate: 'items', lean: true, leanWithId: true, sort: { createdAt: -1 } }
   )
 
   results.docs = await enhanceGroupsWithRatings(results.docs as any, gw2?.account)
+  results.docs = results.docs.map((d) => {
+    return {
+      ...d,
+      items: d?.items?.map((i) => {
+        return {
+          ...i,
+          imageUrl: i.imageUrl?.replace(
+            'https://s3.us-west-2.amazonaws.com/gw2-sightseeing.maael.xyz',
+            'https://gw2-sightseeing.maael.xyz'
+          ),
+        }
+      }),
+    }
+  })
 
   return results as any
 }

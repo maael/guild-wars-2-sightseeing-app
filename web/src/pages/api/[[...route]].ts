@@ -1,5 +1,6 @@
 import { NextApiHandler } from 'next'
 import functionsMap from '~/util/functions/modelFunctions'
+import dbConnect from '~/util/db/mongo'
 
 const handler: NextApiHandler = async (req, res) => {
   const [type, id] = (req.query as any).route || []
@@ -25,6 +26,7 @@ const handler: NextApiHandler = async (req, res) => {
       character: req.headers['x-gw2-character'],
     }
     console.info({ gw2 })
+    await dbConnect()
     const results = await matchedFunction({ id, limit, page, offset, gw2, body: req.body || {} })
     res.json(results)
   } catch (e) {

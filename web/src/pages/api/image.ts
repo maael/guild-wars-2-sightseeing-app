@@ -68,7 +68,13 @@ const handler: NextApiHandler = async (req, res) => {
     console.info('[image:upload:start]', { groupId })
     const buf = await buffer(req)
     const result = await upload(groupId, buf)
-    console.info('[image:upload:done]', { groupId, location: result?.Location })
+    console.info('[image:upload:done]', {
+      groupId,
+      location: result?.Location.replace(
+        'https://s3.us-west-2.amazonaws.com/gw2-sightseeing.maael.xyz',
+        'https://gw2-sightseeing.maael.xyz'
+      ),
+    })
     res.json(result)
   } catch (e) {
     console.error('[image:upload:error]', e)
