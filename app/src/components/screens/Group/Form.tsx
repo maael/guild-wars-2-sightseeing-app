@@ -232,6 +232,7 @@ export default function GroupFormScreen() {
                           ),
                           metadata: {
                             geocoords,
+                            mapId: data.context?.map_id,
                           },
                         } as any)
                         .concat(g.items.slice(i + 1));
