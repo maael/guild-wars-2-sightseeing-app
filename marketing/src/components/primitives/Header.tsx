@@ -19,7 +19,7 @@ export default function Header({ fathom }: { fathom: typeof Fathom }) {
       <div className="flex flex-row gap-2">
         <a
           className="button"
-          href="https://github.com/maael/guild-wars-2-sightseeing-app/releases/latest/download/giveaway-o-tron.zip"
+          href="https://github.com/maael/guild-wars-2-sightseeing-app/releases/latest/download/Guild.Wars.2.Sightseeing.exe"
           onClick={() => fathom.trackGoal('BI8YGHQY', 0)}
         >
           <FaDownload /> Download

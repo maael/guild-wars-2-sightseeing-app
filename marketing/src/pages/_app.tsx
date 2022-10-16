@@ -20,7 +20,7 @@ function App({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         <meta name="theme-color" content="#1A1B1C" />
       </Head>
       <DefaultSeo {...SEO} />
-      <div className="flex flex-col gap-5 px-10 lg:px-3 mx-auto max-w-6xl pt-3 pb-2">
+      <div className="flex flex-col gap-2 px-10 lg:px-3 mx-auto max-w-6xl pt-3 pb-2">
         <Component {...pageProps} fathom={fathom} />
       </div>
     </>
