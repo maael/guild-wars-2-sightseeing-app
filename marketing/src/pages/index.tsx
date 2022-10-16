@@ -8,7 +8,9 @@ export default function Index({ fathom }) {
       <Header fathom={fathom} />
       <div>
         <div className="w-full md:w-2/3 relative aspect-video mx-auto shadow-[0_3px_40px_5px_rgba(0,0,0,0.3)] shadow-gray-500 -mt-8 md:-mt-2">
-          <video src="/videos/sightseeing-example.mp4" controls muted autoPlay />
+          <video controls muted autoPlay>
+            <source src="/videos/sightseeing-example.mp4" type="video/mp4" />
+          </video>
         </div>
       </div>
       <div className="py-10 flex flex-col gap-6 justify-center items-center mx-auto text-center -mt-4 -mb-6">
