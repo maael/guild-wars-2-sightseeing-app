@@ -1,0 +1,32 @@
+@import 'variables.css';
+@import 'utilities.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'mdx.css';
+
+html,
+body,
+div#__next,
+div#__next > div {
+  height: 100%;
+  cursor: url(/cursors/default.cur), default;
+}
+
+body {
+  background-image: url(/ui/windowbg-glyphs.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  font-family: Cagliostro, Arial, Helvetica, sans-serif;
+  @apply bg-gray-900 text-white;
+}
+
+button,
+a,
+.button,
+.cursor-pointer {
+  cursor: url(/cursors/green.cur), pointer;
+}
