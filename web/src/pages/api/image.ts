@@ -38,6 +38,7 @@ async function upload(groupId: string, buf: Buffer): Promise<S3.ManagedUpload.Se
           Key: key,
           Body: buf,
           ContentType: 'image/jpeg',
+          CacheControl: 'max-age=2419200, immutable',
           Metadata: {
             GroupId: groupId,
           },
