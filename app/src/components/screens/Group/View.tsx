@@ -12,7 +12,6 @@ import {
   FaUser,
 } from "react-icons/fa";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
 import cls from "classnames";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Body } from "@tauri-apps/api/http";
@@ -31,6 +30,7 @@ import Button from "../../primitives/Button";
 import Difficulty from "../../primitives/Difficulty";
 import PageHeader from "../../primitives/PageHeader";
 import Rating from "../../primitives/Rating";
+import customToast from "../../primitives/CustomToast";
 
 const customStyles = {
   content: {
@@ -163,7 +163,7 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
         if (newMatches && newMatches.length > 0) {
           bellSound.play();
           for (const match of newMatches) {
-            toast.success(`Found ${match.name}!`);
+            customToast("success", `Found ${match.name}!`);
           }
           setGroupMatches(
             (m) => new Set([...m, ...(newMatches?.map((v) => v._id) || [])])
@@ -265,7 +265,7 @@ export default function GroupViewScreen() {
                     nav("/groups");
                   } catch (e) {
                     console.error(e);
-                    toast.error(`Error deleting, please try again`);
+                    customToast("error", `Error deleting, please try again`);
                   }
                 }}
               >

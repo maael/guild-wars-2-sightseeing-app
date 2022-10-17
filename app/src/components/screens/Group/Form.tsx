@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Body } from "@tauri-apps/api/http";
-import toast from "react-hot-toast";
 import cls from "classnames";
 import {
   FaCamera,
@@ -21,6 +20,7 @@ import Button from "../../primitives/Button";
 import { API_URL, fetchWithKey, getGeoCoords } from "../../../util";
 import { useLocalImageHook } from "../../hooks/useLocalImage";
 import { difficultyMap } from "../../primitives/Difficulty";
+import customToast from "../../primitives/CustomToast";
 
 export default function GroupFormScreen() {
   const nav = useNavigate();
@@ -91,7 +91,7 @@ export default function GroupFormScreen() {
     } catch (e) {
       Sentry.captureException(e);
       console.error(e);
-      toast.error(`Error saving, please try again!`);
+      customToast("error", `Error saving, please try again!`);
     } finally {
       setSaving(false);
     }

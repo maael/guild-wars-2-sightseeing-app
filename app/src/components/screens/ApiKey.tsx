@@ -4,10 +4,10 @@ import { BaseDirectory, readTextFile, writeTextFile } from "@tauri-apps/api/fs";
 import { resolveResource } from "@tauri-apps/api/path";
 import { fetch } from "@tauri-apps/api/http";
 import { FaSave } from "react-icons/fa";
-import toast from "react-hot-toast";
 import * as Sentry from "@sentry/react";
 import Input from "../primitives/Input";
 import Button from "../primitives/Button";
+import customToast from "../primitives/CustomToast";
 
 function useApiAccountInfo() {
   const [apiAccountInfo, setApiAccountInfo] = React.useState<{
@@ -132,7 +132,8 @@ export default function EnterApiKeyScreen() {
           } catch (e) {
             console.error("[EnterApiKeyScreen:submit]", e);
             Sentry.captureException(e);
-            toast.error(
+            customToast(
+              "error",
               "There was a problem getting your account information, please try again"
             );
             setError(e as Error);

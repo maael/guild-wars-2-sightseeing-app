@@ -65,6 +65,20 @@ body:before {
   background-position: center 0px;
 }
 
+.bg-brushed-brown {
+  background-image: url(/ui/windowbg-brushed.png);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center 0px;
+}
+
+.bg-brushed-black {
+  background-image: url(/ui/windowbg-glyphs.png);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center 0px;
+}
+
 *::-webkit-scrollbar {
   width: 10px;
 }

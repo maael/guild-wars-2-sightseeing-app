@@ -22,7 +22,7 @@ function App() {
             <InnerApp />
           </Router>
         </div>
-        <Toaster />
+        <Toaster toastOptions={{ position: "bottom-center" }} />
       </ConnectionProvider>
     </QueryClientProvider>
   );
