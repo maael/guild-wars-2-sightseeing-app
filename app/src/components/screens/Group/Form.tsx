@@ -76,13 +76,18 @@ export default function GroupFormScreen() {
             );
             imageUrl = result;
           }
+          const { __v, ...remaining } = i;
           return {
-            ...i,
+            ...remaining,
             imageUrl,
           };
         })
       );
-      const embellishedGroup = { ...group, items: embellishedGroupItems };
+      const { __v, ...remainingGroup } = group as any;
+      const embellishedGroup = {
+        ...remainingGroup,
+        items: embellishedGroupItems,
+      };
       await fetchWithKey(`${API_URL}/api/groups${id ? `/${id}` : ""}`, {
         method: id ? "PUT" : "POST",
         body: Body.json(embellishedGroup),
