@@ -8,11 +8,11 @@ const itemSchema = new Schema<ItemDocument, ItemModel>(
   {
     name: {
       type: String,
-      required: true,
+      required: false,
     },
     description: {
       type: String,
-      required: true,
+      required: false,
     },
     imageUrl: {
       type: String,

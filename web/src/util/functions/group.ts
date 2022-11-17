@@ -115,10 +115,11 @@ const postMany: OneHandler<GroupType> = async ({ body, gw2 }) => {
     })
   )
   input.items = createditems
-  return Group.create(input).then((i) => i.populate('items'))
+  const created = await Group.create(input)
+  return getOne({ id: created._id, gw2 })
 }
 
-const putOne: OneHandler<GroupType> = async ({ id, body }) => {
+const putOne: OneHandler<GroupType> = async ({ id, body, gw2 }) => {
   const input = {
     name: body.name,
     description: body.description || '',
@@ -141,8 +142,8 @@ const putOne: OneHandler<GroupType> = async ({ id, body }) => {
     })
   )
   input.items = createdItems
-  const item = await Group.findByIdAndUpdate(id, input).lean().populate('items')
-  return item as unknown as GroupType
+  await Group.findByIdAndUpdate(id, input)
+  return getOne({ id, gw2 })
 }
 
 const deleteOne: OneHandler<{ deleted: boolean }> = async ({ id, gw2 }) => {

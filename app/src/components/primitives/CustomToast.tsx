@@ -1,3 +1,4 @@
+import cls from "classnames";
 import toast from "react-hot-toast";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
@@ -8,15 +9,30 @@ const IconMap: Record<ToastType, React.ReactNode> = {
   error: <FaTimesCircle className="text-red-600 text-2xl" />,
 };
 
+const positionMap = {
+  "bottom-center": "justify-center flex-end",
+  "bottom-right": "justify-end flex-end",
+  "bottom-left": "justify-start flex-end",
+};
+
 export function CustomToast(t: any, type: ToastType, message: string) {
   return (
-    <div
-      className={`${
-        t.visible ? "animate-enter" : "animate-leave"
-      } max-w-md bg-brushed-black rounded-full pointer-events-none border-2 border-stone-700 text-xl px-10 py-3 text-center mx-auto flex flex-row gap-3 justify-center items-center`}
-    >
-      {IconMap[type] || null}
-      {message}
+    <div className={cls("flex-1 flex", (positionMap as any)[t.position])}>
+      <div
+        className={cls(
+          `max-w-md bg-brushed-black rounded-full pointer-events-none border-2 border-stone-700 text-center flex flex-row justify-center items-center`,
+          {
+            "animate-enter": t.visible,
+            "animate-leave": !t.visible,
+            "text-xl px-10 py-3 gap-3": t.size === "xl" || !t.size,
+            "text-base px-5 py-2 gap-2": t.size === "base",
+            "text-sm px-5 py-2 gap-2": t.size === "sm",
+          }
+        )}
+      >
+        {IconMap[type] || null}
+        {message}
+      </div>
     </div>
   );
 }
@@ -24,7 +40,7 @@ export function CustomToast(t: any, type: ToastType, message: string) {
 export default function customToast(
   type: ToastType,
   message: string,
-  options?: Parameters<typeof toast.custom>[1]
+  options?: Parameters<typeof toast.custom>[1] & { size?: "sm" | "base" | "xl" }
 ) {
   toast.custom((t) => CustomToast(t, type, message), {
     position: "bottom-center",

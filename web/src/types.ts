@@ -59,8 +59,8 @@ export interface GroupType {
 export interface GroupDocument extends GroupType, Document {}
 
 export interface ItemType {
-  name: string
-  description: string
+  name?: string
+  description?: string
   imageUrl?: string
   precision: number
   position: [number, number, number]

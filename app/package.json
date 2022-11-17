@@ -11,7 +11,8 @@
     "tauri": "tauri",
     "watch-css": "npx tailwindcss -i ./src/input.css -o ./src/style.css --watch",
     "build-css": "npx tailwindcss -i ./src/input.css -o ./src/style.css",
-    "prepare-build": "node scripts/prepare-build.cjs"
+    "prepare-build": "node scripts/prepare-build.cjs",
+    "post-build": "node scripts/post-build.cjs"
   },
   "dependencies": {
     "@sentry/react": "^7.13.0",
@@ -21,6 +22,7 @@
     "classnames": "^2.3.1",
     "date-fns": "^2.29.3",
     "howler": "^2.2.3",
+    "rcedit": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
@@ -29,7 +31,7 @@
     "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.0.5",
+    "@tauri-apps/cli": "^1.2.0",
     "@types/howler": "^2.2.7",
     "@types/node": "^18.7.10",
     "@types/react": "^18.0.15",

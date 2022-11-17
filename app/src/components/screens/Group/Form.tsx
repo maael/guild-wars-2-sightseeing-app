@@ -6,6 +6,7 @@ import { Body } from "@tauri-apps/api/http";
 import cls from "classnames";
 import {
   FaCamera,
+  FaExclamationTriangle,
   FaImage,
   FaPlus,
   FaSave,
@@ -27,7 +28,9 @@ export default function GroupFormScreen() {
   const [saving, setSaving] = React.useState(false);
 
   const [group, setGroup] = React.useState<
-    Omit<GroupType, "creator" | "isActive" | "createdAt" | "updatedAt">
+    Omit<GroupType, "creator" | "isActive" | "createdAt" | "updatedAt"> & {
+      _id?: string;
+    }
   >({
     name: "",
     description: "",
@@ -38,7 +41,8 @@ export default function GroupFormScreen() {
     expansions: [],
   });
 
-  const { id } = useParams();
+  const { id: initialId } = useParams();
+  const [id, setId] = React.useState(() => initialId);
 
   const { takeScreenshot, saveImage } = useLocalImageHook();
 
@@ -65,34 +69,43 @@ export default function GroupFormScreen() {
     try {
       setSaving(true);
       e.preventDefault();
-      const embellishedGroupItems = await Promise.all(
-        group.items.map(async (i) => {
-          let imageUrl = i.imageUrl;
-          if (i.imageUrl?.includes("|")) {
-            const [_, fileSrc] = (i.imageUrl || "").split("|");
-            const result = await saveImage(
-              (group as any)._id || "new_group",
-              fileSrc
-            );
-            imageUrl = result;
-          }
-          const { __v, ...remaining } = i;
-          return {
-            ...remaining,
-            imageUrl,
-          };
-        })
-      );
+      const embellishedGroupItems = [];
+      for (const item of group.items) {
+        let imageUrl = item.imageUrl;
+        if (item.imageUrl?.includes("|")) {
+          const [_, fileSrc] = (item.imageUrl || "").split("|");
+          const result = await saveImage(
+            (group as any)._id || "new_group",
+            fileSrc
+          );
+          imageUrl = result;
+          customToast("success", "Saved image!", {
+            position: "bottom-right",
+            size: "sm",
+          });
+        }
+        const { __v, ...remaining } = item;
+        embellishedGroupItems.push({
+          ...remaining,
+          imageUrl,
+        });
+      }
       const { __v, ...remainingGroup } = group as any;
       const embellishedGroup = {
         ...remainingGroup,
         items: embellishedGroupItems,
       };
-      await fetchWithKey(`${API_URL}/api/groups${id ? `/${id}` : ""}`, {
-        method: id ? "PUT" : "POST",
-        body: Body.json(embellishedGroup),
-      }).then((r) => r.data);
-      nav("/groups");
+      const result = (await fetchWithKey(
+        `${API_URL}/api/groups${id ? `/${id}` : ""}`,
+        {
+          method: id ? "PUT" : "POST",
+          body: Body.json(embellishedGroup),
+        }
+      ).then((r) => r.data)) as any;
+      if (!result._id) throw new Error("No ID on save");
+      setGroup(result);
+      setId(result._id);
+      customToast("success", "Saved successfully!");
     } catch (e) {
       Sentry.captureException(e);
       console.error(e);
@@ -121,7 +134,7 @@ export default function GroupFormScreen() {
         }
         rightClassName="!fixed top-10 right-3 sm:text-lg"
       >
-        New Group
+        {group._id ? "Edit" : "New"} Group
       </PageHeader>
       <form
         onSubmit={save}
@@ -248,6 +261,12 @@ export default function GroupFormScreen() {
                   <FaCamera />
                 </Button>
               </div>
+              {item.imageUrl?.includes("|") ? (
+                <FaExclamationTriangle
+                  className="!absolute right-8 top-1 !text-yellow-600 text-xl !p-0"
+                  title="Item needs to be saved"
+                />
+              ) : null}
               <Button
                 className="!absolute right-1 top-1 !bg-red-600 text-xs !p-1"
                 type="button"

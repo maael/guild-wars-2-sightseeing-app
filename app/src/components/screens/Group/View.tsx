@@ -9,6 +9,7 @@ import {
   FaSpinner,
   FaStar,
   FaTimes,
+  FaTrash,
   FaUser,
 } from "react-icons/fa";
 import { useParams, Link, useNavigate } from "react-router-dom";
@@ -42,6 +43,24 @@ const customStyles = {
     transform: "translate(-50%, -50%)",
     backgroundColor: "rgba(0, 0, 0, 0.6)",
     padding: 0,
+    border: 0,
+  },
+  overlay: {
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    zIndex: 999,
+  },
+};
+
+const blankCustomStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "rgba(0, 0, 0, 0.0)",
+    padding: 10,
     border: 0,
   },
   overlay: {
@@ -197,6 +216,7 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
 
 export default function GroupViewScreen() {
   const [selected, setSelected] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState<boolean>(false);
   const { id } = useParams();
   const nav = useNavigate();
   const { isLoading, error, data, refetch } = useQuery(
@@ -257,19 +277,11 @@ export default function GroupViewScreen() {
               <Button
                 className="!bg-red-700"
                 style={{}}
-                onClick={async () => {
-                  try {
-                    await fetchWithKey(`${API_URL}/api/groups/${id}`, {
-                      method: "DELETE",
-                    });
-                    nav("/groups");
-                  } catch (e) {
-                    console.error(e);
-                    customToast("error", `Error deleting, please try again`);
-                  }
+                onClick={() => {
+                  setDeleting(true);
                 }}
               >
-                <FaTimes /> Delete
+                <FaTrash /> Delete
               </Button>
             </div>
           ) : null
@@ -315,10 +327,48 @@ export default function GroupViewScreen() {
         </div>
       </div>
       <Modal
+        isOpen={deleting}
+        onRequestClose={() => setDeleting(false)}
+        style={blankCustomStyles}
+        contentLabel={`Delete ${data?.items[selected!]?.name || "item"}`}
+      >
+        <div className="flex flex-col gap-5">
+          <div className="text-xl text-center">
+            Are you sure you want to delete this ?
+          </div>
+          <div className="flex flex-row gap-5 justify-center items-center">
+            <Button
+              className="!bg-red-700"
+              style={{}}
+              onClick={async () => {
+                try {
+                  await fetchWithKey(`${API_URL}/api/groups/${id}`, {
+                    method: "DELETE",
+                  });
+                  nav("/groups");
+                } catch (e) {
+                  console.error(e);
+                  customToast("error", `Error deleting, please try again`);
+                }
+              }}
+            >
+              <FaTrash /> Delete
+            </Button>
+            <Button
+              onClick={async () => {
+                setDeleting(false);
+              }}
+            >
+              <FaTimes /> Cancel
+            </Button>
+          </div>
+        </div>
+      </Modal>
+      <Modal
         isOpen={selected !== null}
         onRequestClose={() => setSelected(null)}
         style={customStyles}
-        contentLabel="Example Modal"
+        contentLabel={data?.items[selected!]?.name}
       >
         <img src={data?.items[selected!]?.imageUrl || ""} />
         <div className="my-2 text-center">{data?.items[selected!]?.name}</div>
