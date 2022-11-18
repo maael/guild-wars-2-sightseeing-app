@@ -71,6 +71,9 @@ export default function GroupFormScreen() {
       e.preventDefault();
       const embellishedGroupItems = [];
       for (const item of group.items) {
+        if (!item.imageUrl && !item.name?.trim() && !item.description?.trim()) {
+          continue;
+        }
         let imageUrl = item.imageUrl;
         if (item.imageUrl?.includes("|")) {
           const [_, fileSrc] = (item.imageUrl || "").split("|");
