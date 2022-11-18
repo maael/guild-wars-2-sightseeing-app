@@ -295,13 +295,15 @@ export default function GroupViewScreen() {
           <div className="flex flex-row justify-center items-center gap-1">
             <FaClock /> {format(new Date(data?.createdAt || ""), "dd/MM/yy")}
           </div>
-          <div className="flex flex-row justify-center items-center gap-1">
-            <img
-              src={getAvatar(data?.creator.accountName)}
-              className="rounded-full w-5 h-5"
-            />
-            {data?.creator.accountName}
-          </div>
+          <Link to={`/user/${data?.creator.accountName}`}>
+            <div className="flex flex-row justify-center items-center gap-1">
+              <img
+                src={getAvatar(data?.creator.accountName)}
+                className="rounded-full w-5 h-5"
+              />
+              {data?.creator.accountName}
+            </div>
+          </Link>
         </div>
         <Difficulty level={data?.difficulty} />
         <Rating rating={data?.rating} />

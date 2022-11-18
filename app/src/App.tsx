@@ -9,6 +9,8 @@ import GroupViewScreen from "./components/screens/Group/View";
 import GroupFormScreen from "./components/screens/Group/Form";
 import GroupLeaderboardScreen from "./components/screens/Group/Leaderboard";
 import { Provider as ConnectionProvider } from "./components/hooks/useConnection";
+import AboutScreen from "./components/screens/About";
+import UserScreen from "./components/screens/User";
 
 const queryClient = new QueryClient();
 
@@ -16,12 +18,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ConnectionProvider>
-        <TitleBar />
-        <div id="app" className="flex-1 overflow-y-auto">
-          <Router initialEntries={["/setup"]}>
+        <Router initialEntries={["/setup"]}>
+          <TitleBar />
+          <div id="app" className="flex-1 overflow-y-auto">
             <InnerApp />
-          </Router>
-        </div>
+          </div>
+        </Router>
         <Toaster toastOptions={{ position: "bottom-center" }} />
       </ConnectionProvider>
     </QueryClientProvider>
@@ -40,6 +42,8 @@ function InnerApp() {
       />
       <Route path="/groups/:id" element={<GroupViewScreen />} />
       <Route path="/groups" element={<GroupListScreen />} />
+      <Route path="/about" element={<AboutScreen />} />
+      <Route path="/user/:account" element={<UserScreen />} />
     </Routes>
   );
 }

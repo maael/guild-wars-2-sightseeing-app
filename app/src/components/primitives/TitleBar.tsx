@@ -1,10 +1,11 @@
 import { appWindow } from "@tauri-apps/api/window";
 import { getName } from "@tauri-apps/api/app";
 import { useEffect, useState } from "react";
-import { FaEye, FaSpinner } from "react-icons/fa";
+import { FaEye, FaQuestionCircle, FaSpinner } from "react-icons/fa";
 import cls from "classnames";
 import { useConnection } from "../hooks/useConnection";
 import { getAvatar } from "../../util";
+import { useNavigate } from "react-router-dom";
 
 export default function TitleBar() {
   const [title, setTitle] = useState("");
@@ -28,6 +29,7 @@ export default function TitleBar() {
     };
   }, [accountName]);
   const { connection } = useConnection();
+  const navigate = useNavigate();
   return (
     <>
       <div
@@ -78,6 +80,13 @@ export default function TitleBar() {
               <FaSpinner className="animate-spin" /> Character...
             </div>
           )}
+        </div>
+        <div
+          className="inline-flex justify-center items-center w-6 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
+          onClick={() => navigate("/about")}
+          title="About"
+        >
+          <FaQuestionCircle />
         </div>
         <div
           className="inline-flex justify-center items-center w-7 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
