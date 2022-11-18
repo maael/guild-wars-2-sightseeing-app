@@ -26,7 +26,7 @@ import {
   ItemDocument,
   CompletionDocument,
 } from "../../../types";
-import { API_URL, fetchWithKey } from "../../../util";
+import { API_URL, fetchWithKey, getAvatar } from "../../../util";
 import Button from "../../primitives/Button";
 import Difficulty from "../../primitives/Difficulty";
 import PageHeader from "../../primitives/PageHeader";
@@ -182,7 +182,7 @@ function useGroupMatch(group?: WithRating<GroupDocument>) {
         if (newMatches && newMatches.length > 0) {
           bellSound.play();
           for (const match of newMatches) {
-            customToast("success", `Found ${match.name}!`);
+            customToast("success", `Found ${match.name || "a location"}!`);
           }
           setGroupMatches(
             (m) => new Set([...m, ...(newMatches?.map((v) => v._id) || [])])
@@ -296,7 +296,11 @@ export default function GroupViewScreen() {
             <FaClock /> {format(new Date(data?.createdAt || ""), "dd/MM/yy")}
           </div>
           <div className="flex flex-row justify-center items-center gap-1">
-            <FaUser /> {data?.creator.accountName}
+            <img
+              src={getAvatar(data?.creator.accountName)}
+              className="rounded-full w-5 h-5"
+            />
+            {data?.creator.accountName}
           </div>
         </div>
         <Difficulty level={data?.difficulty} />
@@ -315,7 +319,7 @@ export default function GroupViewScreen() {
         <div>{data?.expansions.join(",")}</div>
         <div>{data?.masteries.join(",")}</div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 px-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 px-2">
           {(data?.items || []).map((d, idx) => (
             <Item
               key={d._id}
@@ -372,6 +376,9 @@ export default function GroupViewScreen() {
       >
         <img src={data?.items[selected!]?.imageUrl || ""} />
         <div className="my-2 text-center">{data?.items[selected!]?.name}</div>
+        {groupMatches.has(data?.items[selected!]?._id) ? (
+          <FaCheckCircle className="absolute top-3 right-3 text-3xl text-green-600" />
+        ) : null}
       </Modal>
     </div>
   );

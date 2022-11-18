@@ -3,7 +3,7 @@ import format from "date-fns/format";
 import { FaCheckCircle, FaClock, FaSpinner, FaUser } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import * as Sentry from "@sentry/react";
-import { API_URL, fetchWithKey } from "../../../util";
+import { API_URL, fetchWithKey, getAvatar } from "../../../util";
 import PageHeader from "../../primitives/PageHeader";
 
 export default function GroupLeaderboardScreen() {
@@ -48,7 +48,10 @@ export default function GroupLeaderboardScreen() {
             }}
           >
             <div className="flex-1 flex flex-row gap-2 items-center text-ellipsis overflow-hidden whitespace-nowrap">
-              <FaUser className="text-white text-opacity-80" />
+              <img
+                src={getAvatar(d.accountName)}
+                className="rounded-full w-5 h-5"
+              />
               {d.accountName}
             </div>
             <div

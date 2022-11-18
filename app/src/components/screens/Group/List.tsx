@@ -1,16 +1,18 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { FaCheckCircle, FaSpinner, FaUser } from "react-icons/fa";
+import { FaCheckCircle, FaClock, FaSpinner, FaStar } from "react-icons/fa";
 import cls from "classnames";
 import * as Sentry from "@sentry/react";
 import { GroupDocument, PaginateResult, WithRating } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
-import { API_URL, fetchWithKey } from "../../../util";
+import { API_URL, fetchWithKey, getAvatar } from "../../../util";
 import Difficulty from "../../primitives/Difficulty";
 import Rating from "../../primitives/Rating";
 import Button from "../../primitives/Button";
 
 export default function GroupListScreen() {
+  const [groupSort, setGroupSort] = useState("recent");
   const { isLoading, error, data } = useQuery(
     ["groups"],
     () =>
@@ -59,7 +61,7 @@ export default function GroupListScreen() {
     <div>
       <PageHeader
         hideBack
-        className="pt-12 sm:pt-0"
+        className="pt-12 sm:pt-0 mb-2"
         rightAction={
           <Link to="/groups/new" className="opacity-70 hover:opacity-100">
             <Button className="flex flex-row justify-center items-center -left-3">
@@ -78,35 +80,77 @@ export default function GroupListScreen() {
           <span className="hidden sm:inline">Guild Wars 2</span> Sightseeing
         </span>
       </PageHeader>
-      <h2 className="text-center text-2xl mb-1">
-        {`Your logs (${completions?.length})`}
+      <h2 className="text-center text-2xl mb-1 capitalize">
+        {`Your active logs (${completions?.length})`}
       </h2>
-      {!completions || completions.length === 0 ? (
-        <p className="text-center text-sm mx-2">
-          Any logs you've started or completed will appear here, find some
-          below!
-        </p>
-      ) : null}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-3xl mx-auto pb-10 px-2">
-        {completions?.map((d) => (
-          <Item
-            key={d._id}
-            item={d}
-            completedItems={(d as any).completedItems?.length}
-          />
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-3xl mx-auto pb-5 px-2">
+        {!completions || completions.length === 0 ? (
+          <p className="text-center text-sm mx-2 w-full col-span-1 sm:col-span-2">
+            Any logs you've started or completed will appear here, find some
+            below!
+          </p>
+        ) : (
+          completions?.map((d) => (
+            <Item
+              key={d._id}
+              item={d}
+              completedItems={(d as any).completedItems?.length}
+            />
+          ))
+        )}
       </div>
-      <h2 className="text-center text-2xl mb-1">
-        Showing {data?.docs.length} of {data?.totalDocs} logs
+      <h2 className="text-center text-2xl mb-1 capitalize">
+        {`Your created logs (${completions?.length})`}
       </h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-3xl mx-auto pb-2 px-2">
+        <p className="text-center text-sm mx-2 w-full col-span-1 sm:col-span-2">
+          Any logs you've created or completed will appear here.
+        </p>
+      </div>
+      <h2 className="text-center text-2xl mb-1 capitalize">{groupSort} logs</h2>
+      <div className="flex flex-row justify-center uppercase max-w-sm w-5/6 mx-auto">
+        <button
+          onClick={() => setGroupSort("recent")}
+          className={cls(
+            "px-5 py-1.5 transition-transform hover:scale-110 rounded-l-lg cursor-pointer w-1/2 flex flex-row justify-center items-center gap-2 text-sm sm:text-base",
+            {
+              "bg-brown-light": groupSort === "recent",
+              "bg-brown-dark": groupSort === "top",
+            }
+          )}
+        >
+          <FaClock /> Recent
+        </button>
+        <button
+          onClick={() => setGroupSort("top")}
+          className={cls(
+            "px-5 py-1.5 transition-transform hover:scale-110 rounded-r-lg cursor-pointer w-1/2 flex flex-row justify-center items-center gap-2 text-sm sm:text-base",
+            {
+              "bg-brown-light": groupSort === "top",
+              "bg-brown-dark": groupSort === "recent",
+            }
+          )}
+        >
+          <FaStar /> Top
+        </button>
+      </div>
+      <h3 className="text-center text-xl my-2">
+        {data?.docs.length} of {data?.totalDocs}
+      </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-3xl mx-auto pb-10 px-2">
-        {data?.docs.map((d) => (
-          <Item
-            key={d._id}
-            item={d}
-            completedItems={(d as any).completedItems?.length}
-          />
-        ))}
+        {data?.docs && data?.docs.length > 0 ? (
+          data?.docs.map((d) => (
+            <Item
+              key={d._id}
+              item={d}
+              completedItems={(d as any).completedItems?.length}
+            />
+          ))
+        ) : (
+          <p className="text-center text-sm mx-2 w-full col-span-1 sm:col-span-2">
+            Logs that you can complete will be here!
+          </p>
+        )}
       </div>
     </div>
   );
@@ -145,8 +189,12 @@ function Item({
               {completedItems} of {item.items?.length || 0} items
             </div>
             <div>{item.expansions.join(",")}</div>
-            <div className="flex flex-row gap-1">
-              <FaUser /> {item.creator.accountName}
+            <div className="flex flex-row gap-1 justify-center items-center">
+              <img
+                src={getAvatar(item.creator.accountName)}
+                className="rounded-full w-5 h-5"
+              />
+              {item.creator.accountName}
             </div>
           </div>
         </div>

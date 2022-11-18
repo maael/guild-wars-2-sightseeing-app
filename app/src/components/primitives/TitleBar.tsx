@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { FaEye, FaSpinner } from "react-icons/fa";
 import cls from "classnames";
 import { useConnection } from "../hooks/useConnection";
+import { getAvatar } from "../../util";
 
 export default function TitleBar() {
   const [title, setTitle] = useState("");
@@ -39,9 +40,13 @@ export default function TitleBar() {
         <div className="pointer-events-none">
           {accountName ? (
             <div
-              className="bg-green-600 px-3 py-0.5 text-xs rounded-md ml-5 text-ellipsis overflow-hidden whitespace-nowrap"
+              className="bg-green-600 px-3 py-0.5 text-xs rounded-md ml-5 text-ellipsis overflow-hidden whitespace-nowrap flex flex-row gap-1 justify-center items-center"
               style={{ maxWidth: 100 }}
             >
+              <img
+                className="rounded-full h-4 w-4"
+                src={getAvatar(accountName)}
+              />
               {accountName}
             </div>
           ) : null}

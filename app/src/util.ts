@@ -2,6 +2,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { fetch, ResponseType } from "@tauri-apps/api/http";
 import { removeFile } from "@tauri-apps/api/fs";
 import { resolveResource } from "@tauri-apps/api/path";
+import avatars from "./data/avatars";
 
 export const API_URL = "http://localhost:3001";
 
@@ -78,4 +79,17 @@ export async function getGeoCoords(mumbleData: any) {
     locationInInches.y,
   ]);
   return scaled;
+}
+
+export function stringToNumber(str: string) {
+  return str.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+}
+
+export function getAvatar(str?: string) {
+  if (!str) return `https://gw2-sightseeing.maael.xyz/avatars/Toxx_2BIcon.jpg`;
+  const idx = stringToNumber(str) % avatars.length;
+  const avatar = avatars[idx];
+  return `https://gw2-sightseeing.maael.xyz/avatars/${
+    avatar || "Toxx_2BIcon.jpg"
+  }`;
 }
