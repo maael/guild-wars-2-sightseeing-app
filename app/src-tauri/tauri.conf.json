@@ -50,7 +50,8 @@
         "unminimize": true,
         "close": true,
         "setPosition": true,
-        "startDragging": true
+        "startDragging": true,
+        "create": true
       }
     },
     "bundle": {

@@ -3,12 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import {
   FaCheckCircle,
   FaClock,
+  FaExpandArrowsAlt,
   FaList,
   FaPencilAlt,
   FaRegStar,
   FaSpinner,
   FaStar,
   FaTimes,
+  FaTimesCircle,
   FaTrash,
   FaUser,
 } from "react-icons/fa";
@@ -32,6 +34,7 @@ import Difficulty from "../../primitives/Difficulty";
 import PageHeader from "../../primitives/PageHeader";
 import Rating from "../../primitives/Rating";
 import customToast from "../../primitives/CustomToast";
+import { WebviewWindow } from "@tauri-apps/api/window";
 
 const customStyles = {
   content: {
@@ -378,9 +381,43 @@ export default function GroupViewScreen() {
       >
         <img src={data?.items[selected!]?.imageUrl || ""} />
         <div className="my-2 text-center">{data?.items[selected!]?.name}</div>
+        <div
+          className="absolute top-3 left-3 text-base bg-brown-dark flex flex-row gap-2 justify-center items-center rounded-2xl pl-2 pr-3 py-1 cursor-pointer"
+          onClick={() => {
+            const expandedView = new WebviewWindow(
+              `${data?.items[selected!]?._id}`,
+              {
+                title: `${data?.name} - ${
+                  data?.items[selected!]?.name || "Sightseeing Item"
+                }`,
+                width: 2560 * 0.5,
+                height: 1440 * 0.5,
+                transparent: true,
+                theme: "dark",
+                url: data?.items[selected!]?.imageUrl,
+              }
+            );
+            expandedView.once("tauri://created", function () {
+              console.info("[opened]");
+            });
+            expandedView.once("tauri://error", function (e) {
+              console.error("[error]", e);
+            });
+          }}
+        >
+          <FaExpandArrowsAlt />
+          <span>Expand</span>
+        </div>
         {groupMatches.has(data?.items[selected!]?._id) ? (
-          <FaCheckCircle className="absolute top-3 right-3 text-3xl text-green-600" />
+          <div className="absolute top-3 right-12 text-base bg-green-600 flex flex-row gap-2 justify-center items-center rounded-2xl pl-2 pr-3 py-1">
+            <FaCheckCircle />
+            <span>Found</span>
+          </div>
         ) : null}
+        <FaTimes
+          className="absolute top-3 right-3 text-2xl text-red-600 cursor-pointer"
+          onClick={() => setSelected(null)}
+        />
       </Modal>
     </div>
   );
