@@ -44,9 +44,23 @@ const itemSchema = new Schema<GroupDocument, ItemModel>(
       type: Number,
       required: true,
     },
-    isActive: {
+    isPromoted: {
       type: Boolean,
-      default: true,
+      default: false,
+    },
+    prizes: {
+      type: [
+        {
+          label: { type: String, required: false },
+          imageUrl: { type: String, required: false },
+          positionLabel: { type: String, required: false },
+        },
+      ],
+      default: [],
+    },
+    status: {
+      type: String,
+      default: 'draft',
     },
     items: [
       {

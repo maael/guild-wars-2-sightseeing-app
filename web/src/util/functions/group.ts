@@ -51,7 +51,7 @@ export async function enhanceGroupsWithRatings(groups: GroupDocument[], gw2Accou
 
 const getOne: OneHandler<GroupType> = async ({ id, gw2 }) => {
   const [item, pageRatings] = await Promise.all([
-    Group.findOne<GroupType>({ _id: id, isActive: true }).lean().populate('items'),
+    Group.findOne<GroupType>({ _id: id, status: 'active' }).lean().populate('items'),
     getPageRatings([new mongoose.Types.ObjectId(id)], gw2?.account),
   ])
   if (!item) return item
@@ -71,7 +71,7 @@ const getOne: OneHandler<GroupType> = async ({ id, gw2 }) => {
 
 const getMany: ManyHandler<GroupType> = async ({ limit = 100, offset = 0, page = 1, gw2 }) => {
   const results = await (Group as any).paginate(
-    { isActive: true },
+    { status: 'active' },
     { limit, offset, page, populate: 'items', lean: true, leanWithId: true, sort: { createdAt: -1 } }
   )
 
@@ -147,7 +147,7 @@ const putOne: OneHandler<GroupType> = async ({ id, body, gw2 }) => {
 }
 
 const deleteOne: OneHandler<{ deleted: boolean }> = async ({ id, gw2 }) => {
-  await Group.updateOne({ _id: id, 'creator.accountName': gw2?.account }, { isActive: false })
+  await Group.updateOne({ _id: id, 'creator.accountName': gw2?.account }, { status: 'deleted' })
   return { deleted: true }
 }
 

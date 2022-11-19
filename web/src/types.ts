@@ -39,6 +39,12 @@ export interface CompletionType {
 
 export interface CompletionDocument extends CompletionType, Document {}
 
+export interface PrizeType {
+  label?: string
+  imageUrl?: string
+  position?: string
+}
+
 export interface GroupType {
   name: string
   description: string
@@ -50,9 +56,11 @@ export interface GroupType {
   expansions: string[]
   masteries: string[]
   difficulty: number
+  isPromoted: boolean
+  prizes: PrizeType[]
   createdAt: string
   updatedAt: string
-  isActive: boolean
+  status: 'draft' | 'active' | 'deleted'
   items: ItemDocument[]
 }
 

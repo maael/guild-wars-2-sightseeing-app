@@ -39,6 +39,8 @@ export default function GroupFormScreen() {
     items: [],
     masteries: [],
     expansions: [],
+    isPromoted: false,
+    prizes: [],
   });
 
   const { id: initialId } = useParams();
