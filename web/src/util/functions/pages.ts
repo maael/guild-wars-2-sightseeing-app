@@ -6,7 +6,13 @@ export const homePage: ManyHandler<any> = async ({ gw2 }) => {
     gw2.account = 'Mael.3259'
   }
   const result = await Promise.all([
-    getGroups({ accountName: gw2?.account, type: 'promoted', query: { isPromoted: true } }),
+    getGroups({
+      accountName: gw2?.account,
+      type: 'promoted',
+      query: { isPromoted: true },
+      limit: 10,
+      select: { bannerImageUrl: 1 },
+    }),
     getGroups({ accountName: gw2?.account, type: 'top' }),
     getGroups({ accountName: gw2?.account, type: 'recent' }),
     gw2?.account

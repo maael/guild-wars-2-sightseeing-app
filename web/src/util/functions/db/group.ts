@@ -24,11 +24,12 @@ export async function getGroups(
     query: Partial<Record<keyof GroupType | string, any>>
     accountName?: string
     withItems?: boolean
+    select?: Partial<Record<keyof GroupType, 1>>
   }>
 ) {
   const query = Object.assign({ status: 'active' }, inputOptions.query || {})
   const options = Object.assign({ limit: 100, page: 1, type: 'recent', query }, inputOptions)
-  const baseGroupFields = { ...groupFields, items: options.withItems ? 1 : undefined }
+  const baseGroupFields = { ...groupFields, ...(options.select || {}), items: options.withItems ? 1 : undefined }
   const groups = await Group.aggregate(
     [
       { $match: query },

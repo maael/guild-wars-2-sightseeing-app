@@ -1,14 +1,12 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { FaCheckCircle, FaClock, FaSpinner, FaStar } from "react-icons/fa";
+import { FaClock, FaEye, FaSpinner, FaStar } from "react-icons/fa";
 import cls from "classnames";
 import * as Sentry from "@sentry/react";
-import { HomeGroup, HomeResponse } from "../../../types";
+import { HomeResponse, HomeGroup } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 import { API_URL, fetchWithKey, getAvatar } from "../../../util";
-import Difficulty from "../../primitives/Difficulty";
-import Rating from "../../primitives/Rating";
 import Button from "../../primitives/Button";
 import GroupsGrid from "../../primitives/GroupsGrid";
 import SectionHeader from "../../primitives/SectionHeader";
@@ -82,8 +80,84 @@ export default function GroupListScreen() {
         emptyMessage="Any logs you've created will appear here, find some below!"
         items={data?.authored}
       />
+      <Promoted items={data?.promoted} />
+      <LogToggle groupType={groupType} setGroupType={setGroupType} />
+      <GroupsGrid
+        emptyMessage="Logs that you can complete will be here!"
+        items={showingItems}
+      />
+    </div>
+  );
+}
+
+function Promoted({
+  items,
+}: {
+  items?: (HomeGroup & { bannerImageUrl?: string })[];
+}) {
+  const [active, setActive] = React.useState(0);
+  const activeItem = (items || [])[active];
+  return items && items.length > 0 ? (
+    <div className="overflow-hidden w-full sm:w-4/5 aspect-video relative my-5 mx-auto px-1 sm:px-5">
+      {activeItem ? (
+        <div
+          className="w-full h-full bg-cover bg-no-repeat bg-center relative rounded-lg drop-shadow-xl"
+          style={{ backgroundImage: `url(${activeItem.bannerImageUrl})` }}
+        >
+          <div className="absolute bottom-12 left-0 right-0 bg-brown-dark px-5 py-2 drop-shadow-lg">
+            <h2 className="text-2xl">{activeItem.name}</h2>
+            <p className="text-lg">{activeItem.description}</p>
+          </div>
+          <Link to={`/user/${activeItem.creator.accountName}`}>
+            <div className="flex flex-row gap-1 justify-center items-center absolute top-3 right-3 bg-brown-dark px-2 py-1 rounded-md drop-shadow-lg">
+              <img
+                src={getAvatar(activeItem.creator.accountName)}
+                className="h-5 w-5 rounded-full"
+              />
+              {activeItem.creator.accountName}
+            </div>
+          </Link>
+          <div className="text-xl !absolute bottom-28 flex justify-center items-center left-0 right-0">
+            <Link to={`/groups/${activeItem._id}`}>
+              <Button>
+                <FaEye /> View
+              </Button>
+            </Link>
+          </div>
+        </div>
+      ) : null}
+      {items && items.length > 1 ? (
+        <div className="absolute bottom-5 flex flex-row gap-3 justify-center items-center left-5 right-5">
+          {items?.map((i, idx) => (
+            <div
+              key={`marker-${i._id}`}
+              onClick={() => setActive(idx)}
+              className={cls(
+                "rounded-full h-3 w-3 outline outline-offset-2 outline-2 outline-white cursor-pointer drop-shadow-lg",
+                {
+                  "bg-white": active === idx,
+                  "bg-gray-400 bg-opacity-80": active !== idx,
+                }
+              )}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  ) : null;
+}
+
+function LogToggle({
+  groupType,
+  setGroupType,
+}: {
+  groupType: string;
+  setGroupType: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  return (
+    <>
       <h2 className="text-center text-2xl mb-1 capitalize">{groupType} logs</h2>
-      <div className="flex flex-row justify-center uppercase max-w-sm w-5/6 mx-auto">
+      <div className="flex flex-row justify-center uppercase max-w-sm w-5/6 mx-auto mb-1">
         <button
           onClick={() => setGroupType("recent")}
           className={cls(
@@ -109,55 +183,6 @@ export default function GroupListScreen() {
           <FaStar /> Top
         </button>
       </div>
-      <GroupsGrid
-        emptyMessage="Logs that you can complete will be here!"
-        items={showingItems}
-      />
-    </div>
-  );
-}
-
-function Item({ item }: { item: HomeGroup }) {
-  const isDone = item.completion.count === item.itemCount;
-  return (
-    <Link to={`/groups/${item._id}`}>
-      <div
-        style={{
-          backgroundImage: "url(/ui/windowbg-glyphs.png)",
-          backgroundSize: "100% 100%",
-        }}
-        className="h-28 bg-no-repeat bg-top relative pb-1 px-1"
-      >
-        <div
-          className={cls("p-2 flex flex-col gap-1 h-full", {
-            "opacity-60": isDone,
-          })}
-        >
-          <div className="flex flex-row gap-2 justify-center items-center">
-            <div className="flex-1 text-lg">{item.name}</div>
-            <Difficulty level={item.difficulty} />
-            <Rating rating={item.ratings} />
-          </div>
-          <div className="flex-1">{item.description}</div>
-          <div className="flex flex-row gap-2 justify-between items-center">
-            <div>
-              {item.completion.count} of {item.itemCount} items
-            </div>
-            <div className="flex flex-row gap-1 justify-center items-center">
-              <img
-                src={getAvatar(item.creator.accountName)}
-                className="rounded-full w-5 h-5"
-              />
-              {item.creator.accountName}
-            </div>
-          </div>
-        </div>
-        {isDone ? (
-          <div className="absolute inset-0 flex justify-center items-center text-4xl">
-            <FaCheckCircle className="text-green-600" />
-          </div>
-        ) : null}
-      </div>
-    </Link>
+    </>
   );
 }
