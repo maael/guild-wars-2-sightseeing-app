@@ -3,19 +3,13 @@ import { GroupType } from '~/types'
 
 type GroupingType = 'top' | 'recent' | 'authored' | 'promoted' | 'completion'
 
-function getSort(method: GroupingType) {
-  if (method === 'recent') {
-    return { createdAt: -1 as const }
-  }
-  return { createdAt: -1 as const }
-}
-
 const groupFields = {
   _id: 1,
   name: 1,
   description: 1,
   difficulty: 1,
   status: 1,
+  createdAt: 1,
   itemCount: { $size: '$items' },
   creator: {
     accountName: 1,
@@ -29,14 +23,16 @@ export async function getGroups(
     type: GroupingType
     query: Partial<Record<keyof GroupType | string, any>>
     accountName?: string
+    withItems?: boolean
   }>
 ) {
   const query = Object.assign({ status: 'active' }, inputOptions.query || {})
   const options = Object.assign({ limit: 100, page: 1, type: 'recent', query }, inputOptions)
+  const baseGroupFields = { ...groupFields, items: options.withItems ? 1 : undefined }
   const groups = await Group.aggregate(
     [
       { $match: query },
-      { $project: groupFields },
+      { $project: baseGroupFields },
       ...(options.type === 'recent' || options.type === 'promoted' || options.type === 'authored'
         ? [
             { $sort: { createdAt: -1 as const } },
@@ -52,20 +48,57 @@ export async function getGroups(
           as: 'completions',
           pipeline: [
             { $match: { accountName: options.accountName } },
-            { $project: { count: { $size: '$items' }, updatedAt: 1, _id: 0 } },
+            {
+              $project: { count: { $size: '$items' }, updatedAt: 1, _id: 0, items: options.withItems ? 1 : undefined },
+            },
           ],
         },
       },
       {
         $project: {
-          ...groupFields,
+          ...baseGroupFields,
           itemCount: 1,
           completion: { $arrayElemAt: ['$completions', 0] },
         },
       },
+      ...(options.withItems
+        ? [
+            {
+              $lookup: {
+                from: 'items',
+                localField: 'items',
+                foreignField: '_id',
+                as: 'items',
+              },
+            },
+            {
+              $set: {
+                items: {
+                  $map: {
+                    input: '$items',
+                    in: {
+                      $mergeObjects: [
+                        '$$this',
+                        {
+                          imageUrl: {
+                            $replaceOne: {
+                              input: '$$this.imageUrl',
+                              find: 'https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com',
+                              replacement: 'https://gw2-sightseeing.maael.xyz',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          ]
+        : []),
       {
         $project: {
-          ...groupFields,
+          ...baseGroupFields,
           itemCount: 1,
           completion: 1,
           completionPercent: { $multiply: [{ $divide: ['$completion.count', '$itemCount'] }, 100] },
@@ -102,7 +135,7 @@ export async function getGroups(
       },
       {
         $project: {
-          ...groupFields,
+          ...baseGroupFields,
           itemCount: 1,
           completion: 1,
           completionPercent: 1,

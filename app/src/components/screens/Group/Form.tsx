@@ -1,19 +1,22 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/tauri";
 import { Body } from "@tauri-apps/api/http";
 import cls from "classnames";
 import {
   FaCamera,
+  FaCheckCircle,
   FaExclamationTriangle,
   FaImage,
+  FaInfoCircle,
   FaPlus,
   FaSave,
   FaSpinner,
   FaTimes,
 } from "react-icons/fa";
 import * as Sentry from "@sentry/react";
+import Modal from "react-modal";
 import { GroupType, WithRating, GroupDocument, ItemType } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 import Input from "../../primitives/Input";
@@ -23,8 +26,25 @@ import { useLocalImageHook } from "../../hooks/useLocalImage";
 import { difficultyMap } from "../../primitives/Difficulty";
 import customToast from "../../primitives/CustomToast";
 
+const blankCustomStyles = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "rgba(0, 0, 0, 0.0)",
+    padding: 10,
+    border: 0,
+  },
+  overlay: {
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    zIndex: 999,
+  },
+};
+
 export default function GroupFormScreen() {
-  const nav = useNavigate();
   const [saving, setSaving] = React.useState(false);
 
   const [group, setGroup] = React.useState<
@@ -41,12 +61,27 @@ export default function GroupFormScreen() {
     expansions: [],
     isPromoted: false,
     prizes: [],
+    status: "active",
   });
+
+  const [showHowTo, setShowHowTo] = React.useState(
+    !localStorage.getItem("v1/gw2-sightseeing-app/how-to")
+  );
+
+  React.useEffect(() => {
+    if (!showHowTo) {
+      localStorage.setItem("v1/gw2-sightseeing-app/how-to", "done");
+    }
+  }, [showHowTo]);
 
   const { id: initialId } = useParams();
   const [id, setId] = React.useState(() => initialId);
 
   const { takeScreenshot, saveImage } = useLocalImageHook();
+
+  React.useEffect(() => {
+    Modal.setAppElement("#app");
+  }, []);
 
   const { isLoading } = useQuery(
     [`group/${id}`],
@@ -62,6 +97,7 @@ export default function GroupFormScreen() {
         Sentry.captureException(e);
       },
       enabled: !!id,
+      refetchOnMount: true,
     }
   );
 
@@ -193,6 +229,9 @@ export default function GroupFormScreen() {
                 </div>
               )}
               <Input
+                outerClassName="w-full"
+                className="w-full"
+                labelClassName="w-1/2"
                 label={`Name`}
                 placeholder="Name..."
                 value={item.name}
@@ -210,6 +249,9 @@ export default function GroupFormScreen() {
                 }
               />
               <Input
+                outerClassName="w-full"
+                className="w-full"
+                labelClassName="w-1/2"
                 label={`Description`}
                 placeholder="Description..."
                 value={item.description}
@@ -226,13 +268,7 @@ export default function GroupFormScreen() {
                   })
                 }
               />
-              <div className="flex flex-row gap-1 justify-center items-center text-xs">
-                <Input
-                  label="Position"
-                  className="flex-3"
-                  value={item.position?.join(", ")}
-                  disabled
-                />
+              <div className="flex flex-row gap-1 justify-center items-center text-sm">
                 <Button
                   onClick={async (e) => {
                     e.preventDefault();
@@ -263,7 +299,7 @@ export default function GroupFormScreen() {
                     });
                   }}
                 >
-                  <FaCamera />
+                  <FaCamera /> Capture Location
                 </Button>
               </div>
               {item.imageUrl?.includes("|") ? (
@@ -311,6 +347,40 @@ export default function GroupFormScreen() {
           </Button>
         </div>
       </form>
+      <Modal
+        isOpen={showHowTo}
+        onRequestClose={() => setShowHowTo(false)}
+        style={blankCustomStyles}
+      >
+        <div className="py-5 px-10 rounded-lg drop-shadow-lg bg-brown-dark flex flex-col justify-center items-center gap-5 text-center">
+          <h2 className="text-3xl flex flex-row justify-center items-center gap-2">
+            <FaInfoCircle /> How to
+          </h2>
+          <p className="max-w-sm">
+            Fill out the details and add items to create your challenge!
+          </p>
+          <p className="max-w-sm">When adding items, clicking:</p>
+          <span className="flex flex-row gap-1 justify-center items-center bg-brown-light px-3 py-2 rounded-md">
+            <FaCamera /> Capture Location
+          </span>
+          <p className="max-w-sm">
+            The app will switch to Guild Wars 2 (by alt-tabbing once) and then
+            capture a screenshot (using Print Screen)
+          </p>
+          <p className="max-w-sm">
+            To ensure this works as expected, please make sure Guild Wars 2 was
+            your last focused window, and your Print Screen key is bound to take
+            a screenshot.
+          </p>
+          <p className="max-w-sm">This guide will only be shown once.</p>
+          <Button
+            className="px-3 py-2 text-lg"
+            onClick={() => setShowHowTo(false)}
+          >
+            <FaCheckCircle /> Acknowledge
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

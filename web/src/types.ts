@@ -85,3 +85,55 @@ export interface RatingType {
 }
 
 export interface RatingDocument extends RatingType, Document {}
+
+/**
+ * Home Page
+ */
+
+export interface HomeResponse {
+  promoted: HomeGroup[]
+  top: HomeGroup[]
+  recent: HomeGroup[]
+  authored: HomeGroup[]
+  completion: HomeGroup[]
+}
+
+export interface HomeGroup {
+  _id: string
+  name: string
+  description: string
+  creator: {
+    accountName: string
+  }
+  difficulty: number
+  status: 'active' | 'draft' | 'deleted'
+  itemCount: number
+  completion: {
+    updatedAt: string
+    count: number
+  }
+  completionPercent: number
+  ratings: {
+    avgRating: number
+    count: number
+  }
+  userRating: {
+    rating: number
+  }
+  createdAt: string
+}
+
+export type HomeGroupWithItems = HomeGroup & {
+  items: {
+    _id: string
+    name: string
+    description: string
+    imageUrl: string
+    precision: number
+    position: [number, number, number]
+    metadata?: any
+  }[]
+  completions: HomeGroup['completion'] & { items: string[] }
+}
+
+export type UserResponse = Pick<HomeResponse, 'authored' | 'completion'>

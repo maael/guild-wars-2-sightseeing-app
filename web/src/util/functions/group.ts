@@ -1,100 +1,19 @@
 import mongoose from 'mongoose'
-import { Completion, Group, GroupType, Item, Rating } from '~/util/db/models'
-import { OneHandler, ManyHandler, GroupDocument } from '~/types'
+import { Group, Item } from '~/util/db/models'
+import { OneHandler, HomeGroupWithItems, HomeGroup } from '~/types'
+import { getGroups } from './db/group'
 
-async function getPageRatings(ids: mongoose.Types.ObjectId[], gw2Account?: string) {
-  const [basicPageRatings, userPageRating] = await Promise.all([
-    Rating.aggregate([
-      { $match: { groupId: { $in: ids } } },
-      { $group: { _id: '$groupId', avgRating: { $avg: '$rating' }, count: { $sum: 1 } } },
-    ]),
-    Rating.find({ groupId: { $in: ids }, raterAccountName: gw2Account }),
-  ])
-  const userRatingMap = new Map(userPageRating.map((r: any) => [r.groupId.toString(), r.rating]))
-  const pageRatings = basicPageRatings.reduce((acc, i) => {
-    acc.set(i._id.toString(), { avg: i.avgRating, count: i.count, user: userRatingMap.get(i._id.toString()) })
-    return acc
-  }, new Map<string, number>())
-  return pageRatings
-}
-
-async function getCompletions(ids: mongoose.Types.ObjectId[], gw2Account?: string) {
-  return new Map(
-    (await Completion.find({ groupId: { $in: ids }, accountName: gw2Account }).lean()).map((c: any) => [
-      c.groupId.toString(),
-      c.items,
-    ])
-  )
-}
-
-export async function enhanceGroupsWithRatings(groups: GroupDocument[], gw2Account?: string, withCompletions = true) {
-  const [pageRatings, completions] = await Promise.all([
-    getPageRatings(
-      groups.map((d) => d._id),
-      gw2Account
-    ),
-    withCompletions
-      ? getCompletions(
-          groups.map((d) => d._id),
-          gw2Account
-        )
-      : new Map(),
-  ])
-
-  return groups.map((d: any) => {
-    const info = pageRatings.get(d._id.toString()) || { avg: 0, count: 0 }
-    d.rating = info
-    d.completedItems = completions.get(d._id.toString()) || []
-    return d
+const getOne: OneHandler<HomeGroupWithItems> = async ({ id, gw2 }) => {
+  const group = await getGroups({
+    query: { _id: new mongoose.Types.ObjectId(id), status: 'active' },
+    accountName: gw2?.account || 'Mael.3259',
+    limit: 1,
+    withItems: true,
   })
+  return group[0]
 }
 
-const getOne: OneHandler<GroupType> = async ({ id, gw2 }) => {
-  const [item, pageRatings] = await Promise.all([
-    Group.findOne<GroupType>({ _id: id, status: 'active' }).lean().populate('items'),
-    getPageRatings([new mongoose.Types.ObjectId(id)], gw2?.account),
-  ])
-  if (!item) return item
-  const info = pageRatings.get(id) || { avg: 0, count: 0 }
-  ;(item as any).rating = info
-  ;(item.items as any) = item.items.map((i) => {
-    return {
-      ...i,
-      imageUrl: i.imageUrl?.replace(
-        'https://s3.us-west-2.amazonaws.com/gw2-sightseeing.maael.xyz',
-        'https://gw2-sightseeing.maael.xyz'
-      ),
-    }
-  })
-  return item
-}
-
-const getMany: ManyHandler<GroupType> = async ({ limit = 100, offset = 0, page = 1, gw2 }) => {
-  const results = await (Group as any).paginate(
-    { status: 'active' },
-    { limit, offset, page, populate: 'items', lean: true, leanWithId: true, sort: { createdAt: -1 } }
-  )
-
-  results.docs = await enhanceGroupsWithRatings(results.docs as any, gw2?.account)
-  results.docs = results.docs.map((d) => {
-    return {
-      ...d,
-      items: d?.items?.map((i) => {
-        return {
-          ...i,
-          imageUrl: i.imageUrl?.replace(
-            'https://s3.us-west-2.amazonaws.com/gw2-sightseeing.maael.xyz',
-            'https://gw2-sightseeing.maael.xyz'
-          ),
-        }
-      }),
-    }
-  })
-
-  return results as any
-}
-
-const postMany: OneHandler<GroupType> = async ({ body, gw2 }) => {
+const postMany: OneHandler<HomeGroup> = async ({ body, gw2 }) => {
   const input = {
     name: body.name,
     description: body.description || '',
@@ -119,7 +38,7 @@ const postMany: OneHandler<GroupType> = async ({ body, gw2 }) => {
   return getOne({ id: created._id, gw2 })
 }
 
-const putOne: OneHandler<GroupType> = async ({ id, body, gw2 }) => {
+const putOne: OneHandler<HomeGroup> = async ({ id, body, gw2 }) => {
   const input = {
     name: body.name,
     description: body.description || '',
@@ -154,7 +73,6 @@ const deleteOne: OneHandler<{ deleted: boolean }> = async ({ id, gw2 }) => {
 export default {
   get: {
     one: getOne,
-    many: getMany,
   },
   post: {
     many: postMany,

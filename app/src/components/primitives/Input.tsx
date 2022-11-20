@@ -8,8 +8,8 @@ export default function Input({
   ...inputProps
 }: InputHTMLAttributes<HTMLInputElement> & {
   label: string;
-  labelClassName?: React.CSSProperties;
-  outerClassName?: React.CSSProperties;
+  labelClassName?: string;
+  outerClassName?: string;
 }) {
   return (
     <div className={cls("flex flex-col sm:flex-row", outerClassName)}>

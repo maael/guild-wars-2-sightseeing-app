@@ -1,9 +1,6 @@
 import { getGroups } from './db/group'
-import { ManyHandler } from '~/types'
+import { ManyHandler, OneHandler } from '~/types'
 
-/**
- * TODO: Swap to use new endpoint in frontend, and remove old groups get:many
- */
 export const homePage: ManyHandler<any> = async ({ gw2 }) => {
   if (gw2) {
     gw2.account = 'Mael.3259'
@@ -36,9 +33,17 @@ export const homePage: ManyHandler<any> = async ({ gw2 }) => {
   } as any
 }
 
-export async function userPage() {
+export const userPage: OneHandler<any> = async ({ id }) => {
+  const [completion, authored] = await Promise.all([
+    getGroups({ accountName: id, type: 'completion' }),
+    getGroups({
+      accountName: id,
+      type: 'authored',
+      query: { 'creator.accountName': id },
+    }),
+  ])
   return {
-    authored: [],
-    completion: [],
+    authored,
+    completion,
   }
 }

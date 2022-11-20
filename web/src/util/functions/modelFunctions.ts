@@ -16,7 +16,7 @@ export default {
   },
   user: {
     get: {
-      many: pageFns.userPage,
+      one: pageFns.userPage,
     },
   },
 }

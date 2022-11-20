@@ -10,9 +10,7 @@ import {
   FaSpinner,
   FaStar,
   FaTimes,
-  FaTimesCircle,
   FaTrash,
-  FaUser,
 } from "react-icons/fa";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import cls from "classnames";
@@ -22,12 +20,7 @@ import { Howl } from "howler";
 import format from "date-fns/format";
 import Modal from "react-modal";
 import * as Sentry from "@sentry/react";
-import {
-  WithRating,
-  GroupDocument,
-  ItemDocument,
-  CompletionDocument,
-} from "../../../types";
+import { CompletionDocument, HomeGroupWithItems } from "../../../types";
 import { API_URL, fetchWithKey, getAvatar } from "../../../util";
 import Button from "../../primitives/Button";
 import Difficulty from "../../primitives/Difficulty";
@@ -150,7 +143,7 @@ function within(value: number, compare: number, precision: number) {
   return compare - precision < value && value < compare + precision;
 }
 
-function useGroupMatch(group?: WithRating<GroupDocument>) {
+function useGroupMatch(group?: HomeGroupWithItems) {
   const [groupMatches, setGroupMatches] = useState<Set<string>>(new Set());
   const { data: queryData } = useQuery(
     [`completion/${group?._id}`],
@@ -225,9 +218,9 @@ export default function GroupViewScreen() {
   const { isLoading, error, data, refetch } = useQuery(
     [`group/${id}`],
     () =>
-      fetchWithKey<WithRating<GroupDocument>>(
-        `${API_URL}/api/groups/${id}`
-      ).then((d) => d.data),
+      fetchWithKey<HomeGroupWithItems>(`${API_URL}/api/groups/${id}`).then(
+        (d) => d.data
+      ),
     {
       onError: (e) => {
         Sentry.captureException(e);
@@ -309,20 +302,17 @@ export default function GroupViewScreen() {
           </Link>
         </div>
         <Difficulty level={data?.difficulty} />
-        <Rating rating={data?.rating} />
+        <Rating rating={data?.ratings} />
         <RatingSelection
           id={id}
           refetch={refetch}
-          userRating={data?.rating?.user}
+          userRating={data?.userRating?.rating}
         />
         <Link to={`/groups/${id}/leaderboard`}>
           <Button type="button" className="gap-2">
             <FaList /> Leaderboard
           </Button>
         </Link>
-
-        <div>{data?.expansions.join(",")}</div>
-        <div>{data?.masteries.join(",")}</div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 px-2">
           {(data?.items || []).map((d, idx) => (
@@ -408,7 +398,7 @@ export default function GroupViewScreen() {
           <FaExpandArrowsAlt />
           <span>Expand</span>
         </div>
-        {groupMatches.has(data?.items[selected!]?._id) ? (
+        {groupMatches.has(data?.items[selected!]?._id || "") ? (
           <div className="absolute top-3 right-12 text-base bg-green-600 flex flex-row gap-2 justify-center items-center rounded-2xl pl-2 pr-3 py-1">
             <FaCheckCircle />
             <span>Found</span>
@@ -428,7 +418,7 @@ function Item({
   matched,
   onClick,
 }: {
-  item: ItemDocument;
+  item: HomeGroupWithItems["items"][0];
   matched: boolean;
   onClick: () => void;
 }) {

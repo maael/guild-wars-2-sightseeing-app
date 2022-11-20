@@ -12,7 +12,16 @@ import { Provider as ConnectionProvider } from "./components/hooks/useConnection
 import AboutScreen from "./components/screens/About";
 import UserScreen from "./components/screens/User";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnMount: true,
+      refetchOnReconnect: false,
+      refetchIntervalInBackground: false,
+      refetchInterval: false,
+    },
+  },
+});
 
 function App() {
   return (
