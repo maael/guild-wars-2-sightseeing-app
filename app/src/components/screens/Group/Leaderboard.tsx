@@ -1,10 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import format from "date-fns/format";
-import { FaCheckCircle, FaClock, FaSpinner, FaUser } from "react-icons/fa";
+import { BaseDirectory, writeTextFile } from "@tauri-apps/api/fs";
+import { FaCheckCircle, FaClock, FaDownload, FaSpinner } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import * as Sentry from "@sentry/react";
 import { API_URL, fetchWithKey, getAvatar } from "../../../util";
 import PageHeader from "../../primitives/PageHeader";
+import Button from "../../primitives/Button";
+import customToast from "../../primitives/CustomToast";
 
 export default function GroupLeaderboardScreen() {
   const { id } = useParams();
@@ -31,7 +34,33 @@ export default function GroupLeaderboardScreen() {
 
   return (
     <>
-      <PageHeader>Leaderboard</PageHeader>
+      <PageHeader
+        rightAction={
+          <Button
+            className="right-5 text-sm"
+            onClick={async () => {
+              const toSave =
+                "account,completed_items,is_completed,updated_at\n" +
+                data
+                  ?.map(
+                    (d) =>
+                      `${d.accountName},${d.completedItems},${
+                        d.completedItems === d.totalItems ? "Y" : "N"
+                      },${d.updatedAt}`
+                  )
+                  .join("\n");
+              await writeTextFile(`gw2-sightseeing-${id}.csv`, toSave, {
+                dir: BaseDirectory.Document,
+              });
+              customToast("success", "Saved to your documents folder!");
+            }}
+          >
+            <FaDownload /> Download
+          </Button>
+        }
+      >
+        Leaderboard
+      </PageHeader>
       <h2 className="text-center text-xl">
         {data?.length} completion{data?.length == 1 ? "" : "s"}
       </h2>

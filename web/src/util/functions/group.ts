@@ -26,6 +26,7 @@ const postMany: OneHandler<HomeGroup> = async ({ body, gw2 }) => {
     difficulty: body.difficulty || 3,
     expansions: body.expansions || [],
     masteries: body.masteries || [],
+    mounts: body.mounts || [],
     items: body.items || [],
   }
   const createditems = await Promise.all(
@@ -51,6 +52,7 @@ const putOne: OneHandler<HomeGroup> = async ({ id, body, gw2 }) => {
     difficulty: body.difficulty,
     expansions: body.expansions,
     masteries: body.masteries,
+    mounts: body.mounts || [],
     items: body.items || [],
   }
   const createdItems = await Promise.all(
