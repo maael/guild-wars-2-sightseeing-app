@@ -151,7 +151,10 @@ function within(value: number, compare: number, precision: number) {
   return compare - precision < value && value < compare + precision;
 }
 
-function useGroupMatch(group?: HomeGroupWithItems) {
+function useGroupMatch(
+  setShowComplete: (show: boolean) => void,
+  group?: HomeGroupWithItems
+) {
   const [groupMatches, setGroupMatches] = useState<Set<string>>(new Set());
   const { data: queryData } = useQuery(
     [`completion/${group?._id}`],
@@ -192,6 +195,12 @@ function useGroupMatch(group?: HomeGroupWithItems) {
           for (const match of newMatches) {
             customToast("success", `Found ${match.name || "a location"}!`);
           }
+          if (
+            groupMatches.size + (newMatches?.length || 0) ===
+            group?.itemCount
+          ) {
+            setShowComplete(true);
+          }
           setGroupMatches(
             (m) => new Set([...m, ...(newMatches?.map((v) => v._id) || [])])
           );
@@ -225,6 +234,7 @@ function useGroupMatch(group?: HomeGroupWithItems) {
 export default function GroupViewScreen() {
   const [selected, setSelected] = useState<number | null>(null);
   const [deleting, setDeleting] = useState<boolean>(false);
+  const [showComplete, setShowComplete] = useState<boolean>(false);
   const { id } = useParams();
   const nav = useNavigate();
   const { isLoading, error, data, refetch } = useQuery(
@@ -240,7 +250,7 @@ export default function GroupViewScreen() {
     }
   );
 
-  const groupMatches = useGroupMatch(data);
+  const groupMatches = useGroupMatch(setShowComplete, data);
 
   useEffect(() => {
     Modal.setAppElement("#app");
@@ -440,6 +450,25 @@ export default function GroupViewScreen() {
           className="absolute top-3 right-3 text-2xl text-gray-200 cursor-pointer drop-shadow-md"
           onClick={() => setSelected(null)}
         />
+      </Modal>
+      <Modal
+        isOpen={showComplete}
+        onRequestClose={() => setShowComplete(false)}
+        style={blankCustomStyles}
+      >
+        <div className="flex flex-col gap-2">
+          <img
+            src="/ui/party-quaggan.png"
+            className="mx-auto"
+            style={{ height: "60vmin", width: "60vmin" }}
+          />
+          <p className="text-center text-lg xs:text-2xl bg-black bg-opacity-20 px-2 py-5 rounded-lg">
+            Congratulations! You finished the challenge!
+            <p className="text-sm text-center rounded-lg">
+              Click anywhere to close
+            </p>
+          </p>
+        </div>
       </Modal>
     </div>
   );
