@@ -10,6 +10,7 @@ import {
   FaSpinner,
   FaStar,
   FaTimes,
+  FaTimesCircle,
   FaTrash,
 } from "react-icons/fa";
 import { useParams, Link, useNavigate } from "react-router-dom";
@@ -313,7 +314,7 @@ export default function GroupViewScreen() {
             <FaList /> Leaderboard
           </Button>
         </Link>
-
+        <Prizes prizes={data?.prizes} />
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 px-2">
           {(data?.items || []).map((d, idx) => (
             <Item
@@ -404,8 +405,8 @@ export default function GroupViewScreen() {
             <span>Found</span>
           </div>
         ) : null}
-        <FaTimes
-          className="absolute top-3 right-3 text-2xl text-red-600 cursor-pointer"
+        <FaTimesCircle
+          className="absolute top-3 right-3 text-2xl text-gray-200 cursor-pointer drop-shadow-md"
           onClick={() => setSelected(null)}
         />
       </Modal>
@@ -449,4 +450,26 @@ function Item({
       ) : null}
     </div>
   );
+}
+
+function Prizes({ prizes }: { prizes: HomeGroupWithItems["prizes"] }) {
+  return prizes && prizes.length > 0 ? (
+    <div className="flex flex-col gap-1 justify-center items-center">
+      <h3 className="text-2xl -mb-1">Prizes</h3>
+      {prizes?.map((p) => (
+        <div
+          key={`${p.positionLabel}-${p.label}`}
+          className="flex flex-row gap-1 justify-center items-center text-lg"
+        >
+          <div className="bg-brown-light rounded-md px-3 py-1">
+            {p.positionLabel}
+          </div>
+          <img src={p.imageUrl} className="h-8 w-8 rounded-full" />
+          <div>
+            {p.label} {p.amount === 1 ? "" : `x${p.amount}`}
+          </div>
+        </div>
+      ))}
+    </div>
+  ) : null;
 }

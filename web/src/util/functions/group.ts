@@ -9,6 +9,7 @@ const getOne: OneHandler<HomeGroupWithItems> = async ({ id, gw2 }) => {
     accountName: gw2?.account || 'Mael.3259',
     limit: 1,
     withItems: true,
+    select: { prizes: 1 },
   })
   return group[0]
 }

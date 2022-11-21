@@ -54,6 +54,7 @@ const itemSchema = new Schema<GroupDocument, ItemModel>(
           label: { type: String, required: false },
           imageUrl: { type: String, required: false },
           positionLabel: { type: String, required: false },
+          amount: { type: Number, required: false },
         },
       ],
       default: [],

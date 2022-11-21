@@ -121,6 +121,12 @@ export interface HomeGroup {
     rating: number
   }
   createdAt: string
+  prizes?: {
+    label?: string
+    imageUrl?: string
+    amount?: number
+    positionLabel?: string
+  }[]
 }
 
 export type HomeGroupWithItems = HomeGroup & {
