@@ -13,3 +13,35 @@
 .text-brown-dark {
   color: rgba(55, 45, 35, 0.8);
 }
+
+.bg-base {
+  background-color: #7e0b02;
+}
+
+.bg-living-world-2 {
+  background-color: #000000;
+}
+
+.bg-heart-of-thorns {
+  background-color: #6e7814;
+}
+
+.bg-living-world-3 {
+  background-color: #718777;
+}
+
+.bg-path-of-fire {
+  background-color: #c4014e;
+}
+
+.bg-living-world-4 {
+  background-color: #e15cdd;
+}
+
+.bg-icebrood-saga {
+  background-color: #742c74;
+}
+
+.bg-end-of-dragons {
+  background-color: #19e0ca;
+}

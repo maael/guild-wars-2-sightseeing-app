@@ -1,4 +1,9 @@
-import { MemoryRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  MemoryRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
 import TitleBar from "./components/primitives/TitleBar";
@@ -11,6 +16,7 @@ import GroupLeaderboardScreen from "./components/screens/Group/Leaderboard";
 import { Provider as ConnectionProvider } from "./components/hooks/useConnection";
 import AboutScreen from "./components/screens/About";
 import UserScreen from "./components/screens/User";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,6 +46,13 @@ function App() {
 }
 
 function InnerApp() {
+  const location = useLocation();
+  useEffect(() => {
+    if ((globalThis as any).fathom) {
+      console.info({ location: location.pathname });
+      (globalThis as any).fathom.trackPageview({ url: location.pathname });
+    }
+  }, [location.pathname]);
   return (
     <Routes>
       <Route path="/setup" element={<EnterApiKeyScreen />} />

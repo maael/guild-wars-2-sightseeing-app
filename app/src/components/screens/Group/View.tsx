@@ -22,13 +22,20 @@ import format from "date-fns/format";
 import Modal from "react-modal";
 import * as Sentry from "@sentry/react";
 import { CompletionDocument, HomeGroupWithItems } from "../../../types";
-import { API_URL, fetchWithKey, getAvatar } from "../../../util";
+import {
+  API_URL,
+  fetchWithKey,
+  getAvatar,
+  MOUNTS,
+  EXPANSIONS,
+} from "../../../util";
 import Button from "../../primitives/Button";
 import Difficulty from "../../primitives/Difficulty";
 import PageHeader from "../../primitives/PageHeader";
 import Rating from "../../primitives/Rating";
 import customToast from "../../primitives/CustomToast";
 import { WebviewWindow } from "@tauri-apps/api/window";
+import RingedItems from "../../primitives/RingedItems";
 
 const customStyles = {
   content: {
@@ -63,172 +70,6 @@ const blankCustomStyles = {
   overlay: {
     backgroundColor: "rgba(0, 0, 0, 0.3)",
     zIndex: 999,
-  },
-};
-
-const EXPANSIONS = {
-  base: {
-    ring: {
-      outlineColor: "red",
-    },
-    bg: {
-      backgroundColor: "white",
-    },
-    icon: "base",
-    label: "Base Game",
-  },
-  livingWorldSeason2: {
-    ring: {
-      outlineColor: "red",
-    },
-    bg: {
-      backgroundColor: "white",
-    },
-    icon: "living-world-season-2",
-    label: "Living World: Season 2",
-  },
-  heartOfThorns: {
-    ring: {
-      outlineColor: "light-green",
-    },
-    bg: {
-      backgroundColor: "white",
-    },
-    icon: "heart-of-thorns",
-    label: "Heart of Thorns",
-  },
-  livingWorldSeason3: {
-    ring: {
-      outlineColor: "red",
-    },
-    bg: {
-      backgroundColor: "white",
-    },
-    icon: "living-world-season-3",
-    label: "Living World: Season 3",
-  },
-  pathOfFire: {
-    ring: {
-      outlineColor: "lightpurple",
-    },
-    bg: {
-      backgroundColor: "white",
-    },
-    icon: "path-of-fire",
-    label: "Path of Fire",
-  },
-  livingWorldSeason4: {
-    ring: {
-      outlineColor: "red",
-    },
-    bg: {
-      backgroundColor: "white",
-    },
-    icon: "living-world-season-4",
-    label: "Living World: Season 4",
-  },
-  icebroodSaga: {
-    ring: {
-      outlineColor: "lightblue",
-    },
-    bg: {
-      backgroundColor: "white",
-    },
-    icon: "icebrood-saga",
-    label: "The Icebrood Saga",
-  },
-  endOfDragons: {
-    ring: {
-      outlineColor: "teal",
-    },
-    bg: {
-      backgroundColor: "white",
-    },
-    icon: "end-of-dragons",
-    label: "End of Dragons",
-  },
-};
-
-const MOUNTS = {
-  raptor: {
-    icon: "Raptor-Icon-v2",
-    label: "Raptor",
-    bg: {
-      backgroundColor: "#D46B2A",
-    },
-    ring: {
-      outlineColor: "#D46B2A",
-    },
-  },
-  springer: {
-    icon: "Springer_2BIcon",
-    label: "Springer",
-    bg: {
-      backgroundColor: "#F1C48B",
-    },
-    ring: {
-      outlineColor: "#F1C48B",
-    },
-  },
-  skimmer: {
-    icon: "Skimmer-Icon",
-    label: "Skimmer",
-    bg: {
-      backgroundColor: "#F1C48B",
-    },
-    ring: {
-      outlineColor: "#F1C48B",
-    },
-  },
-  jackal: {
-    icon: "Jackal-Icon",
-    label: "Jackal",
-    bg: {
-      backgroundColor: "#FFE463",
-    },
-    ring: {
-      outlineColor: "#FFE463",
-    },
-  },
-  rollerBeetle: {
-    icon: "Roller_2BBeetle_2BIcon",
-    label: "Roller Beetle",
-    bg: {
-      backgroundColor: "#A1D7F9",
-    },
-    ring: {
-      outlineColor: "#A1D7F9",
-    },
-  },
-  griffon: {
-    icon: "Griffon_2BIcon",
-    label: "Griffon",
-    bg: {
-      backgroundColor: "#772309",
-    },
-    ring: {
-      outlineColor: "#772309",
-    },
-  },
-  skyscale: {
-    icon: "Skyscale_2BIcon",
-    label: "Skyscale",
-    bg: {
-      backgroundColor: "#B7D1D0",
-    },
-    ring: {
-      outlineColor: "#B7D1D0",
-    },
-  },
-  siegeTurtle: {
-    icon: "Siege-Turtle-Icon",
-    label: "Siege Turtle",
-    bg: {
-      backgroundColor: "#311315",
-    },
-    ring: {
-      outlineColor: "#311315",
-    },
   },
 };
 
@@ -335,6 +176,10 @@ function useGroupMatch(group?: HomeGroupWithItems) {
           JSON.parse((r as string) || "{}")
         );
         if (Object.keys(data).length === 0) return;
+        if (data.error) {
+          console.warn("[link:error]", data.error);
+          return;
+        }
         const position = data.avatar.position;
         const matches = group?.items.filter((i) => {
           return i.position.every((v, idx) =>
@@ -469,46 +314,20 @@ export default function GroupViewScreen() {
           </Link>
         </div>
         {data?.expansions && data?.expansions.length > 0 ? (
-          <div className="flex flex-col xs:flex-row gap-2 xs:gap-3 w-full justify-center items-center my-1">
-            <div>Suggested Expansions</div>
-            <div className="flex flex-row gap-3 justify-center items-center flex-wrap">
-              {(data?.expansions as (keyof typeof EXPANSIONS)[]).map((key) =>
-                EXPANSIONS[key] ? (
-                  <img
-                    src={`/ui/logos/${EXPANSIONS[key].icon}.png`}
-                    title={EXPANSIONS[key].label}
-                    className="w-6 h-6 bg-white rounded-full p-0.5 outline-1 outline outline-offset-2 outline-red-600"
-                    style={{
-                      ...EXPANSIONS[key].bg,
-                      ...EXPANSIONS[key].ring,
-                    }}
-                  />
-                ) : null
-              )}
-            </div>
-          </div>
+          <RingedItems
+            type="expansion"
+            items={data?.expansions}
+            label="Suggested Expansions"
+            mapping={EXPANSIONS}
+          />
         ) : null}
         {data?.mounts && data?.mounts.length > 0 ? (
-          <div className="flex flex-col xs:flex-row gap-2 xs:gap-3 w-full justify-center items-center my-1">
-            <div>Suggested Mounts</div>
-            <div className="flex flex-row gap-3 justify-center items-center flex-wrap">
-              {(data?.mounts as (keyof typeof MOUNTS)[]).map((key) =>
-                MOUNTS[key] ? (
-                  <img
-                    src={`https://gw2-sightseeing.maael.xyz/avatars/${MOUNTS[key].icon}.jpg`}
-                    title={MOUNTS[key].label}
-                    className={
-                      "w-6 h-6 rounded-full outline-1 outline outline-offset-2"
-                    }
-                    style={{
-                      ...MOUNTS[key].bg,
-                      ...MOUNTS[key].ring,
-                    }}
-                  />
-                ) : null
-              )}
-            </div>
-          </div>
+          <RingedItems
+            type="mount"
+            items={data?.mounts}
+            label="Suggested Mounts"
+            mapping={MOUNTS}
+          />
         ) : (
           []
         )}

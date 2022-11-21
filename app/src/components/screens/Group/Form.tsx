@@ -21,10 +21,17 @@ import { GroupType, WithRating, GroupDocument, ItemType } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 import Input from "../../primitives/Input";
 import Button from "../../primitives/Button";
-import { API_URL, fetchWithKey, getGeoCoords } from "../../../util";
+import {
+  API_URL,
+  EXPANSIONS,
+  fetchWithKey,
+  getGeoCoords,
+  MOUNTS,
+} from "../../../util";
 import { useLocalImageHook } from "../../hooks/useLocalImage";
 import { difficultyMap } from "../../primitives/Difficulty";
 import customToast from "../../primitives/CustomToast";
+import RingedItems from "../../primitives/RingedItems";
 
 const blankCustomStyles = {
   content: {
@@ -62,6 +69,7 @@ export default function GroupFormScreen() {
     isPromoted: false,
     prizes: [],
     status: "active",
+    mounts: [],
   });
 
   const [showHowTo, setShowHowTo] = React.useState(
@@ -211,6 +219,48 @@ export default function GroupFormScreen() {
             </Button>
           ))}
         </div>
+        <RingedItems
+          type="expansion"
+          label="Suggested Expansions"
+          mapping={EXPANSIONS}
+          onClick={(k) =>
+            setGroup((g) => {
+              let items = g.expansions || [];
+              const exists = items.includes(k);
+              if (exists) {
+                items = items.filter((i) => i !== k);
+              } else {
+                items = items.concat(k);
+              }
+              return {
+                ...g,
+                expansions: items,
+              };
+            })
+          }
+          selected={group.expansions || []}
+        />
+        <RingedItems
+          type="mount"
+          label="Suggested Mounts"
+          mapping={MOUNTS}
+          onClick={(k) =>
+            setGroup((g) => {
+              let items = g.mounts || [];
+              const exists = items.includes(k);
+              if (exists) {
+                items = items.filter((i) => i !== k);
+              } else {
+                items = items.concat(k);
+              }
+              return {
+                ...g,
+                mounts: items,
+              };
+            })
+          }
+          selected={group.mounts || []}
+        />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-10 sm:gap-4 my-5">
           {(group.items || []).map((item, i) => (

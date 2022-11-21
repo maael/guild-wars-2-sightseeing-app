@@ -35,7 +35,8 @@
           "https://gw2-sightseeing-api.mael.tech/*",
           "https://o304997.ingest.sentry.io/*",
           "https://gw2-sightseeing.maael.xyz/*",
-          "https://render.guildwars2.com/*"
+          "https://render.guildwars2.com/*",
+          "https://cdn.usefathom.com/*"
         ],
         "all": true
       },
@@ -89,7 +90,7 @@
       }
     },
     "security": {
-      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com https://gw2-sightseeing.maael.xyz https://render.guildwars2.com"
+      "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com https://gw2-sightseeing.maael.xyz https://render.guildwars2.com https://cdn.usefathom.com"
     },
     "updater": {
       "active": false
