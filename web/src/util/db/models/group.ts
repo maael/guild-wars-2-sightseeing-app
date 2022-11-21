@@ -40,6 +40,10 @@ const itemSchema = new Schema<GroupDocument, ItemModel>(
       type: [String],
       default: [],
     },
+    mounts: {
+      type: [String],
+      default: [],
+    },
     difficulty: {
       type: Number,
       required: true,

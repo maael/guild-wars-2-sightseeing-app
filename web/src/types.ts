@@ -55,6 +55,7 @@ export interface GroupType {
   }
   expansions: string[]
   masteries: string[]
+  mounts: string[]
   difficulty: number
   isPromoted: boolean
   prizes: PrizeType[]
@@ -107,6 +108,9 @@ export interface HomeGroup {
   }
   difficulty: number
   status: 'active' | 'draft' | 'deleted'
+  masteries: string[]
+  expansions: string[]
+  mounts: string[]
   itemCount: number
   completion: {
     updatedAt: string

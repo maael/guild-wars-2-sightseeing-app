@@ -9,6 +9,9 @@ const groupFields = {
   description: 1,
   difficulty: 1,
   status: 1,
+  masteries: 1,
+  mounts: 1,
+  expansions: 1,
   createdAt: 1,
   itemCount: { $size: '$items' },
   creator: {
