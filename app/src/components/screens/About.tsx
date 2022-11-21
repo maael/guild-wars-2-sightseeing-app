@@ -1,13 +1,18 @@
 import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
+import { fetch } from "@tauri-apps/api/http";
 import React, { useEffect, useState } from "react";
 import {
   FaBeer,
   FaChevronLeft,
   FaDownload,
+  FaEye,
   FaGithub,
   FaLink,
+  FaSpinner,
+  FaUpload,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../../util";
 import Button from "../primitives/Button";
 import customToast from "../primitives/CustomToast";
 
@@ -26,6 +31,8 @@ export default function AboutScreen() {
       setDetails({ appVersion, tauriVersion });
     })();
   }, []);
+  const [checking, setChecking] = useState(false);
+  const [updateInfo, setUpdateInfo] = useState<any>(null);
   return (
     <div className="px-3">
       <div className="relative text-3xl flex flex-row gap-1 text-center justify-center items-center w-full p-5 mb-2">
@@ -81,12 +88,46 @@ export default function AboutScreen() {
         </div>
         <Button
           className="m-2"
-          onClick={() => {
-            customToast("success", "No update found!");
+          onClick={async () => {
+            try {
+              setChecking(true);
+              const updateInfo = await fetch(`${API_URL}/api/update-info`);
+              if (!updateInfo.ok) {
+                throw new Error("Error getting update info");
+              }
+              setUpdateInfo(updateInfo.data);
+              customToast("success", "Found latest version!", {
+                size: "sm",
+                duration: 1_000,
+              });
+            } catch (e) {
+              customToast(
+                "error",
+                "Failed to check for update, please try again!"
+              );
+            } finally {
+              setChecking(false);
+            }
           }}
         >
-          <FaDownload /> Check for update
+          {checking ? <FaSpinner className="animate-spin" /> : <FaUpload />}{" "}
+          Check for update
         </Button>
+        {updateInfo ? (
+          <div className="flex flex-col gap-3 justify-center items-center">
+            <div>Latest Version: v{updateInfo.version}</div>
+            <a href={updateInfo.downloadLink} target="_blank">
+              <Button>
+                <FaDownload /> Download
+              </Button>
+            </a>
+            <a href={updateInfo.viewLink} target="_blank">
+              <Button>
+                <FaEye /> View
+              </Button>
+            </a>
+          </div>
+        ) : null}
       </div>
       <div className="absolute bottom-10 right-5">
         <div>App Version: v{details.appVersion || "?.?.?"}</div>

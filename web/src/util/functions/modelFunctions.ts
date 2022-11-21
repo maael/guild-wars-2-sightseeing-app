@@ -19,4 +19,9 @@ export default {
       one: pageFns.userPage,
     },
   },
+  'update-info': {
+    get: {
+      many: pageFns.updateInfo,
+    },
+  },
 }

@@ -374,7 +374,7 @@ export default function GroupViewScreen() {
         contentLabel={`Delete ${data?.items[selected!]?.name || "item"}`}
       >
         <div className="flex flex-col gap-5">
-          <div className="text-xl text-center">
+          <div className="text-xl text-center xs:text-2xl bg-black bg-opacity-40 px-5 py-3 rounded-lg">
             Are you sure you want to delete this ?
           </div>
           <div className="flex flex-row gap-5 justify-center items-center">
@@ -386,6 +386,7 @@ export default function GroupViewScreen() {
                   await fetchWithKey(`${API_URL}/api/groups/${id}`, {
                     method: "DELETE",
                   });
+                  customToast("success", "Deleted");
                   nav("/groups");
                 } catch (e) {
                   console.error(e);
