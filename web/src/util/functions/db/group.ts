@@ -13,6 +13,7 @@ const groupFields = {
   mounts: 1,
   expansions: 1,
   createdAt: 1,
+  bannerImageUrl: 1,
   itemCount: { $size: '$items' },
   creator: {
     accountName: 1,

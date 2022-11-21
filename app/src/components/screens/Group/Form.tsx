@@ -175,7 +175,7 @@ export default function GroupFormScreen() {
   return (
     <div className="px-2 overflow-x-hidden py-3">
       <PageHeader
-        className="pt-12 sm:pt-0"
+        className="pt-10 sm:pt-0"
         rightAction={
           <Button onClick={save} disabled={saving} className="shadow-md mr-3">
             {saving ? <FaSpinner className="animate-spin" /> : <FaSave />} Save
@@ -190,12 +190,14 @@ export default function GroupFormScreen() {
         className="flex flex-col gap-2 max-w-2xl mx-auto mt-4 items-center"
       >
         <Input
+          outerClassName="w-full sm:w-auto"
           label="Name"
           placeholder="Name..."
           value={group.name}
           onChange={(e) => setGroup((g) => ({ ...g, name: e.target.value }))}
         />
         <Input
+          outerClassName="w-full sm:w-auto"
           label="Description"
           placeholder="Description..."
           value={group.description}
@@ -281,7 +283,7 @@ export default function GroupFormScreen() {
               <Input
                 outerClassName="w-full"
                 className="w-full"
-                labelClassName="w-1/2"
+                labelClassName="w-full sm:w-1/2"
                 label={`Name`}
                 placeholder="Name..."
                 value={item.name}
@@ -301,7 +303,7 @@ export default function GroupFormScreen() {
               <Input
                 outerClassName="w-full"
                 className="w-full"
-                labelClassName="w-1/2"
+                labelClassName="w-full sm:w-1/2"
                 label={`Description`}
                 placeholder="Description..."
                 value={item.description}

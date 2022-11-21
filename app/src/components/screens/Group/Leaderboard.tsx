@@ -37,7 +37,7 @@ export default function GroupLeaderboardScreen() {
       <PageHeader
         rightAction={
           <Button
-            className="right-5 text-sm"
+            className="right-5 h-8 text-sm"
             onClick={async () => {
               const toSave =
                 "account,completed_items,is_completed,updated_at\n" +
@@ -55,7 +55,7 @@ export default function GroupLeaderboardScreen() {
               customToast("success", "Saved to your documents folder!");
             }}
           >
-            <FaDownload /> Download
+            <FaDownload /> <span className="hidden xs:inline">Download</span>
           </Button>
         }
       >

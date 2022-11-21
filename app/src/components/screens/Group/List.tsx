@@ -47,7 +47,7 @@ export default function GroupListScreen() {
     <div>
       <PageHeader
         hideBack
-        className="pt-12 sm:pt-0 mb-2"
+        className="pt-12 sm:pt-3 mb-2"
         rightAction={
           <Link to="/groups/new" className="opacity-70 hover:opacity-100">
             <Button className="flex flex-row justify-center items-center -left-3">
