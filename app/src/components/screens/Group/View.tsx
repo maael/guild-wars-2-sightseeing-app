@@ -357,7 +357,7 @@ export default function GroupViewScreen() {
         </Link>
         <Prizes prizes={data?.prizes} />
       </div>
-      <div className="flex-1 w-full">
+      <div className="flex-1 w-full pt-3 pb-8">
         <ItemGrid
           items={data?.items}
           groupMatches={groupMatches}
