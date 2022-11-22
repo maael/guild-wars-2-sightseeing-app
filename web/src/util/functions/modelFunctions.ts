@@ -9,9 +9,14 @@ export default {
   groups: groupFns,
   ratings: ratingFns,
   leaderboards: leaderboardFns,
-  home: {
+  yours: {
     get: {
-      many: pageFns.homePage,
+      many: pageFns.yoursPage,
+    },
+  },
+  others: {
+    get: {
+      many: pageFns.othersPage,
     },
   },
   user: {

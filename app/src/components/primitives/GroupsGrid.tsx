@@ -10,7 +10,7 @@ export default function GroupsGrid({
   items,
   emptyMessage,
 }: {
-  emptyMessage: string;
+  emptyMessage: React.ReactNode;
   items?: HomeGroup[];
 }) {
   return (
@@ -18,7 +18,7 @@ export default function GroupsGrid({
       {items && items.length > 0 ? (
         items.map((d) => <Item key={d._id} item={d} />)
       ) : (
-        <p className="text-center text-sm mx-2 w-full col-span-1 sm:col-span-2">
+        <p className="text-center text-base mx-2 w-full col-span-1 sm:col-span-2">
           {emptyMessage}
         </p>
       )}

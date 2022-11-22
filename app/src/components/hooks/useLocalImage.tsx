@@ -16,7 +16,20 @@ export function useLocalImageHook() {
 
   async function saveImage(groupId: string, fileSrc: string) {
     console.info("[save]", `${API_URL}/api/image/${groupId}`, fileSrc);
-    const file = await readBinaryFile(fileSrc);
+    let file = await readBinaryFile(fileSrc);
+    try {
+      console.info("[jimp]", "start");
+      const Jimp = (window as any).Jimp;
+      const image = await Jimp.read(file.buffer);
+      const compressed = await image
+        .contain(1920, 1080)
+        .quality(75)
+        .getBufferAsync(Jimp.MIME_JPEG);
+      file = new Uint8Array(compressed);
+      console.info("[jimp]", "done");
+    } catch (e) {
+      console.warn("[jimp]", e);
+    }
     const formData = Body.bytes(file);
     console.info("[save][start]", formData);
     const res = await fetch(`${API_URL}/api/image?groupId=${groupId}`, {

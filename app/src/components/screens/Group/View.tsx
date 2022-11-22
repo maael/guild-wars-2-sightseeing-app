@@ -356,10 +356,11 @@ export default function GroupViewScreen() {
           </Button>
         </Link>
         <Prizes prizes={data?.prizes} />
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 px-2">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 px-2">
           {(data?.items || []).map((d, idx) => (
             <Item
               key={d._id}
+              index={idx}
               item={d}
               matched={groupMatches.has(d._id)}
               onClick={() => setSelected(idx)}
@@ -465,9 +466,9 @@ export default function GroupViewScreen() {
           />
           <p className="text-center text-lg xs:text-2xl bg-black bg-opacity-20 px-2 py-5 rounded-lg">
             Congratulations! You finished the challenge!
-            <p className="text-sm text-center rounded-lg">
+            <span className="text-sm text-center rounded-lg block">
               Click anywhere to close
-            </p>
+            </span>
           </p>
         </div>
       </Modal>
@@ -477,10 +478,12 @@ export default function GroupViewScreen() {
 
 function Item({
   item: d,
+  index,
   matched,
   onClick,
 }: {
   item: HomeGroupWithItems["items"][0];
+  index: number;
   matched: boolean;
   onClick: () => void;
 }) {
@@ -498,7 +501,10 @@ function Item({
         })}
       >
         <div className="rounded-md overflow-hidden mb-1">
-          {d.imageUrl ? <img src={d.imageUrl} /> : null}
+          <LoadableImage
+            src={d.imageUrl}
+            loading={index > 10 ? "lazy" : "eager"}
+          />
         </div>
         <div>{d.name}</div>
         <div className="text-sm">{d.description}</div>
@@ -511,6 +517,31 @@ function Item({
       ) : null}
     </div>
   );
+}
+
+function LoadableImage({
+  src,
+  loading,
+}: {
+  src?: string;
+  loading?: "lazy" | "eager";
+}) {
+  const [loaded, setLoaded] = useState(false);
+  return src ? (
+    <div>
+      {loaded ? null : (
+        <div className="w-full flex justify-center items-center aspect-video">
+          <FaSpinner className="animate-spin text-xl" />
+        </div>
+      )}
+      <img
+        src={src}
+        loading={loading}
+        onLoad={() => setLoaded(true)}
+        style={{ display: loaded ? "initial" : "none" }}
+      />
+    </div>
+  ) : null;
 }
 
 function Prizes({ prizes }: { prizes: HomeGroupWithItems["prizes"] }) {

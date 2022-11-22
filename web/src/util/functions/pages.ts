@@ -1,11 +1,8 @@
 import { getGroups } from './db/group'
 import { ManyHandler, OneHandler } from '~/types'
 
-export const homePage: ManyHandler<any> = async ({ gw2 }) => {
-  if (gw2) {
-    gw2.account = 'Mael.3259'
-  }
-  const result = await Promise.all([
+export const othersPage: ManyHandler<any> = async ({ gw2 }) => {
+  const [promoted, top, recent] = await Promise.all([
     getGroups({
       accountName: gw2?.account,
       type: 'promoted',
@@ -15,6 +12,16 @@ export const homePage: ManyHandler<any> = async ({ gw2 }) => {
     }),
     getGroups({ accountName: gw2?.account, type: 'top' }),
     getGroups({ accountName: gw2?.account, type: 'recent' }),
+  ])
+  return {
+    promoted,
+    top,
+    recent,
+  } as any
+}
+
+export const yoursPage: ManyHandler<any> = async ({ gw2 }) => {
+  const [authored, completion] = await Promise.all([
     gw2?.account
       ? getGroups({
           accountName: gw2?.account,
@@ -29,11 +36,7 @@ export const homePage: ManyHandler<any> = async ({ gw2 }) => {
         })
       : [],
   ])
-  const [promoted, top, recent, authored, completion] = result
   return {
-    promoted,
-    top,
-    recent,
     authored,
     completion,
   } as any

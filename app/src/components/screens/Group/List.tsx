@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { FaClock, FaEye, FaSpinner, FaStar } from "react-icons/fa";
+import {
+  FaClock,
+  FaEye,
+  FaSpinner,
+  FaStar,
+  FaUser,
+  FaUsers,
+} from "react-icons/fa";
 import cls from "classnames";
 import * as Sentry from "@sentry/react";
-import { HomeResponse, HomeGroup } from "../../../types";
+import { YoursResponse, OthersResponse, HomeGroup } from "../../../types";
 import PageHeader from "../../primitives/PageHeader";
 import { API_URL, fetchWithKey, getAvatar } from "../../../util";
 import Button from "../../primitives/Button";
@@ -12,36 +19,7 @@ import GroupsGrid from "../../primitives/GroupsGrid";
 import SectionHeader from "../../primitives/SectionHeader";
 
 export default function GroupListScreen() {
-  const [groupType, setGroupType] = useState("recent");
-  const { isLoading, error, data } = useQuery(
-    ["groups"],
-    () =>
-      fetchWithKey<HomeResponse>(`${API_URL}/api/home`).then((res) => res.data),
-    {
-      onError: (e) => {
-        console.info("[groups:error]", e);
-        Sentry.captureException(e);
-      },
-    }
-  );
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full text-3xl">
-        <FaSpinner className="animate-spin" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-full text-red-700 mx-2">
-        {`An error has occurred: ${error as Error}, ${(error as Error).stack}}`}
-      </div>
-    );
-  }
-
-  const showingItems = groupType === "top" ? data?.top : data?.recent;
+  const [pageSection, setPageSection] = useState("yours");
 
   return (
     <div>
@@ -66,27 +44,151 @@ export default function GroupListScreen() {
           <span className="hidden sm:inline">Guild Wars 2</span> Sightseeing
         </span>
       </PageHeader>
+      <Toggle
+        items={[
+          {
+            content: (
+              <>
+                <FaUser /> Yours
+              </>
+            ),
+            value: "yours",
+          },
+          {
+            content: (
+              <>
+                <FaUsers /> Others
+              </>
+            ),
+            value: "others",
+          },
+        ]}
+        active={pageSection}
+        onChange={setPageSection}
+      />
+      {pageSection === "yours" ? (
+        <YourLogs setPageSection={setPageSection} />
+      ) : (
+        <OthersLogs />
+      )}
+    </div>
+  );
+}
+
+function YourLogs({
+  setPageSection,
+}: {
+  setPageSection: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  const { isLoading, error, data } = useQuery(
+    ["groups/yours"],
+    () =>
+      fetchWithKey<YoursResponse>(`${API_URL}/api/yours`).then(
+        (res) => res.data
+      ),
+    {
+      onError: (e) => {
+        console.info("[groups:error]", e);
+        Sentry.captureException(e);
+      },
+    }
+  );
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full text-3xl py-20">
+        <FaSpinner className="animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-full text-red-700 text-lg mx-2">
+        {`An error has occurred: ${(error as Error) || "Unknown error"} ${
+          (error as Error)?.stack || ""
+        }`}
+      </div>
+    );
+  }
+
+  return (
+    <>
       <SectionHeader>
-        {`Your active logs (${data?.completion?.length})`}
+        {`Active logs (${data?.completion?.length})`}
       </SectionHeader>
       <GroupsGrid
-        emptyMessage="Any logs you've started or completed will appear here, find some below!"
+        emptyMessage={
+          <span className="flex flex-col justify-center items-center gap-4">
+            Any logs you've started or completed will appear here
+            <Button
+              onClick={() => setPageSection("others")}
+              className="text-2xl"
+            >
+              Find some here!
+            </Button>
+          </span>
+        }
         items={data?.completion}
       />
-      <SectionHeader>
-        {`Your created logs (${data?.authored?.length})`}
-      </SectionHeader>
-      <GroupsGrid
-        emptyMessage="Any logs you've created will appear here, find some below!"
-        items={data?.authored}
-      />
+      {data?.authored && data?.authored?.length > 0 ? (
+        <>
+          <SectionHeader>
+            {`Created logs (${data?.authored?.length})`}
+          </SectionHeader>
+          <GroupsGrid
+            emptyMessage="Any logs you've created will appear here!"
+            items={data?.authored}
+          />
+        </>
+      ) : null}
+    </>
+  );
+}
+
+function OthersLogs() {
+  const [groupType, setGroupType] = useState("recent");
+  const { isLoading, error, data } = useQuery(
+    ["groups/others"],
+    () =>
+      fetchWithKey<OthersResponse>(`${API_URL}/api/others`).then(
+        (res) => res.data
+      ),
+    {
+      onError: (e) => {
+        console.info("[groups:error]", e);
+        Sentry.captureException(e);
+      },
+    }
+  );
+  const showingItems = groupType === "top" ? data?.top : data?.recent;
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-full text-3xl py-20">
+        <FaSpinner className="animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-full text-red-700 text-lg mx-2">
+        {`An error has occurred: ${(error as Error) || "Unknown error"} ${
+          (error as Error)?.stack || ""
+        }`}
+      </div>
+    );
+  }
+  return (
+    <>
       <Promoted items={data?.promoted} />
       <LogToggle groupType={groupType} setGroupType={setGroupType} />
       <GroupsGrid
         emptyMessage="Logs that you can complete will be here!"
         items={showingItems}
       />
-    </div>
+    </>
   );
 }
 
@@ -136,7 +238,8 @@ function Promoted({
                 "rounded-full h-3 w-3 outline outline-offset-2 outline-2 outline-white cursor-pointer drop-shadow-lg",
                 {
                   "bg-white": active === idx,
-                  "bg-gray-400 bg-opacity-80": active !== idx,
+                  "bg-gray-400 bg-opacity-80 hover:bg-opacity-100":
+                    active !== idx,
                 }
               )}
             />
@@ -157,32 +260,60 @@ function LogToggle({
   return (
     <>
       <h2 className="text-center text-2xl mb-1 capitalize">{groupType} logs</h2>
-      <div className="flex flex-row justify-center uppercase max-w-sm w-5/6 mx-auto mb-1">
-        <button
-          onClick={() => setGroupType("recent")}
-          className={cls(
-            "px-5 py-1.5 transition-transform hover:scale-110 rounded-l-lg cursor-pointer w-1/2 flex flex-row justify-center items-center gap-2 text-sm sm:text-base",
-            {
-              "bg-brown-light": groupType === "recent",
-              "bg-brown-dark": groupType === "top",
-            }
-          )}
-        >
-          <FaClock /> Recent
-        </button>
-        <button
-          onClick={() => setGroupType("top")}
-          className={cls(
-            "px-5 py-1.5 transition-transform hover:scale-110 rounded-r-lg cursor-pointer w-1/2 flex flex-row justify-center items-center gap-2 text-sm sm:text-base",
-            {
-              "bg-brown-light": groupType === "top",
-              "bg-brown-dark": groupType === "recent",
-            }
-          )}
-        >
-          <FaStar /> Top
-        </button>
-      </div>
+      <Toggle
+        items={[
+          {
+            content: (
+              <>
+                <FaClock /> Recent
+              </>
+            ),
+            value: "recent",
+          },
+          {
+            content: (
+              <>
+                <FaStar /> Top
+              </>
+            ),
+            value: "top",
+          },
+        ]}
+        active={groupType}
+        onChange={setGroupType}
+      />
     </>
+  );
+}
+
+function Toggle({
+  items,
+  onChange,
+  active,
+}: {
+  items: { content: React.ReactNode; value: string }[];
+  onChange: (val: string) => void;
+  active: string;
+}) {
+  return (
+    <div className="flex flex-row justify-center uppercase max-w-xs w-5/6 mx-auto mb-2">
+      {items.map((item, idx) => (
+        <button
+          key={item.value}
+          onClick={() => onChange(item.value)}
+          className={cls(
+            "px-3 py-1 transition-transform hover:scale-110 cursor-pointer w-1/2 flex flex-row justify-center items-center gap-2 text-base sm:text-lg",
+            {
+              "bg-brown-light": active === item.value,
+              "bg-brown-dark": active !== item.value,
+              "rounded-l-lg": idx === 0,
+              "rounded-r-lg": idx === items.length - 1,
+            }
+          )}
+        >
+          {item.content}
+        </button>
+      ))}
+    </div>
   );
 }

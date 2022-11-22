@@ -98,6 +98,17 @@ export interface HomeResponse {
   completion: HomeGroup[]
 }
 
+export interface YoursResponse {
+  authored: HomeGroup[]
+  completion: HomeGroup[]
+}
+
+export interface OthersResponse {
+  promoted: HomeGroup[]
+  top: HomeGroup[]
+  recent: HomeGroup[]
+}
+
 export interface HomeGroup {
   _id: string
   name: string
