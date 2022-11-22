@@ -29,7 +29,6 @@
     "fathom-client": "^3.4.1",
     "isomorphic-fetch": "^3.0.0",
     "mongoose": "^6.5.3",
-    "mongoose-paginate-v2": "^1.7.0",
     "next": "11.0.0",
     "next-seo": "^5.4.0",
     "react": "^18.0.0",

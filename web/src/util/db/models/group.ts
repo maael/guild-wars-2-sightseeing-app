@@ -1,5 +1,4 @@
-import mongoose, { Schema, Model, PaginateModel } from 'mongoose'
-import paginate from 'mongoose-paginate-v2'
+import mongoose, { Schema, Model } from 'mongoose'
 import { GroupDocument } from '../../../types'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -80,8 +79,6 @@ const itemSchema = new Schema<GroupDocument, ItemModel>(
   }
 )
 
-itemSchema.plugin(paginate)
-
-const Item = mongoose.models.Group || mongoose.model<GroupDocument, PaginateModel<ItemModel>>('Group', itemSchema)
+const Item = mongoose.models.Group || mongoose.model<GroupDocument, ItemModel>('Group', itemSchema)
 
 export default Item

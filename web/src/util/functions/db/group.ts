@@ -88,7 +88,7 @@ export async function getGroups(
                           imageUrl: {
                             $replaceOne: {
                               input: '$$this.imageUrl',
-                              find: 'https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com',
+                              find: 'https://s3.us-west-2.amazonaws.com/gw2-sightseeing.maael.xyz',
                               replacement: 'https://gw2-sightseeing.maael.xyz',
                             },
                           },

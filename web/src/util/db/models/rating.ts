@@ -1,4 +1,4 @@
-import mongoose, { Schema, Model, PaginateModel } from 'mongoose'
+import mongoose, { Schema, Model } from 'mongoose'
 import { RatingDocument } from '../../../types'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -24,6 +24,6 @@ const itemSchema = new Schema<RatingDocument, ItemModel>(
   }
 )
 
-const Item = mongoose.models.Rating || mongoose.model<RatingDocument, PaginateModel<ItemModel>>('Rating', itemSchema)
+const Item = mongoose.models.Rating || mongoose.model<RatingDocument, ItemModel>('Rating', itemSchema)
 
 export default Item

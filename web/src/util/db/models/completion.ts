@@ -1,4 +1,4 @@
-import mongoose, { Schema, Model, PaginateModel } from 'mongoose'
+import mongoose, { Schema, Model } from 'mongoose'
 import { CompletionDocument } from '../../../types'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -25,7 +25,6 @@ const itemSchema = new Schema<CompletionDocument, ItemModel>(
   }
 )
 
-const Item =
-  mongoose.models.Completion || mongoose.model<CompletionDocument, PaginateModel<ItemModel>>('Completion', itemSchema)
+const Item = mongoose.models.Completion || mongoose.model<CompletionDocument, ItemModel>('Completion', itemSchema)
 
 export default Item

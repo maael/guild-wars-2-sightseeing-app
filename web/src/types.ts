@@ -1,5 +1,4 @@
-import type { PaginateResult, ObjectId, Document } from 'mongoose'
-import 'mongoose-paginate-v2'
+import type { ObjectId, Document } from 'mongoose'
 
 export type OneHandler<T, Body = any> = (args: {
   id: string
@@ -18,7 +17,7 @@ export type ManyHandler<T, Body = any> = (args: {
     account?: string
     character?: string
   }
-}) => Promise<T[] | PaginateResult<T>>
+}) => Promise<T[]>
 
 type WithRating<T> = T & {
   rating: {
@@ -27,7 +26,7 @@ type WithRating<T> = T & {
     user: number
   }
 }
-export type { PaginateResult, WithRating }
+export type { WithRating }
 
 export interface CompletionType {
   groupId: ObjectId

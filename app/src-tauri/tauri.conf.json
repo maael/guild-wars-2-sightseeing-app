@@ -7,20 +7,24 @@
   },
   "package": {
     "productName": "Guild Wars 2 Sightseeing",
-    "version": "0.0.0"
+    "version": "1.8.1"
   },
   "tauri": {
     "allowlist": {
       "protocol": {
         "all": false,
         "asset": true,
-        "assetScope": ["$DOCUMENT/Guild Wars 2/Screens/*"]
+        "assetScope": [
+          "$DOCUMENT/Guild Wars 2/Screens/*"
+        ]
       },
       "shell": {
         "open": true
       },
       "fs": {
-        "scope": ["*"],
+        "scope": [
+          "*"
+        ],
         "readDir": true,
         "readFile": true,
         "writeFile": true,

@@ -32,7 +32,10 @@ const tauriConfig = path.join(process.cwd(), "src-tauri", "tauri.conf.json");
   if (githubRef.startsWith("refs/tags/v")) {
     githubVersion = githubRef.replace("refs/tags/v", "").trim();
   }
-  const newVersion = process.env.APP_VERSION || githubVersion;
+  const newVersion =
+    process.env.APP_VERSION ||
+    githubVersion ||
+    require("../package.json").version;
   if (newVersion) {
     console.info(
       "[tauri-conf]",
