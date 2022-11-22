@@ -211,7 +211,7 @@ function Promoted({
             <p className="text-lg">{activeItem.description}</p>
           </div>
           <Link to={`/user/${activeItem.creator.accountName}`}>
-            <div className="flex flex-row gap-1 justify-center items-center absolute top-3 right-3 bg-brown-dark px-2 py-1 rounded-md drop-shadow-lg">
+            <div className="flex flex-row gap-1 justify-center items-center absolute top-3 right-3 bg-brown-dark px-2 py-1 rounded-lg drop-shadow-lg">
               <img
                 src={getAvatar(activeItem.creator.accountName)}
                 className="h-5 w-5 rounded-full"
