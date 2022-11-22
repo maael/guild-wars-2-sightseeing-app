@@ -23,6 +23,7 @@ export default function Input({
         {label}
       </div>
       <input
+        autoComplete="off"
         {...inputProps}
         style={{ borderColor: "#584025" }}
         className={cls(
