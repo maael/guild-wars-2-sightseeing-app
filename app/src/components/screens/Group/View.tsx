@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   FaCheckCircle,
@@ -281,7 +281,7 @@ export default function GroupViewScreen() {
   }
 
   return (
-    <div>
+    <div className="flex-1 flex flex-col">
       <PageHeader
         className="pt-10 sm:pt-0"
         rightAction={
@@ -356,17 +356,13 @@ export default function GroupViewScreen() {
           </Button>
         </Link>
         <Prizes prizes={data?.prizes} />
-        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 px-2">
-          {(data?.items || []).map((d, idx) => (
-            <Item
-              key={d._id}
-              index={idx}
-              item={d}
-              matched={groupMatches.has(d._id)}
-              onClick={() => setSelected(idx)}
-            />
-          ))}
-        </div>
+      </div>
+      <div className="flex-1 w-full">
+        <ItemGrid
+          items={data?.items}
+          groupMatches={groupMatches}
+          setSelected={setSelected}
+        />
       </div>
       <Modal
         isOpen={deleting}
@@ -478,7 +474,6 @@ export default function GroupViewScreen() {
 
 function Item({
   item: d,
-  index,
   matched,
   onClick,
 }: {
@@ -492,7 +487,7 @@ function Item({
       style={{
         backgroundImage: "url(/ui/windowbg-glyphs.png)",
       }}
-      className="bg-no-repeat bg-top bg-cover relative cursor-pointer"
+      className="bg-no-repeat bg-top bg-cover relative cursor-pointer h-full"
       onClick={onClick}
     >
       <div
@@ -501,15 +496,11 @@ function Item({
         })}
       >
         <div className="rounded-md overflow-hidden mb-1">
-          <LoadableImage
-            src={d.imageUrl}
-            loading={index > 10 ? "lazy" : "eager"}
-          />
+          <LoadableImage src={d.imageUrl} />
         </div>
         <div>{d.name}</div>
         <div className="text-sm">{d.description}</div>
       </div>
-
       {matched ? (
         <div className="absolute inset-0 flex justify-center items-center text-4xl">
           <FaCheckCircle className="text-green-600" />
@@ -519,27 +510,65 @@ function Item({
   );
 }
 
-function LoadableImage({
-  src,
-  loading,
+function ItemGrid({
+  items,
+  groupMatches,
+  setSelected,
 }: {
-  src?: string;
-  loading?: "lazy" | "eager";
+  items?: any[];
+  groupMatches: Set<string>;
+  setSelected: Dispatch<SetStateAction<number | null>>;
 }) {
+  return (
+    <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 px-2">
+      {(items || []).map((d, idx) => (
+        <Item
+          key={d._id}
+          index={idx}
+          item={d}
+          matched={groupMatches.has(d._id)}
+          onClick={() => setSelected(idx)}
+        />
+      ))}
+    </div>
+  );
+}
+
+function LoadableImage({ src }: { src?: string }) {
   const [loaded, setLoaded] = useState(false);
+  const [viewable, setViewable] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.target === ref.current && entry.isIntersecting) {
+            setViewable(true);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    if (ref.current) {
+      intersectionObserver.observe(ref.current);
+    }
+    return () => intersectionObserver.disconnect();
+  }, []);
   return src ? (
-    <div>
+    <div ref={ref}>
       {loaded ? null : (
         <div className="w-full flex justify-center items-center aspect-video">
           <FaSpinner className="animate-spin text-xl" />
         </div>
       )}
-      <img
-        src={src}
-        loading={loading}
-        onLoad={() => setLoaded(true)}
-        style={{ display: loaded ? "initial" : "none" }}
-      />
+      {viewable ? (
+        <img
+          src={src}
+          loading={"eager"}
+          onLoad={() => setLoaded(true)}
+          style={{ display: loaded ? "initial" : "none" }}
+        />
+      ) : null}
     </div>
   ) : null;
 }

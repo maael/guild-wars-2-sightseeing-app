@@ -14,6 +14,9 @@
     "prepare-build": "node scripts/prepare-build.cjs",
     "post-build": "node scripts/post-build.cjs"
   },
+  "resolutions": {
+    "@types/react": "^17"
+  },
   "dependencies": {
     "@sentry/react": "^7.13.0",
     "@sentry/tracing": "^7.13.0",
@@ -22,6 +25,7 @@
     "classnames": "^2.3.1",
     "date-fns": "^2.29.3",
     "howler": "^2.2.3",
+    "jimp": "^0.16.2",
     "rcedit": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -35,8 +39,8 @@
     "@tauri-apps/cli": "^1.2.0",
     "@types/howler": "^2.2.7",
     "@types/node": "^18.7.10",
-    "@types/react": "^18.0.15",
-    "@types/react-dom": "^18.0.6",
+    "@types/react": "17",
+    "@types/react-dom": "17",
     "@types/react-modal": "^3.13.1",
     "@vitejs/plugin-react": "^2.0.0",
     "autoprefixer": "^10.4.8",

@@ -35,7 +35,7 @@ function App() {
       <ConnectionProvider>
         <Router initialEntries={["/setup"]}>
           <TitleBar />
-          <div id="app" className="flex-1 overflow-y-auto">
+          <div id="app" className="flex-1 overflow-y-auto flex flex-col">
             <InnerApp />
           </div>
         </Router>
