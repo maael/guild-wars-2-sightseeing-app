@@ -15,7 +15,7 @@
     "post-build": "node scripts/post-build.cjs"
   },
   "resolutions": {
-    "@types/react": "^17"
+    "@types/react": "18.0.25"
   },
   "dependencies": {
     "@sentry/react": "^7.13.0",
@@ -39,8 +39,8 @@
     "@tauri-apps/cli": "^1.2.0",
     "@types/howler": "^2.2.7",
     "@types/node": "^18.7.10",
-    "@types/react": "17",
-    "@types/react-dom": "17",
+    "@types/react": "18.0.25",
+    "@types/react-dom": "18.0.6",
     "@types/react-modal": "^3.13.1",
     "@vitejs/plugin-react": "^2.0.0",
     "autoprefixer": "^10.4.8",

@@ -14,7 +14,7 @@ type ConnData = Partial<{
   setConnection: React.Dispatch<React.SetStateAction<ConnData>>;
 }>;
 
-export function Provider({ children }: React.PropsWithChildren) {
+export function Provider({ children }: React.PropsWithChildren<{}>) {
   const [{ connection }, setConnection] = React.useState<Partial<ConnData>>({});
   React.useEffect(() => {
     const interval = setInterval(async () => {
