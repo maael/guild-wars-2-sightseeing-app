@@ -12,7 +12,7 @@ const itemSchema = new Schema<GeoguesserSubmissionDocument, ItemModel>(
     image: { type: String },
   },
   {
-    timestamps: false,
+    timestamps: true,
   }
 )
 
