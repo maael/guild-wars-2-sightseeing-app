@@ -157,3 +157,13 @@ export type HomeGroupWithItems = HomeGroup & {
 }
 
 export type UserResponse = Pick<HomeResponse, 'authored' | 'completion'>
+
+export interface GeoguesserSubmission {
+  accepted: false
+  account: string
+  image: string
+  location: [number, number]
+  createdAt: string
+  updatedAt: string
+}
+export interface GeoguesserSubmissionDocument extends GeoguesserSubmission, Document {}

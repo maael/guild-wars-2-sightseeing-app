@@ -94,6 +94,9 @@ export function getAvatar(str?: string) {
   }`;
 }
 
+export const wait = (ms: number) =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
 export const EXPANSIONS = {
   base: {
     ring: {

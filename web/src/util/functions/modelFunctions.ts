@@ -2,6 +2,7 @@ import completionFns from './completion'
 import groupFns from './group'
 import ratingFns from './rating'
 import leaderboardFns from './leaderboard'
+import geoguesserSuggestion from './geoguesserSuggestion'
 import * as pageFns from './pages'
 
 export default {
@@ -29,4 +30,5 @@ export default {
       many: pageFns.updateInfo,
     },
   },
+  geoguesser: geoguesserSuggestion,
 }

@@ -42,7 +42,10 @@ export function useLocalImageHook() {
       console.error("[saveImage:error]", res.status, res.data as any);
       throw new Error((res.data as any).error || "Unknown error saving image");
     }
-    return (res.data as any)?.Location;
+    return (res.data as any)?.Location.replace(
+      "https://s3.us-west-2.amazonaws.com/gw2-sightseeing.maael.xyz",
+      "https://gw2-sightseeing.maael.xyz"
+    );
   }
 
   return {

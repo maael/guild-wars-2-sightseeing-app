@@ -1,11 +1,27 @@
 import { appWindow } from "@tauri-apps/api/window";
 import { getName } from "@tauri-apps/api/app";
 import { useEffect, useState } from "react";
-import { FaEye, FaHome, FaQuestionCircle, FaSpinner } from "react-icons/fa";
+import {
+  FaEye,
+  FaHome,
+  FaQuestionCircle,
+  FaSpinner,
+  FaUpload,
+} from "react-icons/fa";
 import cls from "classnames";
 import { useConnection } from "../hooks/useConnection";
-import { getAvatar } from "../../util";
+import {
+  API_URL,
+  fetchWithKey,
+  getAvatar,
+  getGeoCoords,
+  wait,
+} from "../../util";
 import { useNavigate } from "react-router-dom";
+import customToast from "./CustomToast";
+import { invoke } from "@tauri-apps/api/tauri";
+import { useLocalImageHook } from "../hooks/useLocalImage";
+import { Body } from "@tauri-apps/api/http";
 
 export default function TitleBar() {
   const [title, setTitle] = useState("");
@@ -88,6 +104,7 @@ export default function TitleBar() {
         >
           <FaHome />
         </div>
+        <GeoguesserSubmitButton accountName={accountName} />
         <div
           className="inline-flex justify-center items-center w-6 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
           onClick={() => navigate("/about")}
@@ -123,4 +140,76 @@ export default function TitleBar() {
       </div>
     </>
   );
+}
+
+function GeoguesserSubmitButton({
+  accountName,
+}: {
+  accountName?: string | null;
+}) {
+  const [saving, setSaving] = useState(false);
+  const { takeScreenshot, saveImage } = useLocalImageHook();
+  return accountName ? (
+    <div
+      className="inline-flex justify-center items-center w-6 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
+      onClick={async () => {
+        try {
+          setSaving(true);
+          customToast("info", "Starting submitting Geoguesser suggestion...", {
+            size: "sm",
+            duration: 1_000,
+          });
+          await wait(1_000);
+          customToast(
+            "info",
+            "Will swap to Guild Wars 2, hide UI, and take screenshot...",
+            { size: "sm", duration: 2_000 }
+          );
+          const [{ fileSrc }, data] = await Promise.all([
+            takeScreenshot(),
+            invoke("get_mumble").then((raw) =>
+              JSON.parse((raw as string) || "{}")
+            ),
+          ]);
+          const location = await getGeoCoords(data);
+          const image = await saveImage("geoguesser", fileSrc);
+          console.info("[submission]", {
+            location,
+            accountName,
+            image,
+          });
+          const result = await fetchWithKey(`${API_URL}/api/geoguesser`, {
+            method: "POST",
+            body: Body.json({
+              location,
+              accountName,
+              image,
+            }),
+          });
+          if (result.ok) {
+            customToast("success", "Submitted Geoguesser suggestion!", {
+              size: "sm",
+              duration: 1_000,
+            });
+          } else {
+            customToast("error", "Failed to submit Geoguesser suggestion!", {
+              size: "sm",
+              duration: 3_000,
+            });
+          }
+        } catch (e) {
+          console.warn(e);
+          customToast("error", "Failed to submit Geoguesser suggestion!", {
+            size: "sm",
+            duration: 5_000,
+          });
+        } finally {
+          setSaving(false);
+        }
+      }}
+      title="Submit to GW2 Geoguesser"
+    >
+      {saving ? <FaSpinner className="animate-spin" /> : <FaUpload />}
+    </div>
+  ) : null;
 }

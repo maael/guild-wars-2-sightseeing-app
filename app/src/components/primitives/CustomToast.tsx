@@ -1,12 +1,13 @@
 import cls from "classnames";
 import toast from "react-hot-toast";
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaCheckCircle, FaInfoCircle, FaTimesCircle } from "react-icons/fa";
 
-type ToastType = "success" | "error";
+type ToastType = "success" | "error" | "info";
 
 const IconMap: Record<ToastType, React.ReactNode> = {
-  success: <FaCheckCircle className="text-green-600 text-2xl" />,
-  error: <FaTimesCircle className="text-red-600 text-2xl" />,
+  success: <FaCheckCircle className="text-green-600" />,
+  info: <FaInfoCircle className="text-blue-500" />,
+  error: <FaTimesCircle className="text-red-600" />,
 };
 
 const positionMap = {
@@ -26,7 +27,8 @@ export function CustomToast(t: any, type: ToastType, message: string) {
             "animate-leave": !t.visible,
             "text-xl px-10 py-3 gap-3": t.size === "xl" || !t.size,
             "text-base px-5 py-2 gap-2": t.size === "base",
-            "text-sm px-5 py-2 gap-2": t.size === "sm",
+            "text-sm px-3 py-2 gap-2": t.size === "sm",
+            "text-xs px-3 py-2 gap-2": t.size === "xs",
           }
         )}
       >
@@ -40,7 +42,9 @@ export function CustomToast(t: any, type: ToastType, message: string) {
 export default function customToast(
   type: ToastType,
   message: string,
-  options?: Parameters<typeof toast.custom>[1] & { size?: "sm" | "base" | "xl" }
+  options?: Parameters<typeof toast.custom>[1] & {
+    size?: "xs" | "sm" | "base" | "xl";
+  }
 ) {
   toast.custom((t) => CustomToast(t, type, message), {
     position: "bottom-center",
