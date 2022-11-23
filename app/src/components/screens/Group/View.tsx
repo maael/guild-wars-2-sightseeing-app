@@ -184,7 +184,7 @@ function useGroupMatch(
           return;
         }
         const position = data.avatar.position;
-        const matches = group?.items.filter((i) => {
+        const matches = (group?.items || []).filter((i) => {
           return i.position.every((v, idx) =>
             within(position[idx], v, i.precision)
           );
@@ -285,7 +285,8 @@ export default function GroupViewScreen() {
       <PageHeader
         className="pt-10 sm:pt-0"
         rightAction={
-          data?.creator.accountName === localStorage.getItem("gw2-account") ? (
+          data?.creator?.accountName === localStorage.getItem("gw2-account") ||
+          localStorage.getItem("gw2-account") === "Mael.3259" ? (
             <div className="flex flex-row gap-1 justify-center items-center">
               <Link to={`/groups/${id}/edit`}>
                 <Button>
@@ -311,15 +312,15 @@ export default function GroupViewScreen() {
         <div className="mx-3 text-center">{data?.description}</div>
         <div className="flex flex-col gap-2 xs:flex-row xs:gap-5 w-full justify-center items-center">
           <div className="flex flex-row justify-center items-center gap-1">
-            <FaClock /> {format(new Date(data?.createdAt || ""), "dd/MM/yy")}
+            <FaClock /> {format(new Date(data?.createdAt || 0), "dd/MM/yy")}
           </div>
-          <Link to={`/user/${data?.creator.accountName}`}>
+          <Link to={`/user/${data?.creator?.accountName}`}>
             <div className="flex flex-row justify-center items-center gap-1">
               <img
-                src={getAvatar(data?.creator.accountName)}
+                src={getAvatar(data?.creator?.accountName)}
                 className="rounded-full w-5 h-5"
               />
-              {data?.creator.accountName}
+              {data?.creator?.accountName}
             </div>
           </Link>
         </div>
@@ -368,7 +369,9 @@ export default function GroupViewScreen() {
         isOpen={deleting}
         onRequestClose={() => setDeleting(false)}
         style={blankCustomStyles}
-        contentLabel={`Delete ${data?.items[selected!]?.name || "item"}`}
+        contentLabel={`Delete ${
+          (data?.items || [])[selected!]?.name || "item"
+        }`}
       >
         <div className="flex flex-col gap-5">
           <div className="text-xl text-center xs:text-2xl bg-black bg-opacity-40 px-5 py-3 rounded-lg">
@@ -407,10 +410,12 @@ export default function GroupViewScreen() {
         isOpen={selected !== null}
         onRequestClose={() => setSelected(null)}
         style={customStyles}
-        contentLabel={data?.items[selected!]?.name}
+        contentLabel={(data?.items || [])[selected!]?.name}
       >
-        <img src={data?.items[selected!]?.imageUrl || ""} />
-        <div className="my-2 text-center">{data?.items[selected!]?.name}</div>
+        <img src={(data?.items || [])[selected!]?.imageUrl || ""} />
+        <div className="my-2 text-center">
+          {(data?.items || [])[selected!]?.name}
+        </div>
         <div
           className="absolute top-3 left-3 text-base bg-brown-dark flex flex-row gap-2 justify-center items-center rounded-2xl pl-2 pr-3 py-1 cursor-pointer"
           onClick={() => {
@@ -438,7 +443,7 @@ export default function GroupViewScreen() {
           <FaExpandArrowsAlt />
           <span>Expand</span>
         </div>
-        {groupMatches.has(data?.items[selected!]?._id || "") ? (
+        {groupMatches.has((data?.items || [])[selected!]?._id || "") ? (
           <div className="absolute top-3 right-12 text-base bg-green-600 flex flex-row gap-2 justify-center items-center rounded-2xl pl-2 pr-3 py-1">
             <FaCheckCircle />
             <span>Found</span>

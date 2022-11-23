@@ -26,10 +26,10 @@ export default function GroupsGrid({
   );
 }
 
-function Item({ item }: { item: HomeGroup }) {
-  const isDone = item.completion.count === item.itemCount;
+function Item({ item }: { item?: HomeGroup }) {
+  const isDone = item?.completion?.count === item?.itemCount;
   return (
-    <Link to={`/groups/${item._id}`}>
+    <Link to={`/groups/${item?._id}`}>
       <div
         style={{
           backgroundImage: "url(/ui/windowbg-glyphs.png)",
@@ -43,21 +43,21 @@ function Item({ item }: { item: HomeGroup }) {
           })}
         >
           <div className="flex flex-row gap-2 justify-center items-center">
-            <div className="flex-1 text-lg">{item.name}</div>
-            <Difficulty level={item.difficulty} />
-            <Rating rating={item.ratings} />
+            <div className="flex-1 text-lg">{item?.name}</div>
+            <Difficulty level={item?.difficulty} />
+            <Rating rating={item?.ratings} />
           </div>
-          <div className="flex-1">{item.description}</div>
+          <div className="flex-1">{item?.description}</div>
           <div className="flex flex-row gap-2 justify-between items-center">
             <div>
-              {item.completion.count} of {item.itemCount} items
+              {item?.completion?.count || 0} of {item?.itemCount} items
             </div>
             <div className="flex flex-row gap-1 justify-center items-center">
               <img
-                src={getAvatar(item.creator.accountName)}
+                src={getAvatar(item?.creator.accountName)}
                 className="rounded-full w-5 h-5"
               />
-              {item.creator.accountName}
+              {item?.creator.accountName}
             </div>
           </div>
         </div>
