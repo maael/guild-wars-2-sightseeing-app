@@ -1,7 +1,7 @@
 {
   "name": "guild-wars-2-sightseeing-app",
   "private": true,
-  "version": "1.8.1",
+  "version": "1.8.2",
   "type": "module",
   "scripts": {
     "dev": "run-p vite watch-css",
@@ -12,7 +12,8 @@
     "watch-css": "npx tailwindcss -i ./src/input.css -o ./src/style.css --watch",
     "build-css": "npx tailwindcss -i ./src/input.css -o ./src/style.css",
     "prepare-build": "node scripts/prepare-build.cjs",
-    "post-build": "node scripts/post-build.cjs"
+    "post-build": "node scripts/post-build.cjs",
+    "build-app": "npm run prepare-build && npm run tauri build && npm run post-build && git checkout src/types.ts src/util.ts"
   },
   "resolutions": {
     "@types/react": "18.0.25"

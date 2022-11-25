@@ -14,13 +14,17 @@
       "protocol": {
         "all": false,
         "asset": true,
-        "assetScope": ["$DOCUMENT/Guild Wars 2/Screens/*"]
+        "assetScope": [
+          "$DOCUMENT/Guild Wars 2/Screens/*"
+        ]
       },
       "shell": {
         "open": true
       },
       "fs": {
-        "scope": ["*"],
+        "scope": [
+          "*"
+        ],
         "readDir": true,
         "readFile": true,
         "writeFile": true,
