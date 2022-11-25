@@ -11,6 +11,7 @@ defaults:
 
 jobs:
   create-release:
+    if: false
     runs-on: ubuntu-20.04
     outputs:
       release_id: ${{ steps.create-release.outputs.result }}
