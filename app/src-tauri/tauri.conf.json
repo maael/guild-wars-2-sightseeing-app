@@ -14,17 +14,13 @@
       "protocol": {
         "all": false,
         "asset": true,
-        "assetScope": [
-          "$DOCUMENT/Guild Wars 2/Screens/*"
-        ]
+        "assetScope": ["$DOCUMENT/Guild Wars 2/Screens/*"]
       },
       "shell": {
         "open": true
       },
       "fs": {
-        "scope": [
-          "*"
-        ],
+        "scope": ["*"],
         "readDir": true,
         "readFile": true,
         "writeFile": true,
@@ -88,9 +84,9 @@
       "shortDescription": "",
       "targets": "all",
       "windows": {
-        "certificateThumbprint": null,
+        "certificateThumbprint": "98F798EDDA618BF2BED24FFC8E66CC0489EC2FFD",
         "digestAlgorithm": "sha256",
-        "timestampUrl": ""
+        "timestampUrl": "http://timestamp.comodoca.com"
       }
     },
     "security": {
