@@ -7,18 +7,25 @@ export default function Index({ fathom }) {
     <>
       <Header fathom={fathom} />
       <div>
-        <div className="w-full md:w-2/3 relative aspect-video mx-auto shadow-[0_3px_40px_5px_rgba(0,0,0,0.3)] shadow-gray-500 -mt-8 md:-mt-2">
+        <div className="w-full md:w-2/3 relative aspect-video mx-auto shadow-[0_3px_40px_5px_rgba(0,0,0,0.3)] shadow-gray-500 -mt-8">
           <video controls muted autoPlay>
             <source src="/videos/sightseeing-example.mp4" type="video/mp4" />
           </video>
         </div>
       </div>
-      <div className="py-10 flex flex-col gap-6 justify-center items-center mx-auto text-center -mt-4 -mb-6">
+      <div className="py-10 flex flex-col gap-5 justify-center items-center mx-auto text-center -mt-4 -mb-6">
         <h2 className="text-4xl font-bold">Introducing the Guild Wars 2 Sightseeing App!</h2>
         <h2 className="text-4xl font-bold">A brand new way to explore Tyria</h2>
         <p className="text-lg opacity-80 max-w-lg mt-1">
           Guild Wars 2 is a game with a fantastic world, full of secret places to find and memorable locations - with
           the Sightseeing App, try to find locations in game from pictures of these places
+        </p>
+        <p className="text-lg opacity-80 max-w-lg -mt-1">
+          It also allows you to submit suggestions for{' '}
+          <a href="https://gw2-geoguesser.mael.tech/" className="font-bold">
+            🔗Guild Wars 2 Geoguesser
+          </a>
+          with the click of a button, if that's your think!
         </p>
         <div className="flex flex-row gap-4 justify-center items-center">
           <a
@@ -59,22 +66,32 @@ export default function Index({ fathom }) {
 
 export function SetupGuide({ fathom }: { fathom: any }) {
   return (
-    <div className="mt-2 text-left max-w-2xl mx-auto px-2">
-      <h1 className="text-5xl font-bold pt-2 pb-1 text-center no-underline">Setup</h1>
+    <div className="mt-1 text-left max-w-2xl mx-auto px-2">
+      <h1 className="text-5xl font-bold pt-2 text-center no-underline">Setup</h1>
       <ol className="text-left flex flex-col gap-2 mt-5 list-decimal mx-5 mb-1">
         <li>
-          Download the latest release from
+          Download the latest release from{' '}
           <a
             href="https://github.com/maael/guild-wars-2-sightseeing-app/releases/latest/download/Guild.Wars.2.Sightseeing.exe"
-            className="text-white font-bold bg-brown-brushed px-2 py-1 rounded-md not-italic whitespace-nowrap mx-1"
+            className="text-white font-bold bg-brown-brushed px-2 py-1 rounded-md not-italic whitespace-nowrap"
             onClick={() => fathom.trackGoal('BI8YGHQY', 0)}
           >
             here →
           </a>
         </li>
         <li>
+          You will need to right click the{' '}
+          <b className="text-white font-bold bg-brown-brushed px-2 py-1 rounded-md not-italic">
+            Guild.Wars.2.Sightseeing.exe
+          </b>{' '}
+          and tick the <b className="text-white font-bold bg-brown-brushed px-2 py-1 rounded-md not-italic">Unblock</b>{' '}
+          option if it's present, and press{' '}
+          <b className="text-white font-bold bg-brown-brushed px-2 py-1 rounded-md not-italic">OK</b> to apply the
+          change
+        </li>
+        <li>
           Run the{' '}
-          <b className="text-white font-bold bg-brown-brushed px-2 py-1 rounded-md not-italic mx-1">
+          <b className="text-white font-bold bg-brown-brushed px-2 py-1 rounded-md not-italic">
             Guild.Wars.2.Sightseeing.exe
           </b>{' '}
           file in the folder
@@ -82,7 +99,7 @@ export function SetupGuide({ fathom }: { fathom: any }) {
         <li>It will show you the setup page, follow the instructions and enter a Guild Wars 2 API Key</li>
         <li>
           You should now see a list of sightseeing challenges, choose one and get exploring! It will only tick off
-          locations you find for the challenge you have open in the app.
+          locations you find for the challenge you have open in the app
         </li>
       </ol>
     </div>
