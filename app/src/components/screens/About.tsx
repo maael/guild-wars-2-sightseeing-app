@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../util";
 import Button from "../primitives/Button";
 import customToast from "../primitives/CustomToast";
+import gtr from "semver/ranges/gtr";
 
 export default function AboutScreen() {
   const navigate = useNavigate();
@@ -95,11 +96,21 @@ export default function AboutScreen() {
               if (!updateInfo.ok) {
                 throw new Error("Error getting update info");
               }
-              setUpdateInfo(updateInfo.data);
-              customToast("success", "Found latest version!", {
-                size: "sm",
-                duration: 1_000,
-              });
+              const isNewer =
+                details.appVersion && updateInfo.data
+                  ? gtr((updateInfo.data as any).version, details.appVersion)
+                  : !!updateInfo.data;
+              setUpdateInfo({ ...(updateInfo.data || {}), isNewer });
+              customToast(
+                "success",
+                isNewer
+                  ? "Found latest version!"
+                  : "You're on the latest version!",
+                {
+                  size: "sm",
+                  duration: 1_000,
+                }
+              );
             } catch (e) {
               customToast(
                 "error",
@@ -116,16 +127,20 @@ export default function AboutScreen() {
         {updateInfo ? (
           <div className="flex flex-col gap-3 justify-center items-center">
             <div>Latest Version: v{updateInfo.version}</div>
-            <a href={updateInfo.downloadLink} target="_blank">
-              <Button>
-                <FaDownload /> Download
-              </Button>
-            </a>
-            <a href={updateInfo.viewLink} target="_blank">
-              <Button>
-                <FaEye /> View
-              </Button>
-            </a>
+            {updateInfo.isNewer ? (
+              <>
+                <a href={updateInfo.downloadLink} target="_blank">
+                  <Button>
+                    <FaDownload /> Download
+                  </Button>
+                </a>
+                <a href={updateInfo.viewLink} target="_blank">
+                  <Button>
+                    <FaEye /> View
+                  </Button>
+                </a>
+              </>
+            ) : null}
           </div>
         ) : null}
       </div>
