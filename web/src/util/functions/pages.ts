@@ -59,7 +59,7 @@ export const userPage: OneHandler<any> = async ({ id }) => {
 
 export const updateInfo: ManyHandler<any> = async () => {
   return {
-    version: '1.8.0',
+    version: '1.9.0',
     downloadLink:
       'https://github.com/maael/guild-wars-2-sightseeing-app/releases/latest/download/Guild.Wars.2.Sightseeing.exe',
     viewLink: 'https://github.com/maael/guild-wars-2-sightseeing-app/releases/latest',

@@ -103,7 +103,7 @@ export default function AboutScreen() {
                 details.appVersion && updateInfo.data
                   ? gtr((updateInfo.data as any).version, details.appVersion)
                   : !!updateInfo.data;
-              setUpdateInfo({ ...(updateInfo.data || {}), isNewer });
+              setUpdateInfo({ ...((updateInfo.data as any) || {}), isNewer });
               customToast(
                 "success",
                 isNewer
