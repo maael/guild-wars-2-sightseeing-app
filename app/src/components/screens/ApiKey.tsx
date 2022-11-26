@@ -71,12 +71,12 @@ export default function EnterApiKeyScreen() {
     }
   }, [apiAccountInfo]);
   return (
-    <div className="mt-2 flex flex-col gap-1 items-center max-w-lg mx-auto">
+    <div className="mt-1 flex flex-col gap-1 items-center max-w-lg mx-auto">
       <img src="/ui/icon.png" className="w-1/4 aspect-square" />
       <h1 className="text-2xl gwfont">Guild Wars 2 Sightseeing</h1>
-      <h3 className="text-xl">Setup</h3>
+      <h3 className="text-xl -mb-1">Setup</h3>
       <h3 className="text-lg">To get started please provide an API Key!</h3>
-      <ol className="list-decimal mx-8 mt-2 mb-4 space-y-1">
+      <ol className="list-decimal mx-8 mt-1.5 mb-3 space-y-1">
         <li className="leading-6">
           Go to{" "}
           <a
@@ -107,7 +107,7 @@ export default function EnterApiKeyScreen() {
         </li>
       </ol>
       <form
-        className="flex flex-col gap-2 justify-center items-center"
+        className="flex flex-col gap-3 justify-center items-center w-full"
         onSubmit={async (e) => {
           e.preventDefault();
           try {
@@ -155,8 +155,10 @@ export default function EnterApiKeyScreen() {
           defaultValue={apiAccountInfo.apiKey}
           placeholder="API Key..."
           name="api-key"
+          outerClassName="w-full"
+          className="flex-1"
         />
-        <Button type="submit">
+        <Button type="submit" className="text-xl">
           {loading ? <FaSpinner className="animate-spin" /> : <FaSave />} Save
           Key
         </Button>
