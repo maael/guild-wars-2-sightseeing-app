@@ -1,4 +1,6 @@
 import { getTauriVersion, getVersion } from "@tauri-apps/api/app";
+import { resolveResource } from "@tauri-apps/api/path";
+import { removeFile } from "@tauri-apps/api/fs";
 import { fetch } from "@tauri-apps/api/http";
 import React, { useEffect, useState } from "react";
 import {
@@ -9,13 +11,14 @@ import {
   FaGithub,
   FaLink,
   FaSpinner,
+  FaTimes,
   FaUpload,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import gtr from "semver/ranges/gtr";
 import { API_URL } from "../../util";
 import Button from "../primitives/Button";
 import customToast from "../primitives/CustomToast";
-import gtr from "semver/ranges/gtr";
 
 export default function AboutScreen() {
   const navigate = useNavigate();
@@ -35,7 +38,7 @@ export default function AboutScreen() {
   const [checking, setChecking] = useState(false);
   const [updateInfo, setUpdateInfo] = useState<any>(null);
   return (
-    <div className="px-3">
+    <div className="px-3 flex flex-col flex-1">
       <div className="relative text-3xl flex flex-row gap-1 text-center justify-center items-center w-full p-5 mb-2">
         <FaChevronLeft
           className="absolute left-0 top-1/2 -translate-y-1/2 text-3xl gwcursor-btn hover:scale-110"
@@ -143,6 +146,24 @@ export default function AboutScreen() {
             ) : null}
           </div>
         ) : null}
+      </div>
+      <div className="flex-1" />
+      <div className="mb-24 flex flex-col gap-2 justify-center items-center opacity-50 hover:opacity-100 transition-all">
+        <Button
+          className="!bg-red-600 text-xs"
+          onClick={async () => {
+            localStorage.clear();
+            const resourcePath = await resolveResource("settings.json");
+            await removeFile(resourcePath);
+            window.location.reload();
+          }}
+        >
+          <FaTimes /> Reset App
+        </Button>
+        <div className="max-w-xs text-center text-xs">
+          This will log you out, but progress associated with the Account Name
+          won't be lost
+        </div>
       </div>
       <div className="absolute bottom-10 right-5">
         <div>App Version: v{details.appVersion || "?.?.?"}</div>

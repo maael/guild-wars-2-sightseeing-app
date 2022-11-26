@@ -52,8 +52,9 @@ export default function TitleBar() {
         data-tauri-drag-region
         className="bg-gray-900 bg-opacity-25 flex-grow-0 flex-shrink-0 text-white select-none flex flex-row justify-end items-center cursor-move text-sm"
       >
-        <div className="absolute top-2 left-3 select-none pointer-events-none flex flex-row gap-1">
-          <FaEye /> <span className="hidden sm:inline">{title}</span>
+        <div className="absolute top-2 left-3 select-none pointer-events-none flex flex-row gap-2">
+          <img src="/ui/icon.png" className="w-5 -m-1 aspect-square" />{" "}
+          <span className="hidden sm:inline">{title}</span>
         </div>
         <div className="pointer-events-none">
           {accountName ? (
