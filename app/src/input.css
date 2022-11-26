@@ -27,12 +27,32 @@
 }
 
 * {
-  font-family: "Menomonia", "Trebuchet MS", "Lucida Sans Unicode",
+  font-family: "Cagliostro", "Trebuchet MS", "Lucida Sans Unicode",
     "Lucida Grande", "Lucida Sans", Arial, sans-serif;
   font-size: 1em;
   line-height: 1em;
   font-weight: 400;
   box-sizing: border-box;
+  cursor: url(/cursors/default.cur), default;
+}
+
+button,
+a {
+  cursor: url(/cursors/green.cur), pointer;
+}
+
+button:disabled {
+  cursor: url(/cursors/grey.cur), pointer;
+}
+
+.gwcursor-btn,
+.gwcursor-btn * {
+  cursor: url(/cursors/green.cur), default !important;
+}
+
+.gwcursor-btn:disabled,
+.gwcursor-btn:disabled * {
+  cursor: url(/cursors/grey.cur), default !important;
 }
 
 #root,
@@ -94,4 +114,22 @@ body:before {
 }
 
 @media (prefers-color-scheme: dark) {
+}
+
+.cagfont {
+  font-family: Cagliostro, Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family: "Cagliostro";
+  src: url(/fonts/Cagliostro-Regular.ttf);
+}
+
+.gwfont {
+  font-family: GwTwo, Arial, Helvetica, sans-serif;
+}
+
+@font-face {
+  font-family: "GwTwo";
+  src: url(/fonts/GWTwoFont.ttf);
 }

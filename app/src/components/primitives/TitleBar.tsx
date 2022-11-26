@@ -98,7 +98,7 @@ export default function TitleBar() {
           )}
         </div>
         <div
-          className="inline-flex justify-center items-center w-6 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
+          className="inline-flex justify-center items-center w-6 h-7 gwcursor-btn opacity-70 transition-opacity hover:opacity-100"
           onClick={() => navigate("/groups")}
           title="Home"
         >
@@ -106,21 +106,21 @@ export default function TitleBar() {
         </div>
         <GeoguesserSubmitButton accountName={accountName} />
         <div
-          className="inline-flex justify-center items-center w-6 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
+          className="inline-flex justify-center items-center w-6 h-7 gwcursor-btn opacity-70 transition-opacity hover:opacity-100"
           onClick={() => navigate("/about")}
           title="About"
         >
           <FaQuestionCircle />
         </div>
         <div
-          className="inline-flex justify-center items-center w-7 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
+          className="inline-flex justify-center items-center w-7 h-7 gwcursor-btn opacity-70 transition-opacity hover:opacity-100"
           id="titlebar-minimize"
           onClick={() => appWindow.minimize()}
         >
           <img src="/ui/minimize_button.png" alt="minimize" />
         </div>
         <div
-          className="inline-flex justify-center items-center w-7 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
+          className="inline-flex justify-center items-center w-7 h-7 gwcursor-btn opacity-70 transition-opacity hover:opacity-100"
           id="titlebar-maximize"
           onClick={async () =>
             (await appWindow.isMaximized())
@@ -131,7 +131,7 @@ export default function TitleBar() {
           <img src="/ui/maximize_button.png" alt="maximize" />
         </div>
         <div
-          className="inline-flex justify-center items-center w-7 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
+          className="inline-flex justify-center items-center w-7 h-7 gwcursor-btn opacity-70 transition-opacity hover:opacity-100"
           id="titlebar-close"
           onClick={() => appWindow.close()}
         >
@@ -151,7 +151,7 @@ function GeoguesserSubmitButton({
   const { takeScreenshot, saveImage } = useLocalImageHook();
   return accountName ? (
     <div
-      className="inline-flex justify-center items-center w-6 h-7 cursor-pointer opacity-70 transition-opacity hover:opacity-100"
+      className="inline-flex justify-center items-center w-6 h-7 gwcursor-btn opacity-70 transition-opacity hover:opacity-100"
       onClick={async () => {
         try {
           setSaving(true);

@@ -78,7 +78,7 @@ export default function GroupLeaderboardScreen() {
           >
             <Link
               to={`/user/${d.accountName}`}
-              className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap"
+              className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap gwcursor-btn"
             >
               <div className="w-full flex flex-row gap-2 items-center">
                 <img

@@ -322,6 +322,7 @@ export default function GroupFormScreen() {
               />
               <div className="flex flex-row gap-1 justify-center items-center text-sm">
                 <Button
+                  className="gwcursor-btn"
                   onClick={async (e) => {
                     e.preventDefault();
                     const [{ src, fileSrc }, data] = await Promise.all([

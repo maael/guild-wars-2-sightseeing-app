@@ -28,9 +28,9 @@ export default function GroupListScreen() {
         className="pt-12 sm:pt-3 mb-2"
         rightAction={
           <Link to="/groups/new" className="opacity-70 hover:opacity-100">
-            <Button className="flex flex-row justify-center items-center -left-3">
+            <Button className="flex flex-row justify-center items-center -left-3 gwfont gwcursor-btn">
               <div
-                className="h-14 w-14 -ml-4 -mr-3 -my-4 cursor-pointer bg-no-repeat bg-cover bg-center"
+                className="h-14 w-14 -ml-4 -mr-3 -my-4 bg-no-repeat bg-cover bg-center"
                 style={{
                   backgroundImage: "url(/ui/new.png)",
                 }}
@@ -40,8 +40,9 @@ export default function GroupListScreen() {
           </Link>
         }
       >
-        <span>
-          <span className="hidden sm:inline">Guild Wars 2</span> Sightseeing
+        <span className="gwfont">
+          <span className="hidden sm:inline gwfont">Guild Wars 2</span>{" "}
+          Sightseeing
         </span>
       </PageHeader>
       <Toggle
@@ -259,7 +260,9 @@ function LogToggle({
 }) {
   return (
     <>
-      <h2 className="text-center text-2xl mb-1 capitalize">{groupType} logs</h2>
+      <h2 className="text-center text-2xl mb-1 capitalize gwfont">
+        {groupType} logs
+      </h2>
       <Toggle
         items={[
           {
@@ -302,7 +305,7 @@ function Toggle({
           key={item.value}
           onClick={() => onChange(item.value)}
           className={cls(
-            "px-3 py-1 transition-transform hover:scale-110 cursor-pointer w-1/2 flex flex-row justify-center items-center gap-2 text-base sm:text-lg",
+            "px-3 py-1 transition-transform hover:scale-110 gwcursor-btn w-1/2 flex flex-row justify-center items-center gap-2 text-base sm:text-lg",
             {
               "bg-brown-light": active === item.value,
               "bg-brown-dark": active !== item.value,

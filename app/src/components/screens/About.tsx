@@ -37,7 +37,7 @@ export default function AboutScreen() {
     <div className="px-3">
       <div className="relative text-3xl flex flex-row gap-1 text-center justify-center items-center w-full p-5 mb-2">
         <FaChevronLeft
-          className="absolute left-0 top-1/2 -translate-y-1/2 text-3xl cursor-pointer hover:scale-110"
+          className="absolute left-0 top-1/2 -translate-y-1/2 text-3xl gwcursor-btn hover:scale-110"
           onClick={() => {
             navigate(-1);
           }}

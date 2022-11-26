@@ -22,13 +22,13 @@ export default function PageHeader({
     <header className={cls("relative flex flex-row gap-2", className)}>
       {hideBack ? null : (
         <button
-          className="absolute left-3 top-2 text-2xl"
+          className="absolute left-3 top-2 text-2xl gwcursor-btn transition-transform hover:scale-110"
           onClick={() => nav(backNav || (-1 as any))}
         >
           <FaChevronLeft />
         </button>
       )}
-      <h1 className="text-3xl text-center flex-1">{children}</h1>
+      <h1 className="text-3xl text-center flex-1 gwfont">{children}</h1>
       <div className={cls("absolute right-3 top-2 z-50", rightClassName)}>
         {rightAction}
       </div>

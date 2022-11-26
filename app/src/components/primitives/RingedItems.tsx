@@ -48,7 +48,7 @@ export default function RingedItems({
                     (isInteractive && selected?.includes(key)),
                   "opacity-50 hover:opacity-80 hover:outline":
                     isInteractive && !selected?.includes(key),
-                  "cursor-pointer": isInteractive,
+                  "gwcursor-btn": isInteractive,
                 }
               )}
               style={{

@@ -8,7 +8,7 @@ export default function Button({
   return (
     <button
       className={cls(
-        "px-2.5 py-1 transition-all relative hover:scale-125 rounded-md shadow-md flex flex-row justify-center items-center gap-1",
+        "px-2.5 py-1 gwcursor-btn transition-all relative hover:scale-125 rounded-md shadow-md flex flex-row justify-center items-center gap-1",
         className
       )}
       style={{ background: "#584025" }}

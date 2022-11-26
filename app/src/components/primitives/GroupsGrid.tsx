@@ -35,7 +35,7 @@ function Item({ item }: { item?: HomeGroup }) {
           backgroundImage: "url(/ui/windowbg-glyphs.png)",
           backgroundSize: "100% 100%",
         }}
-        className="h-28 bg-no-repeat bg-top relative pb-1 px-1"
+        className="h-28 bg-no-repeat bg-top relative pb-1 px-1 transition-transform hover:scale-105 gwcursor-btn cursor-pointer"
       >
         <div
           className={cls("p-2 flex flex-col gap-1 h-full", {

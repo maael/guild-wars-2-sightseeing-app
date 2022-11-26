@@ -50,7 +50,7 @@ export default function UserScreen() {
     <div className="px-3">
       <div className="relative flex flex-row gap-1 text-center justify-center items-center w-full p-5 mb-3">
         <FaChevronLeft
-          className="absolute left-0 top-8 text-3xl cursor-pointer hover:scale-110"
+          className="absolute left-0 top-8 text-3xl gwcursor-btn hover:scale-110"
           onClick={() => {
             navigate(-1);
           }}

@@ -87,7 +87,7 @@ function RatingSelection({
   userRating?: number;
 }) {
   return (
-    <div className="grid grid-cols-5 gap-1 cursor-pointer select-none px-2">
+    <div className="grid grid-cols-5 gap-1 gwcursor-btn select-none px-2">
       <RatedStar
         userRating={userRating}
         threshold={1}
@@ -287,7 +287,7 @@ export default function GroupViewScreen() {
         rightAction={
           data?.creator?.accountName === localStorage.getItem("gw2-account") ||
           localStorage.getItem("gw2-account") === "Mael.3259" ? (
-            <div className="flex flex-row gap-1 justify-center items-center">
+            <div className="flex flex-row gap-3 justify-center items-center">
               <Link to={`/groups/${id}/edit`}>
                 <Button>
                   <FaPencilAlt /> Edit
@@ -417,7 +417,7 @@ export default function GroupViewScreen() {
           {(data?.items || [])[selected!]?.name}
         </div>
         <div
-          className="absolute top-3 left-3 text-base bg-brown-dark flex flex-row gap-2 justify-center items-center rounded-2xl pl-2 pr-3 py-1 cursor-pointer"
+          className="absolute top-3 left-3 text-base bg-brown-dark flex flex-row gap-2 justify-center items-center rounded-2xl pl-2 pr-3 py-1 gwcursor-btn transition-transform hover:scale-110"
           onClick={() => {
             const expandedView = new WebviewWindow(
               `${data?.items[selected!]?._id}`,
@@ -449,10 +449,9 @@ export default function GroupViewScreen() {
             <span>Found</span>
           </div>
         ) : null}
-        <FaTimesCircle
-          className="absolute top-3 right-3 text-2xl text-gray-200 cursor-pointer drop-shadow-md"
-          onClick={() => setSelected(null)}
-        />
+        <div className="absolute top-3 right-3 text-2xl text-gray-200 gwcursor-btn drop-shadow-md transition-transform hover:scale-110">
+          <FaTimesCircle onClick={() => setSelected(null)} />
+        </div>
       </Modal>
       <Modal
         isOpen={showComplete}
@@ -492,7 +491,7 @@ function Item({
       style={{
         backgroundImage: "url(/ui/windowbg-glyphs.png)",
       }}
-      className="bg-no-repeat bg-top bg-cover relative cursor-pointer h-full"
+      className="bg-no-repeat bg-top bg-cover relative gwcursor-btn h-full"
       onClick={onClick}
     >
       <div
