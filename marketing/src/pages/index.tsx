@@ -24,8 +24,8 @@ export default function Index({ fathom }) {
           It also allows you to submit suggestions for{' '}
           <a href="https://gw2-geoguesser.mael.tech/" className="font-bold">
             🔗Guild Wars 2 Geoguesser
-          </a>
-          with the click of a button, if that's your think!
+          </a>{" "}
+          with the click of a button, if that's your thing!
         </p>
         <div className="flex flex-row gap-4 justify-center items-center">
           <a
