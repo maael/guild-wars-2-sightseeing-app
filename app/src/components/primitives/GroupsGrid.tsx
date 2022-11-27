@@ -27,7 +27,10 @@ export default function GroupsGrid({
 }
 
 function Item({ item }: { item?: HomeGroup }) {
-  const isDone = item?.completion?.count === item?.itemCount;
+  const isDone =
+    item && item?.completion
+      ? item?.completion?.count >= item?.itemCount
+      : false;
   return (
     <Link to={`/groups/${item?._id}`}>
       <div
@@ -50,7 +53,8 @@ function Item({ item }: { item?: HomeGroup }) {
           <div className="flex-1">{item?.description}</div>
           <div className="flex flex-row gap-2 justify-between items-center">
             <div>
-              {item?.completion?.count || 0} of {item?.itemCount} items
+              {Math.min(item?.completion?.count || 0, item?.itemCount || 0)} of{" "}
+              {item?.itemCount} items
             </div>
             <div className="flex flex-row gap-1 justify-center items-center">
               <img
