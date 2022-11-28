@@ -5,7 +5,6 @@ const url = 'https://gw2-sightseeing.mael.tech'
 export default {
   title,
   description,
-  canonical: url,
   openGraph: {
     title,
     description,
@@ -13,5 +12,13 @@ export default {
     site_name: title,
     type: 'website',
     locale: 'en_GB',
+    images: [
+      {
+        url: `${url}/preview.png`,
+        width: 1200,
+        height: 630,
+        alt: 'Guild Wars 2 | Sightseeing App',
+      },
+    ],
   },
 }
