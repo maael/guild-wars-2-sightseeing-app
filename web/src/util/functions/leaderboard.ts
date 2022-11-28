@@ -9,7 +9,7 @@ const getOne: OneHandler<CompletionType[]> = async ({ id }) => {
   return Completion.aggregate<CompletionType>([
     { $match: { groupId: new mongoose.Types.ObjectId(id) } },
     { $set: { totalItems: groupItems, completedItems: { $size: '$items' } } },
-    { $sort: { updatedAt: 1, completedItems: -1 } },
+    { $sort: { completedItems: -1, updatedAt: 1 } },
     { $limit: 1000 },
   ])
 }
