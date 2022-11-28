@@ -46,11 +46,15 @@ function Item({ item }: { item?: HomeGroup }) {
           })}
         >
           <div className="flex flex-row gap-2 justify-center items-center">
-            <div className="flex-1 text-lg">{item?.name}</div>
+            <div className="flex-1 text-lg text-ellipsis overflow-hidden whitespace-nowrap">
+              {item?.name}
+            </div>
             <Difficulty level={item?.difficulty} />
             <Rating rating={item?.ratings} />
           </div>
-          <div className="flex-1">{item?.description}</div>
+          <div className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
+            {item?.description}
+          </div>
           <div className="flex flex-row gap-2 justify-between items-center">
             <div>
               {Math.min(item?.completion?.count || 0, item?.itemCount || 0)} of{" "}
