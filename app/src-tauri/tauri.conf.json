@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "Guild Wars 2 Sightseeing",
-    "version": "1.9.0"
+    "version": "1.9.1"
   },
   "tauri": {
     "allowlist": {

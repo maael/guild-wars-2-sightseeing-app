@@ -1,7 +1,7 @@
 {
   "name": "guild-wars-2-sightseeing-app",
   "private": true,
-  "version": "1.9.0",
+  "version": "1.9.1",
   "type": "module",
   "scripts": {
     "dev": "run-p vite watch-css",
