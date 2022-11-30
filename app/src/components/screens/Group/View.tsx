@@ -356,7 +356,7 @@ export default function GroupViewScreen() {
             <FaList /> Leaderboard
           </Button>
         </Link>
-        <Prizes prizes={data?.prizes} />
+        <Prizes prizeNote={data?.prizeNote} prizes={data?.prizes} />
       </div>
       <div className="flex-1 w-full pt-3 pb-8">
         <ItemGrid
@@ -577,10 +577,19 @@ function LoadableImage({ src }: { src?: string }) {
   ) : null;
 }
 
-function Prizes({ prizes }: { prizes: HomeGroupWithItems["prizes"] }) {
+function Prizes({
+  prizeNote,
+  prizes,
+}: {
+  prizeNote?: string;
+  prizes: HomeGroupWithItems["prizes"];
+}) {
   return prizes && prizes.length > 0 ? (
     <div className="flex flex-col gap-1 justify-center items-center">
       <h3 className="text-2xl -mb-1">Prizes</h3>
+      {prizeNote ? (
+        <p className="max-w-sm text-center text-base">{prizeNote}</p>
+      ) : null}
       {prizes?.map((p) => (
         <div
           key={`${p.positionLabel}-${p.label}`}

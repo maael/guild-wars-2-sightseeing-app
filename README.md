@@ -65,3 +65,20 @@ cd guild-wars-2-sightseeing-app/web
 yarn
 yarn dev
 ```
+
+### Migration commands
+
+```sh
+mongoexport --forceTableScan --uri mongodb+srv://<from_user>:<from_password>@<from_url>/app --collection items --type json --out items.json
+mongoexport --forceTableScan --uri mongodb+srv://<from_user>:<from_password>@<from_url>/app --collection completions --type json --out completions.json
+mongoexport --forceTableScan --uri mongodb+srv://<from_user>:<from_password>@<from_url>/app --collection geoguessersubmissions --type json --out geoguessersubmissions.json
+mongoexport --forceTableScan --uri mongodb+srv://<from_user>:<from_password>@<from_url>/app --collection groups --type json --out groups.json
+mongoexport --forceTableScan --uri mongodb+srv://<from_user>:<from_password>@<from_url>/app --collection ratings --type json --out ratings.json
+
+
+mongoimport --uri "mongodb+srv://<to_user>:<to_password>@<to_url>/sightseeing" --collection items --type json --file items.json
+mongoimport --uri "mongodb+srv://<to_user>:<to_password>@<to_url>/sightseeing" --collection completions --type json --file completions.json
+mongoimport --uri "mongodb+srv://<to_user>:<to_password>@<to_url>/sightseeing" --collection geoguessersubmissions --type json --file geoguessersubmissions.json
+mongoimport --uri "mongodb+srv://<to_user>:<to_password>@<to_url>/sightseeing" --collection groups --type json --file groups.json
+mongoimport --uri "mongodb+srv://<to_user>:<to_password>@<to_url>/sightseeing" --collection ratings --type json --file ratings.json
+```

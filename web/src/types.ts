@@ -58,6 +58,7 @@ export interface GroupType {
   difficulty: number
   isPromoted: boolean
   prizes: PrizeType[]
+  prizeNote?: string
   createdAt: string
   updatedAt: string
   status: 'draft' | 'active' | 'deleted'
@@ -141,6 +142,7 @@ export interface HomeGroup {
     amount?: number
     positionLabel?: string
   }[]
+  prizeNote?: string
 }
 
 export type HomeGroupWithItems = HomeGroup & {

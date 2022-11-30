@@ -15,6 +15,7 @@ const groupFields = {
   createdAt: 1,
   bannerImageUrl: 1,
   itemCount: { $size: '$items' },
+  prizes: 1,
   creator: {
     accountName: 1,
   },

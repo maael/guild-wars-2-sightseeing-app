@@ -62,6 +62,10 @@ const itemSchema = new Schema<GroupDocument, ItemModel>(
       ],
       default: [],
     },
+    prizeNote: {
+      type: String,
+      required: false,
+    },
     status: {
       type: String,
       default: 'draft',

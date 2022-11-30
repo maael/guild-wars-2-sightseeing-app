@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaGift, FaGifts } from "react-icons/fa";
 import cls from "classnames";
 import { HomeGroup } from "../../types";
 import { getAvatar } from "../../util";
@@ -61,6 +61,9 @@ function Item({ item }: { item?: HomeGroup }) {
               {item?.itemCount} items
             </div>
             <div className="flex flex-row gap-1 justify-center items-center">
+              {item?.prizes && Object.keys(item.prizes).length > 0 ? (
+                <FaGift className="mx-2" title="Has prizes!" />
+              ) : null}
               <img
                 src={getAvatar(item?.creator.accountName)}
                 className="rounded-full w-5 h-5"
