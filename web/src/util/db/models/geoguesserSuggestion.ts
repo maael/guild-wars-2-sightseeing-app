@@ -8,6 +8,7 @@ const itemSchema = new Schema<GeoguesserSubmissionDocument, ItemModel>(
   {
     accepted: { type: Boolean, default: false },
     account: { type: String },
+    mapId: { type: Number },
     location: { type: [Number, Number] },
     image: { type: String },
   },

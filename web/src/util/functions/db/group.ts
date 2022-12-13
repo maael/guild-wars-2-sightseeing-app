@@ -30,6 +30,7 @@ export async function getGroups(
     accountName?: string
     withItems?: boolean
     select?: Partial<Record<keyof GroupType, 1>>
+    apiVersion?: string
   }>
 ) {
   const query = Object.assign({ status: 'active' }, inputOptions.query || {})
@@ -90,7 +91,91 @@ export async function getGroups(
                             $replaceOne: {
                               input: '$$this.imageUrl',
                               find: 'https://s3.us-west-2.amazonaws.com/gw2-sightseeing.maael.xyz',
-                              replacement: 'https://gw2-sightseeing.maael.xyz',
+                              replacement:
+                                inputOptions.apiVersion === '2'
+                                  ? 'https://gw2-sightseeing.mael-cdn.com'
+                                  : 'https://gw2-sightseeing.maael.xyz',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+            {
+              $set: {
+                items: {
+                  $map: {
+                    input: '$items',
+                    in: {
+                      $mergeObjects: [
+                        '$$this',
+                        {
+                          imageUrl: {
+                            $replaceOne: {
+                              input: '$$this.imageUrl',
+                              find: 'https://gw2-sightseeing-app.s3.us-west-2.amazonaws.com',
+                              replacement:
+                                inputOptions.apiVersion === '2'
+                                  ? 'https://gw2-sightseeing.mael-cdn.com'
+                                  : 'https://gw2-sightseeing.maael.xyz',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+            {
+              $set: {
+                items: {
+                  $map: {
+                    input: '$items',
+                    in: {
+                      $mergeObjects: [
+                        '$$this',
+                        {
+                          imageUrl: {
+                            $replaceOne: {
+                              input: '$$this.imageUrl',
+                              find: 'https://s3.us-east-1.amazonaws.com/gw2-sightseeing.mael-cdn.com',
+                              replacement:
+                                inputOptions.apiVersion === '2'
+                                  ? 'https://gw2-sightseeing.mael-cdn.com'
+                                  : 'https://gw2-sightseeing.maael.xyz',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+            {
+              $set: {
+                items: {
+                  $map: {
+                    input: '$items',
+                    in: {
+                      $mergeObjects: [
+                        '$$this',
+                        {
+                          imageUrl: {
+                            $replaceOne: {
+                              input: '$$this.imageUrl',
+                              find:
+                                inputOptions.apiVersion === '2'
+                                  ? 'https://gw2-sightseeing.maael.xyz'
+                                  : 'https://gw2-sightseeing.mael-cdn.com',
+                              replacement:
+                                inputOptions.apiVersion === '2'
+                                  ? 'https://gw2-sightseeing.mael-cdn.com'
+                                  : 'https://gw2-sightseeing.maael.xyz',
                             },
                           },
                         },

@@ -25,9 +25,17 @@ const handler: NextApiHandler = async (req, res) => {
       account: req.headers['x-gw2-account'],
       character: req.headers['x-gw2-character'],
     }
-    console.info({ gw2 })
+    console.info({ gw2, apiVersion: req.headers['x-api-version'] })
     await dbConnect()
-    const results = await matchedFunction({ id, limit, page, offset, gw2, body: req.body || {} })
+    const results = await matchedFunction({
+      id,
+      limit,
+      page,
+      offset,
+      gw2,
+      body: req.body || {},
+      apiVersion: req.headers['x-api-version'],
+    })
     res.json(results)
   } catch (e) {
     res.status(500).json({ error: e.message })

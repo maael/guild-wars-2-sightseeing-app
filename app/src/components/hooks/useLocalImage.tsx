@@ -36,6 +36,9 @@ export function useLocalImageHook() {
       body: formData,
       method: "POST",
       responseType: ResponseType.JSON,
+      headers: {
+        "x-api-version": "2",
+      },
     });
     console.info("[saveImage:data]", res.ok, res.status, res.data);
     if (!res.ok) {
@@ -45,6 +48,9 @@ export function useLocalImageHook() {
     return (res.data as any)?.Location.replace(
       "https://s3.us-west-2.amazonaws.com/gw2-sightseeing.maael.xyz",
       "https://gw2-sightseeing.maael.xyz"
+    ).replace(
+      "https://s3.us-east-1.amazonaws.com/gw2-sightseeing.mael-cdn.com",
+      "https://gw2-sightseeing.mael-cdn.com"
     );
   }
 

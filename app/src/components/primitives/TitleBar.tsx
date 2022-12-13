@@ -173,11 +173,13 @@ function GeoguesserSubmitButton({
             ),
           ]);
           const location = await getGeoCoords(data);
+          const mapId = data.context?.map_id;
           const image = await saveImage("geoguesser", fileSrc);
           console.info("[submission]", {
             location,
             accountName,
             image,
+            mapId,
           });
           const result = await fetchWithKey(`${API_URL}/api/geoguesser`, {
             method: "POST",
@@ -185,6 +187,7 @@ function GeoguesserSubmitButton({
               location,
               accountName,
               image,
+              mapId,
             }),
           });
           if (result.ok) {

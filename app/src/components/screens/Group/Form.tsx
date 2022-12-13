@@ -156,8 +156,8 @@ export default function GroupFormScreen() {
       setId(result._id);
       customToast("success", "Saved successfully!");
     } catch (e) {
+      console.error("[save][error]", e);
       Sentry.captureException(e);
-      console.error(e);
       customToast("error", `Error saving, please try again!`);
     } finally {
       setSaving(false);

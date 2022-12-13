@@ -3,18 +3,19 @@ import { Group, Item } from '~/util/db/models'
 import { OneHandler, HomeGroupWithItems, HomeGroup } from '~/types'
 import { getGroups } from './db/group'
 
-const getOne: OneHandler<HomeGroupWithItems> = async ({ id, gw2 }) => {
+const getOne: OneHandler<HomeGroupWithItems> = async ({ id, gw2, apiVersion }) => {
   const group = await getGroups({
     query: { _id: new mongoose.Types.ObjectId(id), status: 'active' },
     accountName: gw2?.account || 'Mael.3259',
     limit: 1,
     withItems: true,
     select: { prizes: 1, prizeNote: 1 },
+    apiVersion,
   })
   return group[0]
 }
 
-const postMany: OneHandler<HomeGroup> = async ({ body, gw2 }) => {
+const postMany: OneHandler<HomeGroup> = async ({ body, gw2, apiVersion }) => {
   const input = {
     name: body.name,
     description: body.description || '',
@@ -38,10 +39,10 @@ const postMany: OneHandler<HomeGroup> = async ({ body, gw2 }) => {
   )
   input.items = createditems
   const created = await Group.create(input)
-  return getOne({ id: created._id, gw2 })
+  return getOne({ id: created._id, gw2, apiVersion })
 }
 
-const putOne: OneHandler<HomeGroup> = async ({ id, body, gw2 }) => {
+const putOne: OneHandler<HomeGroup> = async ({ id, body, gw2, apiVersion }) => {
   const input = {
     name: body.name,
     description: body.description || '',
@@ -67,7 +68,7 @@ const putOne: OneHandler<HomeGroup> = async ({ id, body, gw2 }) => {
   )
   input.items = createdItems
   await Group.findByIdAndUpdate(id, input)
-  return getOne({ id, gw2 })
+  return getOne({ id, gw2, apiVersion })
 }
 
 const deleteOne: OneHandler<{ deleted: boolean }> = async ({ id, gw2 }) => {

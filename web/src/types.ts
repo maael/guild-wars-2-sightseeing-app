@@ -7,6 +7,7 @@ export type OneHandler<T, Body = any> = (args: {
     account?: string
     character?: string
   }
+  apiVersion?: string
 }) => Promise<T | null>
 export type ManyHandler<T, Body = any> = (args: {
   limit?: number
@@ -17,6 +18,7 @@ export type ManyHandler<T, Body = any> = (args: {
     account?: string
     character?: string
   }
+  apiVersion?: string
 }) => Promise<T[]>
 
 type WithRating<T> = T & {
@@ -164,6 +166,7 @@ export interface GeoguesserSubmission {
   accepted: false
   account: string
   image: string
+  mapId: number
   location: [number, number]
   createdAt: string
   updatedAt: string

@@ -12,6 +12,7 @@ export const fetchWithKey: typeof fetch = async (path, options) => {
   opts.responseType = ResponseType.JSON;
   if (typeof path === "string" && path.startsWith(API_URL)) {
     opts.headers = options?.headers || {};
+    (opts.headers as any)["x-api-version"] = "2";
     (opts.headers as any)["X-GW2-ACCOUNT"] =
       localStorage.getItem("gw2-account") || "";
     try {
