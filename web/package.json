@@ -4,10 +4,13 @@
   "main": "index.js",
   "author": "Matthew Elphick <matt.a.elphy@gmail.com> (https://mael.tech)",
   "license": "MIT",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev -p 3001",
-    "build": "next build",
-    "start": "next start",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider next build",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider next start",
     "prettier": "prettier --ignore-path .gitignore --write .",
     "lint": "eslint --ext .ts,.tsx --ignore-path .gitignore"
   },

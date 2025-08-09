@@ -4,6 +4,9 @@
   "main": "index.js",
   "author": "Matthew Elphick <matt.a.elphy@gmail.com> (https://mael.tech)",
   "license": "MIT",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "next dev -p 3003",
     "build": "next build",
